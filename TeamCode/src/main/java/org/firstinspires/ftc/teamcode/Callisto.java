@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
+import org.firstinspires.ftc.teamcode.subsystems.RRMecanum;
 
 public class Callisto extends Robot {
 
@@ -20,6 +21,7 @@ public class Callisto extends Robot {
 
     // SUBSYSTEMS
     public Mecanum mecanum;
+    public RRMecanum roadRunner;
 
     /**
      * Welcome to the Command pattern. Here we assemble the robot and kick-off the command
