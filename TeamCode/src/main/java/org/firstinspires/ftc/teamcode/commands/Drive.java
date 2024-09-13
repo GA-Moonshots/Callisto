@@ -4,11 +4,11 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Callisto;
-import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
-import org.firstinspires.ftc.teamcode.util.HardwareNames;
+import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
+import org.firstinspires.ftc.teamcode.util.Constants;
 
 public class Drive extends CommandBase {
-    private final Mecanum mecanum;
+    private final PureMecanum mecanum;
     private GamepadEx player1;
     private Callisto robot;
 
@@ -54,6 +54,6 @@ public class Drive extends CommandBase {
      * Helper function for applying dead zone
      */
     private double applyDeadZone(double input) {
-        return Math.abs(input) <= HardwareNames.INPUT_THRESHOLD ? 0.0d : input;
+        return Math.abs(input) <= Constants.INPUT_THRESHOLD ? 0.0d : input;
     }
 }

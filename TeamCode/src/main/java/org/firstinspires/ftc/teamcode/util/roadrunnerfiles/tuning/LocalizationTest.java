@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roadrunnerfiles.tuning;
+package org.firstinspires.ftc.teamcode.util.roadrunnerfiles.tuning;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -8,17 +8,17 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.Drawing;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.MecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.TankDrive;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.Drawing;
+import org.firstinspires.ftc.teamcode.subsystems.RoadRunner;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.TankDrive;
 
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
-            MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        if (TuningOpModes.DRIVE_CLASS.equals(RoadRunner.class)) {
+            RoadRunner drive = new RoadRunner(hardwareMap, new Pose2d(0, 0, 0));
 
             waitForStart();
 

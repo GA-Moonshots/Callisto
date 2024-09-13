@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roadrunnerfiles.tuning;
+package org.firstinspires.ftc.teamcode.util.roadrunnerfiles.tuning;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.reflection.ReflectionConfig;
@@ -22,10 +22,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.MecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.TankDrive;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.ThreeDeadWheelLocalizer;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.TwoDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.RoadRunner;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.TankDrive;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.TwoDeadWheelLocalizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public final class TuningOpModes {
     // TODO: change this to TankDrive.class if you're using tank
-    public static final Class<?> DRIVE_CLASS = MecanumDrive.class;
+    public static final Class<?> DRIVE_CLASS = RoadRunner.class;
 
     public static final String GROUP = "quickstart";
     public static final boolean DISABLED = false;
@@ -53,14 +53,14 @@ public final class TuningOpModes {
         if (DISABLED) return;
 
         DriveViewFactory dvf;
-        if (DRIVE_CLASS.equals(MecanumDrive.class)) {
+        if (DRIVE_CLASS.equals(RoadRunner.class)) {
             dvf = hardwareMap -> {
-                MecanumDrive md = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+                RoadRunner md = new RoadRunner(hardwareMap, new Pose2d(0, 0, 0));
 
                 List<Encoder> leftEncs = new ArrayList<>(), rightEncs = new ArrayList<>();
                 List<Encoder> parEncs = new ArrayList<>(), perpEncs = new ArrayList<>();
-                if (md.localizer instanceof MecanumDrive.DriveLocalizer) {
-                    MecanumDrive.DriveLocalizer dl = (MecanumDrive.DriveLocalizer) md.localizer;
+                if (md.localizer instanceof RoadRunner.DriveLocalizer) {
+                    RoadRunner.DriveLocalizer dl = (RoadRunner.DriveLocalizer) md.localizer;
                     leftEncs.add(dl.leftFront);
                     leftEncs.add(dl.leftBack);
                     rightEncs.add(dl.rightFront);
@@ -80,10 +80,10 @@ public final class TuningOpModes {
 
                 return new DriveView(
                     DriveType.MECANUM,
-                        MecanumDrive.PARAMS.inPerTick,
-                        MecanumDrive.PARAMS.maxWheelVel,
-                        MecanumDrive.PARAMS.minProfileAccel,
-                        MecanumDrive.PARAMS.maxProfileAccel,
+                        RoadRunner.PARAMS.inPerTick,
+                        RoadRunner.PARAMS.maxWheelVel,
+                        RoadRunner.PARAMS.minProfileAccel,
+                        RoadRunner.PARAMS.maxProfileAccel,
                         hardwareMap.getAll(LynxModule.class),
                         Arrays.asList(
                                 md.leftFront,
@@ -99,9 +99,9 @@ public final class TuningOpModes {
                         perpEncs,
                         md.lazyImu,
                         md.voltageSensor,
-                        () -> new MotorFeedforward(MecanumDrive.PARAMS.kS,
-                                MecanumDrive.PARAMS.kV / MecanumDrive.PARAMS.inPerTick,
-                                MecanumDrive.PARAMS.kA / MecanumDrive.PARAMS.inPerTick)
+                        () -> new MotorFeedforward(RoadRunner.PARAMS.kS,
+                                RoadRunner.PARAMS.kV / RoadRunner.PARAMS.inPerTick,
+                                RoadRunner.PARAMS.kA / RoadRunner.PARAMS.inPerTick)
                 );
             };
         } else if (DRIVE_CLASS.equals(TankDrive.class)) {

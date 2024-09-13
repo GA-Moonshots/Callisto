@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.Robot;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 
@@ -11,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Callisto;
  * The primary operation file for the teleOp phase of the match
  */
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous - Primary")
-public class AutoMcAutty extends CommandOpMode {
+public class AutoBotDriveyPants extends CommandOpMode {
 
 
     /**

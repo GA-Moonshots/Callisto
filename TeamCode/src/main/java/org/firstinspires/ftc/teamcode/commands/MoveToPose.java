@@ -6,20 +6,18 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Callisto;
-import org.firstinspires.ftc.teamcode.subsystems.RRMecanum;
-import org.firstinspires.ftc.teamcode.util.HardwareNames;
+import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
+import org.firstinspires.ftc.teamcode.util.Constants;
 
-import com.acmerobotics.roadrunner.Trajectory;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.util.Timing;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class MoveToPose extends CommandBase {
 
     // REFERENCES
     private Callisto robot;
     //TODO: Ask Mr. A is the naming convention of this a problem
-    private RRMecanum drive;
+    private Mecanum drive;
     // ASSETS
     private final Pose2d targetPose; // The target position and heading
     protected Action action;
@@ -36,7 +34,7 @@ public class MoveToPose extends CommandBase {
         this.targetPose = targetPose;
 
         // default timeout
-        this.timeout = HardwareNames.DEFAULT_TIMEOUT;
+        this.timeout = Constants.DEFAULT_TIMEOUT;
 
         addRequirements(drive);
     }

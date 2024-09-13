@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.util.wrappers;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.arcrobotics.ftclib.vision.AprilTag2dPipeline;
@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.vision.AprilTag2dPipeline;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Callisto;
+import org.firstinspires.ftc.teamcode.util.Constants;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -30,7 +31,7 @@ public class Camera {
                 getIdentifier("cameraMonitorViewId", "id",
                         m_robot.opMode.hardwareMap.appContext.getPackageName());
 
-        WebcamName webcamName = m_robot.opMode.hardwareMap.get(WebcamName.class, HardwareNames.WEBCAM_NAME);
+        WebcamName webcamName = m_robot.opMode.hardwareMap.get(WebcamName.class, Constants.WEBCAM_NAME);
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);;
 
         // FTC Dashboard Camera Set up stuff

@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
-import org.firstinspires.ftc.teamcode.subsystems.RRMecanum;
+import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
 
 public class Callisto extends Robot {
 
@@ -20,8 +20,8 @@ public class Callisto extends Robot {
     public GamepadEx player2;
 
     // SUBSYSTEMS
-    public Mecanum mecanum;
-    public RRMecanum roadRunner;
+    public PureMecanum mecanum;
+    public Mecanum roadRunner;
 
     /**
      * Welcome to the Command pattern. Here we assemble the robot and kick-off the command
@@ -45,7 +45,7 @@ public class Callisto extends Robot {
     public void initTele() {
 
         // MECANUM SETUP
-        mecanum = new Mecanum(this);
+        mecanum = new PureMecanum(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS

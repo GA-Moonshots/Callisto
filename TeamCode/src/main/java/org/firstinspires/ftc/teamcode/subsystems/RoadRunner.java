@@ -18,13 +18,14 @@ import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.acmerobotics.roadrunner.TimeTurn;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Twist2dDual;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
+import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
@@ -39,21 +40,19 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.Localizer;
-import org.firstinspires.ftc.teamcode.util.HardwareNames;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.messages.DriveCommandMessage;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.messages.MecanumCommandMessage;
-//import org.firstinspires.ftc.teamcode.roadrunnerfiles.messages.MecanumEncodersMessage;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.messages.PoseMessage;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.Drawing;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.Localizer;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.messages.DriveCommandMessage;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.messages.MecanumCommandMessage;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.messages.MecanumLocalizerInputsMessage;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.messages.PoseMessage;
 
 import java.lang.Math;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * We connect RoadRunner here by extending FTCLib's subsystem
- */
 @Config
 public class RoadRunner extends SubsystemBase {
     public static class Params {
@@ -66,8 +65,8 @@ public class RoadRunner extends SubsystemBase {
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         // drive model parameters
-        public double inPerTick = 0;
-        public double lateralInPerTick = 1;
+        public double inPerTick = 1;
+        public double lateralInPerTick = inPerTick;
         public double trackWidthTicks = 0;
 
         // feedforward parameters (in tick units)
@@ -97,8 +96,7 @@ public class RoadRunner extends SubsystemBase {
     public static Params PARAMS = new Params();
 
     public final MecanumKinematics kinematics = new MecanumKinematics(
-            PARAMS.inPerTick * PARAMS.trackWidthTicks,
-            PARAMS.inPerTick / PARAMS.lateralInPerTick);
+            PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
 
     public final TurnConstraints defaultTurnConstraints = new TurnConstraints(
             PARAMS.maxAngVel, -PARAMS.maxAngAccel, PARAMS.maxAngAccel);
@@ -114,7 +112,7 @@ public class RoadRunner extends SubsystemBase {
 
     public final VoltageSensor voltageSensor;
 
-    public final IMU imu;
+    public final LazyImu lazyImu;
 
     public final Localizer localizer;
     public Pose2d pose;
@@ -128,9 +126,11 @@ public class RoadRunner extends SubsystemBase {
 
     public class DriveLocalizer implements Localizer {
         public final Encoder leftFront, leftBack, rightBack, rightFront;
+        public final IMU imu;
 
-        protected int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
-        protected Rotation2d lastHeading;
+        private int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
+        private Rotation2d lastHeading;
+        private boolean initialized;
 
         public DriveLocalizer() {
             leftFront = new OverflowEncoder(new RawEncoder(RoadRunner.this.leftFront));
@@ -138,15 +138,10 @@ public class RoadRunner extends SubsystemBase {
             rightBack = new OverflowEncoder(new RawEncoder(RoadRunner.this.rightBack));
             rightFront = new OverflowEncoder(new RawEncoder(RoadRunner.this.rightFront));
 
+            imu = lazyImu.get();
+
             // TODO: reverse encoders if needed
             //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-
-            lastLeftFrontPos = leftFront.getPositionAndVelocity().position;
-            lastLeftBackPos = leftBack.getPositionAndVelocity().position;
-            lastRightBackPos = rightBack.getPositionAndVelocity().position;
-            lastRightFrontPos = rightFront.getPositionAndVelocity().position;
-
-            lastHeading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         }
 
         @Override
@@ -156,12 +151,30 @@ public class RoadRunner extends SubsystemBase {
             PositionVelocityPair rightBackPosVel = rightBack.getPositionAndVelocity();
             PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-//            FlightRecorder.write("MECANUM_ENCODERS", new MecanumEncodersMessage(
-//                    leftFrontPosVel, leftBackPosVel, rightBackPosVel, rightFrontPosVel));
+            YawPitchRollAngles angles = imu.getRobotYawPitchRollAngles();
 
-            Rotation2d heading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            FlightRecorder.write("MECANUM_LOCALIZER_INPUTS", new MecanumLocalizerInputsMessage(
+                    leftFrontPosVel, leftBackPosVel, rightBackPosVel, rightFrontPosVel, angles));
+
+            Rotation2d heading = Rotation2d.exp(angles.getYaw(AngleUnit.RADIANS));
+
+            if (!initialized) {
+                initialized = true;
+
+                lastLeftFrontPos = leftFrontPosVel.position;
+                lastLeftBackPos = leftBackPosVel.position;
+                lastRightBackPos = rightBackPosVel.position;
+                lastRightFrontPos = rightFrontPosVel.position;
+
+                lastHeading = heading;
+
+                return new Twist2dDual<>(
+                        Vector2dDual.constant(new Vector2d(0.0, 0.0), 2),
+                        DualNum.constant(0.0, 2)
+                );
+            }
+
             double headingDelta = heading.minus(lastHeading);
-
             Twist2dDual<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
                     new DualNum<Time>(new double[]{
                             (leftFrontPosVel.position - lastLeftFrontPos),
@@ -204,10 +217,12 @@ public class RoadRunner extends SubsystemBase {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        leftFront = hardwareMap.get(DcMotorEx.class, HardwareNames.LEFT_FRONT_NAME);
-        leftBack = hardwareMap.get(DcMotorEx.class, HardwareNames.LEFT_BACK_NAME);
-        rightBack = hardwareMap.get(DcMotorEx.class, HardwareNames.RIGHT_BACK_NAME);
-        rightFront = hardwareMap.get(DcMotorEx.class, HardwareNames.RIGHT_FRONT_NAME);
+        // TODO: make sure your config has motors with these names (or change them)
+        //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -219,10 +234,8 @@ public class RoadRunner extends SubsystemBase {
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        imu = hardwareMap.get(IMU.class, HardwareNames.IMU_NAME);
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+        lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
-        imu.initialize(parameters);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -330,10 +343,10 @@ public class RoadRunner extends SubsystemBase {
             drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
-            drawRobot(c, txWorldTarget.value());
+            Drawing.drawRobot(c, txWorldTarget.value());
 
             c.setStroke("#3F51B5");
-            drawRobot(c, pose);
+            Drawing.drawRobot(c, pose);
 
             c.setStroke("#4CAF50FF");
             c.setStrokeWidth(1);
@@ -411,10 +424,10 @@ public class RoadRunner extends SubsystemBase {
             drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
-            drawRobot(c, txWorldTarget.value());
+            Drawing.drawRobot(c, txWorldTarget.value());
 
             c.setStroke("#3F51B5");
-            drawRobot(c, pose);
+            Drawing.drawRobot(c, pose);
 
             c.setStroke("#7C4DFFFF");
             c.fillCircle(turn.beginPose.position.x, turn.beginPose.position.y, 2);
@@ -460,51 +473,19 @@ public class RoadRunner extends SubsystemBase {
         c.strokePolyline(xPoints, yPoints);
     }
 
-    private static void drawRobot(Canvas c, Pose2d t) {
-        final double ROBOT_RADIUS = 9;
-
-        c.setStrokeWidth(1);
-        c.strokeCircle(t.position.x, t.position.y, ROBOT_RADIUS);
-
-        Vector2d halfv = t.heading.vec().times(0.5 * ROBOT_RADIUS);
-        Vector2d p1 = t.position.plus(halfv);
-        Vector2d p2 = p1.plus(halfv);
-        c.strokeLine(p1.x, p1.y, p2.x, p2.y);
-    }
-    // TODO: Understand this...
-    public TrajectoryActionBuilder createActionBuilder(Pose2d beginPose) {
-        // Assuming you have all these values available or can initialize them
-        TurnActionFactory turnActionFactory = new TurnActionFactory();
-        TrajectoryActionFactory trajectoryActionFactory = new TrajectoryActionFactory();
-        TrajectoryBuilderParams trajectoryBuilderParams = new TrajectoryBuilderParams();
-        double beginEndVel = 1.0;
-        TurnConstraints baseTurnConstraints = new TurnConstraints();
-        VelConstraint baseVelConstraint = new VelConstraint();
-        AccelConstraint baseAccelConstraint = new AccelConstraint();
-        PoseMap poseMap = new IdentityPoseMap(); // or another PoseMap implementation
-
+    public TrajectoryActionBuilder actionBuilder(Pose2d beginPose) {
         return new TrajectoryActionBuilder(
-                turnActionFactory,
-                trajectoryActionFactory,
-                trajectoryBuilderParams,
-                beginPose,
-                beginEndVel,
-                baseTurnConstraints,
-                baseVelConstraint,
-                baseAccelConstraint,
-                poseMap
+                TurnAction::new,
+                FollowTrajectoryAction::new,
+                new TrajectoryBuilderParams(
+                        1e-6,
+                        new ProfileParams(
+                                0.25, 0.1, 1e-2
+                        )
+                ),
+                beginPose, 0.0,
+                defaultTurnConstraints,
+                defaultVelConstraint, defaultAccelConstraint
         );
     }
-
 }
-}
-
-
-
-
-
-
-
-
-
-

@@ -1,21 +1,21 @@
-package org.firstinspires.ftc.teamcode.roadrunnerfiles.tuning;
+package org.firstinspires.ftc.teamcode.util.roadrunnerfiles.tuning;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.MecanumDrive;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.TankDrive;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.ThreeDeadWheelLocalizer;
-import org.firstinspires.ftc.teamcode.roadrunnerfiles.TwoDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.RoadRunner;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.TankDrive;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.TwoDeadWheelLocalizer;
 
 public final class ManualFeedbackTuner extends LinearOpMode {
     public static double DISTANCE = 64;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
-            MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        if (TuningOpModes.DRIVE_CLASS.equals(RoadRunner.class)) {
+            RoadRunner drive = new RoadRunner(hardwareMap, new Pose2d(0, 0, 0));
             
             if (drive.localizer instanceof TwoDeadWheelLocalizer) {
                 if (TwoDeadWheelLocalizer.PARAMS.perpXTicks == 0 && TwoDeadWheelLocalizer.PARAMS.parYTicks == 0) {
