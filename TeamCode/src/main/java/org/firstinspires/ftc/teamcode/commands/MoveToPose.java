@@ -17,36 +17,37 @@ public class MoveToPose extends CommandBase {
     // REFERENCES
     private Callisto robot;
     //TODO: Ask Mr. A is the naming convention of this a problem
-    private Mecanum drive;
+    private Mecanum mecanum;
+
     // ASSETS
     private final Pose2d targetPose; // The target position and heading
     protected Action action;
     protected boolean finished = false;
-    // TIMER
-    protected final double timeout;
-    protected Timing.Timer timer;
 
+    // TIMER
+    protected Timing.Timer timer;
 
     // Constructor to initialize the command
     public MoveToPose(Callisto robot, Pose2d targetPose) {
         this.robot = robot;
-        this.drive = robot.roadRunner;
+        this.mecanum = robot.mecanum;
         this.targetPose = targetPose;
 
         // default timeout
-        this.timeout = Constants.DEFAULT_TIMEOUT;
+        timer = new Timing.Timer((long)Constants.DEFAULT_TIMEOUT);
 
-        addRequirements(drive);
+        addRequirements(mecanum);
     }
 
     public MoveToPose(Callisto robot, Pose2d targetPose, double timeout) {
         this.robot = robot;
-        this.drive = robot.roadRunner;
+        this.mecanum = robot.mecanum;
         this.targetPose = targetPose;
 
-        this.timeout = timeout;
+        timer = new Timing.Timer((long)timeout);
 
-        addRequirements(drive);
+
+        addRequirements(mecanum);
 
     }
 
@@ -57,7 +58,7 @@ public class MoveToPose extends CommandBase {
         timer.start();
 
         // Build the trajectory from the current pose to the target pose
-        action = drive.actionBuilder(drive.pose)
+        action = mecanum.actionBuilder(mecanum.pose)
                 .splineTo(targetPose.position, targetPose.heading)
                 .build();
     }
@@ -66,9 +67,9 @@ public class MoveToPose extends CommandBase {
     @Override
     public void execute() {
         TelemetryPacket packet = new TelemetryPacket();
-        packet.put("x", drive.pose.position.x);
-        packet.put("y", drive.pose.position.y);
-        packet.put("heading", drive.pose.heading.toDouble());
+        packet.put("x", mecanum.pose.position.x);
+        packet.put("y", mecanum.pose.position.y);
+        packet.put("heading", mecanum.pose.heading.toDouble());
 
         // Use the telemetryPacket with the action's run method:
         finished = !action.run(packet);
@@ -78,13 +79,13 @@ public class MoveToPose extends CommandBase {
     // Check if the command has finished
     @Override
     public boolean isFinished() {
-        return finished || timer.elapsedTime() > timeout;
+        return finished || timer.done();
     }
 
     // Stop the robot once the command ends
     @Override
     public void end(boolean interrupted) {
         // Stop the drive if interrupted or completed
-        drive.stop();
+        mecanum.stop();
     }
 }

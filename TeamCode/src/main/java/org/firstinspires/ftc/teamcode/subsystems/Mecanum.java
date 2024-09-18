@@ -33,6 +33,7 @@ public class Mecanum extends RoadRunner {
 //    public DistanceSensor leftDistance;
 //    public DistanceSensor rightDistance;
     public Camera camera;
+
     // USEFUL REFERENCES
     private final Callisto robot;
     public Telemetry telemetry;
@@ -40,12 +41,15 @@ public class Mecanum extends RoadRunner {
     public Mecanum(Callisto robot, Pose2d pose) {
         // setup the RoadRunner parent class
         super(robot.opMode.hardwareMap, pose);
+
         // convenience references
         this.robot = robot;
         this.telemetry = robot.opMode.telemetry;
+
         // sensors
         this.camera = new Camera(robot, robot.opMode.telemetry);
         this.imu = lazyImu.get();
+
         // instantiate distance sensors using our wrapper
 //        this.rearDistance = new DistanceSensor(robot.opMode, Constants.REAR_DIST_NAME);
 //        this.rightDistance = new DistanceSensor(robot.opMode, Constants.RIGHT_DIST_NAME);
@@ -81,8 +85,8 @@ public class Mecanum extends RoadRunner {
             // https://www.geogebra.org/m/fmegkksm
             double diff = fieldCentricTarget - getZAngle();
             double temp = forward;
-            forward = forward * Math.cos(Math.toRadians(diff)) - strafe * Math.sin(Math.toRadians(diff));
-            strafe = temp * Math.sin(Math.toRadians(diff)) + strafe * Math.cos(Math.toRadians(diff));
+            forward = forward * Math.cos(Math.toRadians(diff)) + strafe * Math.sin(Math.toRadians(diff));
+            strafe = (-temp * Math.sin(Math.toRadians(diff)) + strafe * Math.cos(Math.toRadians(diff)));
             if(telemetry != null)
                 telemetry.addData("Mode", "Field Centric");
         } else if(telemetry != null)
@@ -100,10 +104,15 @@ public class Mecanum extends RoadRunner {
         // Meaning forward is reversed
         // The boost values should match the turn
         // Since the drive is a diamond wheel pattern instead of an X, it reverses the strafe.
-        double leftFrontPower = -forward +strafe + turn;
-        double rightFrontPower = forward + strafe + turn;
-        double leftBackPower = -forward - strafe + turn;
-        double rightBackPower = forward - strafe + turn;
+//        double leftFrontPower = -forward +strafe + turn;
+//        double rightFrontPower = forward + strafe + turn;
+//        double leftBackPower = -forward - strafe + turn;
+//        double rightBackPower = forward - strafe + turn;
+
+        double leftFrontPower =  -forward - strafe - turn;
+        double rightFrontPower = -forward + strafe + turn;
+        double leftBackPower = forward - strafe + turn;
+        double rightBackPower = -forward - strafe + turn;
 
         double powerScale = Constants.MOTOR_MAX_SPEED * Math.max(1,
                 Math.max(
@@ -124,9 +133,9 @@ public class Mecanum extends RoadRunner {
         rightFrontPower /= powerScale;
 
 
-        if(telemetry != null)
-            telemetry.addData("Motors", "(%.2f, %.2f, %.2f, %.2f)",
-                    leftFrontPower, leftBackPower, rightBackPower, rightFrontPower);
+//        if(telemetry != null)
+//            telemetry.addData("Motors", "(%.2f, %.2f, %.2f, %.2f)",
+//                    leftFrontPower, leftBackPower, rightBackPower, rightFrontPower);
 
         setMotorPowers(
                 leftFrontPower,
@@ -159,8 +168,8 @@ public class Mecanum extends RoadRunner {
      * intended to be used with RoadRunner as it doesn't explicitly communicate its intended pose
      */
     public void goToZeroAngle() {
-        while (Math.abs(robot.roadRunner.getZAngle() - fieldCentricTarget) >= 2) {
-            drive(0.0, 0.0, 0.7 * Math.toRadians(robot.roadRunner.getZAngle() - fieldCentricTarget));
+        while (Math.abs(getZAngle() - fieldCentricTarget) >= 2) {
+            drive(0.0, 0.0, 0.7 * Math.toRadians(getZAngle() - fieldCentricTarget));
         }
         stop();
     }
@@ -169,7 +178,7 @@ public class Mecanum extends RoadRunner {
      * @return the difference between the robot's current angle and the Zero Angle
      */
     public double getAngleDifferenceFromZero() {
-        double currentAngle = robot.roadRunner.getZAngle(); // Get current angle
+        double currentAngle = getZAngle(); // Get current angle
         double angleDifference = currentAngle - fieldCentricTarget; // Calculate difference
 
         // if the difference is greater than or equal to 360, subtract 360 to keep it within -180 to 180

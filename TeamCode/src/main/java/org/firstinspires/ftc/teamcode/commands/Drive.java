@@ -4,11 +4,12 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Callisto;
+import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
 public class Drive extends CommandBase {
-    private final PureMecanum mecanum;
+    private final Mecanum mecanum;
     private GamepadEx player1;
     private Callisto robot;
 

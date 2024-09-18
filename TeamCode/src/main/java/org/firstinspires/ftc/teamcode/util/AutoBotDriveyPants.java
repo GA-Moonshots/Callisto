@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Callisto;
  */
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous - Primary")
 public class AutoBotDriveyPants extends CommandOpMode {
-
+    public boolean isRed;
 
     /**
      * Set up robot such that it asks the player what our starting position is and kicks off
@@ -19,7 +19,7 @@ public class AutoBotDriveyPants extends CommandOpMode {
     @Override
     public void initialize() {
 
-        boolean isRed = false;
+        isRed = false;
 
         while(opModeInInit()) {
             // press X for blue and B for red
@@ -29,7 +29,7 @@ public class AutoBotDriveyPants extends CommandOpMode {
                 isRed = true;
 
             // DISPLAY SELECTION
-            telemetry.addData("Position", "%s Team, %s Side", isRed ? "Red" : "Blue" );
+            telemetry.addData("Red Team:" , isRed );
             telemetry.update();
         }
 
@@ -41,7 +41,7 @@ public class AutoBotDriveyPants extends CommandOpMode {
          We pass in our autonomous config variables, which signals to the robot we want to be in
          autonomous mode instead of in teleop mode, which would take no params besides this.
          */
-        Robot m_robot = new Callisto(this);
+        Robot m_robot = new Callisto(this, isRed);
     }
 
 }

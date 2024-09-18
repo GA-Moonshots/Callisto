@@ -60,6 +60,8 @@ public class Constants {
     public static final String ELEVATOR_MOTOR_NAME = "elevator";
     // encoder aliases
     public static final String LEFT_ODOMETRY_NAME = LEFT_FRONT_NAME;
+    // TODO: Right odom should be right front
+    // center should be right back
     public static final String RIGHT_ODOMETRY_NAME = LEFT_BACK_NAME;
     public static final String CENTER_ODOMETRY_NAME = RIGHT_FRONT_NAME;
 

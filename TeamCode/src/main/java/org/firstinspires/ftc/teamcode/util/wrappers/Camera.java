@@ -7,13 +7,15 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
+import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
 
 public class Camera {
     // Instance variables
-    private boolean isAprilTag = true;
+    public boolean isAprilTag = true;
 
     // Hardware
     private Callisto m_robot;
@@ -41,6 +43,8 @@ public class Camera {
         if(isAprilTag) {
             //Setting our pipeline to the camera
             camera.setPipeline(new AprilTag2dPipeline());
+        } else {
+            camera.setPipeline(new ObjectDetectionPipeline());
         }
 
         // Opening the camera
@@ -65,5 +69,14 @@ public class Camera {
     // Method to determine which pipeline we will use
     public void AprilTagPipelineSelected(boolean state) {
         isAprilTag = state;
+    }
+}
+
+class ObjectDetectionPipeline extends OpenCvPipeline {
+    
+
+    @Override
+    public Mat processFrame(Mat input) {
+        return null;
     }
 }
