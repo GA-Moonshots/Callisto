@@ -16,7 +16,6 @@ public class MoveToPose extends CommandBase {
 
     // REFERENCES
     private Callisto robot;
-    //TODO: Ask Mr. A is the naming convention of this a problem
     private Mecanum mecanum;
 
     // ASSETS
@@ -26,6 +25,9 @@ public class MoveToPose extends CommandBase {
 
     // TIMER
     protected Timing.Timer timer;
+
+    // FTC DASHBOARD
+    private FtcDashboard dashboard;
 
     // Constructor to initialize the command
     public MoveToPose(Callisto robot, Pose2d targetPose) {
@@ -43,6 +45,7 @@ public class MoveToPose extends CommandBase {
         this.robot = robot;
         this.mecanum = robot.mecanum;
         this.targetPose = targetPose;
+        this.dashboard = FtcDashboard.getInstance();
 
         timer = new Timing.Timer((long)timeout);
 
@@ -66,10 +69,16 @@ public class MoveToPose extends CommandBase {
     // The execute method keeps updating the trajectory following
     @Override
     public void execute() {
+        // Create Packet for dashboard
         TelemetryPacket packet = new TelemetryPacket();
+
         packet.put("x", mecanum.pose.position.x);
         packet.put("y", mecanum.pose.position.y);
         packet.put("heading", mecanum.pose.heading.toDouble());
+
+        packet.fieldOverlay()
+                .setStrokeWidth(1).setStroke("Blue")
+                .fillCircle(mecanum.pose.position.x, mecanum.pose.position.y,3);
 
         // Use the telemetryPacket with the action's run method:
         finished = !action.run(packet);

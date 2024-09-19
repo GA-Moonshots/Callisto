@@ -1,10 +1,16 @@
 package org.firstinspires.ftc.teamcode.commands;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
+import org.firstinspires.ftc.teamcode.subsystems.RoadRunner;
 import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
@@ -12,6 +18,8 @@ public class Drive extends CommandBase {
     private final Mecanum mecanum;
     private GamepadEx player1;
     private Callisto robot;
+
+    private final FtcDashboard dashboard;
 
     private double strafeSpeed;
     private double forwardSpeed;
@@ -24,6 +32,7 @@ public class Drive extends CommandBase {
         player1 = robot.player1;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(robot.mecanum);
+        dashboard = FtcDashboard.getInstance();
     }
 
     @Override
@@ -43,7 +52,12 @@ public class Drive extends CommandBase {
 
         // Drive the robot with adjusted inputs:
         mecanum.drive(forward * speedMod, strafe * speedMod, turn * speedMod);
+
+
+
+
     }
+
 
 
     public boolean isFinished() {

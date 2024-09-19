@@ -10,6 +10,7 @@ import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,7 +18,10 @@ import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.util.AutoBotDriveyPants;
+import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.Localizer;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.ThreeDeadWheelLocalizer;
 
 
 public class Callisto extends Robot {
@@ -106,24 +110,28 @@ public class Callisto extends Robot {
         | (_) ) | | ( (_| || (_) |(  ___/| |       /' /( )
         | ,__/'(___)`\__,_)`\__, |`\____)(_)      (_____/'
         | |                ( )_| |
-        (_)                `\___/'
-         */
+        (_)                `\___/'-50  -50      */
     }
 
     public void initAuto(){
         Pose2d start;
-        Pose2d ending = new Pose2d(new Vector2d(3,3), 0.0);
+        Pose2d ending = new Pose2d(new Vector2d(60,0), 0);
 
         // RED LEFT
         if(isRed)
-            start = new Pose2d(new Vector2d(0,0), 0.0);
+            start = new Pose2d(new Vector2d(-50,-50), 0.0);
            // start = new Pose2d(new Vector2d(0, 0), 0.0);
         else
-            start = new Pose2d(new Vector2d(0, 0), 0.0);
+            start = new Pose2d(new Vector2d(-50, -500), 0.0);
 
 
         mecanum = new Mecanum(this, start);
 
+//        telemetry.addData("Par0 val", ThreeDeadWheelLocalizer.class.ge);
+//        telemetry.addData("Par1 val", hardwareMap.get(Constants.RIGHT_FRONT_NAME));
+//        telemetry.addData("Par2 val", hardwareMap.get(Constants.RIGHT_BACK_NAME));
+//
+//        telemetry.update();
 
         register(mecanum);
 

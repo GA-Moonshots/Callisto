@@ -66,7 +66,7 @@ public class RoadRunner extends SubsystemBase {
                 RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 
         // drive model parameters
-        public double inPerTick = 0.00297;
+        public double inPerTick = -0.002837;
         public double lateralInPerTick = 0.0024668149594044117;
         public double trackWidthTicks = 4750.175693701994;
 
