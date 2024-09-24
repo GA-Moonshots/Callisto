@@ -22,8 +22,8 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 28;
-    public static final double MAX_RPM = 6000;
+    public static final double TICKS_PER_REV = 537.6;
+    public static final double MAX_RPM = 312.5;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -33,7 +33,9 @@ public class DriveConstants {
      * If using the built-in motor velocity PID, update MOTOR_VELO_PID with the tuned coefficients
      * from DriveVelocityPIDTuner.
      */
-    public static final boolean RUN_USING_ENCODER = true;
+
+    // we are not using drive encoders
+    public static final boolean RUN_USING_ENCODER = false;
     public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
       getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 
@@ -45,6 +47,8 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
+
+
     public static double WHEEL_RADIUS = 1.8898; // in
     public static double GEAR_RATIO = 37.9; // output (wheel) speed / input (motor) speed
     public static double TRACK_WIDTH = 16; // in

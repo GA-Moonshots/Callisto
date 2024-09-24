@@ -20,7 +20,9 @@ public class SensorPackage extends SubsystemBase {
     public SensorPackage(Callisto robot) {
         this.robot = robot;
         this.telemetry = robot.telemetry;
-        this.camera = new Camera(robot, telemetry);
+        //this.camera = new Camera(robot, telemetry);
+        this.camera = new Camera(robot, robot.opMode.telemetry);
+
 
         // instantiate distance sensors using our wrapper
 //        this.rearDistance = new DistanceSensor(robot.opMode, Constants.REAR_DIST_NAME);

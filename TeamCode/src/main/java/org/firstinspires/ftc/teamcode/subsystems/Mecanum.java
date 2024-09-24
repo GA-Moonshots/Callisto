@@ -28,6 +28,7 @@ public class Mecanum extends RoadRunner {
     private boolean isGyroLocked = false;
     private double gyroTarget = 0.0d;
     private IMU imu;
+    //private Camera camera;
 
 
     // USEFUL REFERENCES
@@ -169,9 +170,9 @@ public class Mecanum extends RoadRunner {
     public void postEncoderData() {
         ThreeDeadWheelLocalizer localizer = (ThreeDeadWheelLocalizer)this.localizer;
 
-        telemetry.addData("par0 raw ticks", localizer.par0.getPositionAndVelocity().rawPosition);
-        telemetry.addData("par1 raw ticks", localizer.par1.getPositionAndVelocity().rawPosition);
-        telemetry.addData("perp raw ticks", localizer.perp.getPositionAndVelocity().rawPosition);
+        telemetry.addData("par0 raw ticks", localizer.par0.getPositionAndVelocity().position);
+        telemetry.addData("par1 raw ticks", localizer.par1.getPositionAndVelocity().position);
+        telemetry.addData("perp raw ticks", localizer.perp.getPositionAndVelocity().position);
     }
 
 
