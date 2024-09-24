@@ -177,10 +177,12 @@ public class Mecanum extends RoadRunner {
 
     public void postEncoderData() {
         ThreeDeadWheelLocalizer localizer = (ThreeDeadWheelLocalizer)this.localizer;
-        telemetry.addData("par0", localizer.par0.getPositionAndVelocity().position);
-        telemetry.addData("par1", localizer.par0.getPositionAndVelocity().velocity);
-        telemetry.addData("perp", localizer.par0.getPositionAndVelocity().rawPosition);
+
+        telemetry.addData("par0 raw ticks", localizer.par0.getPositionAndVelocity().rawPosition);
+        telemetry.addData("par1 raw ticks", localizer.par1.getPositionAndVelocity().rawPosition);
+        telemetry.addData("perp raw ticks", localizer.perp.getPositionAndVelocity().rawPosition);
     }
+
 
     /**
      * @return the difference between the robot's current angle and the Zero Angle
