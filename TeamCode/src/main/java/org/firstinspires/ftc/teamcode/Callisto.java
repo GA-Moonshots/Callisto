@@ -46,6 +46,7 @@ public class Callisto extends Robot {
     public Callisto(LinearOpMode opMode) {
         this.opMode = opMode;
         this.hardwareMap = opMode.hardwareMap;
+        this.telemetry = opMode.telemetry;
         player1 = new GamepadEx(opMode.gamepad1);
         player2 = new GamepadEx(opMode.gamepad2);
         initTele();
@@ -55,6 +56,7 @@ public class Callisto extends Robot {
     public Callisto(LinearOpMode opMode, boolean isRed) {
         this.opMode = opMode;
         this.hardwareMap = opMode.hardwareMap;
+        this.telemetry = opMode.telemetry;
         this.isRed = isRed;
         initAuto();
     }

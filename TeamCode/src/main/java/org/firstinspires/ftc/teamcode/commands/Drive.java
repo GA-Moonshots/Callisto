@@ -50,6 +50,10 @@ public class Drive extends CommandBase {
         double strafe = applyDeadZone(player1.getLeftX());
         double turn = applyDeadZone(player1.getRightX());
 
+        mecanum.postEncoderData();
+        if(robot.telemetry != null)
+            robot.telemetry.update();
+
         // Drive the robot with adjusted inputs:
         mecanum.drive(forward * speedMod, strafe * speedMod, turn * speedMod);
 

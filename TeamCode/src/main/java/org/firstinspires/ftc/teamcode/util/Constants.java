@@ -20,7 +20,7 @@ public class Constants {
 
     // -------DRIVE--------
     // -------DRIVE--------
-    public static final double MOTOR_MAX_SPEED = 0.9;
+    public static final double MOTOR_MAX_SPEED = 1;
     public static final double SWERVE_ENCODER_COUNTS_PER_REV = 2047.136; // Single revolution encoder ticks
     public static final double SWERVE_ENCODER_COUNTS_PER_INCH =  260.649; // Encoder Ticks per Inch
     public static final double SWERVE_WHEEL_ROT_MULTIPLIER = 3;

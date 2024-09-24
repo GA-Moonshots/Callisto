@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.wrappers.Camera;
 //import org.firstinspires.ftc.teamcode.util.sensors.DistanceSensor;
 
@@ -47,7 +48,7 @@ public class Mecanum extends RoadRunner {
         this.telemetry = robot.opMode.telemetry;
 
         // sensors
-        this.camera = new Camera(robot, robot.opMode.telemetry);
+        //this.camera = new Camera(robot, robot.opMode.telemetry);
         this.imu = lazyImu.get();
 
         // instantiate distance sensors using our wrapper
@@ -172,6 +173,13 @@ public class Mecanum extends RoadRunner {
             drive(0.0, 0.0, 0.7 * Math.toRadians(getZAngle() - fieldCentricTarget));
         }
         stop();
+    }
+
+    public void postEncoderData() {
+        ThreeDeadWheelLocalizer localizer = (ThreeDeadWheelLocalizer)this.localizer;
+        telemetry.addData("par0", localizer.par0.getPositionAndVelocity().position);
+        telemetry.addData("par1", localizer.par0.getPositionAndVelocity().velocity);
+        telemetry.addData("perp", localizer.par0.getPositionAndVelocity().rawPosition);
     }
 
     /**
