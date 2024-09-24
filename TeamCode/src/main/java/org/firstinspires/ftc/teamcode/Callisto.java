@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
+import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
 import org.firstinspires.ftc.teamcode.util.AutoBotDriveyPants;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
@@ -34,6 +35,7 @@ public class Callisto extends Robot {
 
     // SUBSYSTEMS
     public Mecanum mecanum;
+    public SensorPackage sensors;
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
@@ -65,14 +67,12 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
-
-        // MECANUM SETUP
-            //TODO: Eventually we will change this to RoadRunner Mecanum?
+        sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum);
+        register(mecanum, sensors);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
@@ -116,6 +116,7 @@ public class Callisto extends Robot {
     }
 
     public void initAuto(){
+        sensors = new SensorPackage(this);
         Pose2d start;
         Pose2d ending = new Pose2d(new Vector2d(60,0), 0);
 
@@ -128,14 +129,7 @@ public class Callisto extends Robot {
 
 
         mecanum = new Mecanum(this, start);
-
-//        telemetry.addData("Par0 val", ThreeDeadWheelLocalizer.class.ge);
-//        telemetry.addData("Par1 val", hardwareMap.get(Constants.RIGHT_FRONT_NAME));
-//        telemetry.addData("Par2 val", hardwareMap.get(Constants.RIGHT_BACK_NAME));
-//
-//        telemetry.update();
-
-        register(mecanum);
+        register(mecanum, sensors);
 
         new SequentialCommandGroup(
                 new MoveToPose(this,  ending)

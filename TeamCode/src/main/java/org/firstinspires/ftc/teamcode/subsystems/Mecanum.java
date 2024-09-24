@@ -29,11 +29,6 @@ public class Mecanum extends RoadRunner {
     private double gyroTarget = 0.0d;
     private IMU imu;
 
-    // SENSORS
-//    public DistanceSensor rearDistance;
-//    public DistanceSensor leftDistance;
-//    public DistanceSensor rightDistance;
-    public Camera camera;
 
     // USEFUL REFERENCES
     private final Callisto robot;
@@ -51,10 +46,6 @@ public class Mecanum extends RoadRunner {
         //this.camera = new Camera(robot, robot.opMode.telemetry);
         this.imu = lazyImu.get();
 
-        // instantiate distance sensors using our wrapper
-//        this.rearDistance = new DistanceSensor(robot.opMode, Constants.REAR_DIST_NAME);
-//        this.rightDistance = new DistanceSensor(robot.opMode, Constants.RIGHT_DIST_NAME);
-//        this.leftDistance = new DistanceSensor(robot.opMode, Constants.LEFT_DIST_NAME);
         this.resetFieldCentricTarget();
     }
 
