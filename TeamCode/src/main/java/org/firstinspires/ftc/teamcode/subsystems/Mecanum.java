@@ -28,8 +28,10 @@ public class Mecanum extends RoadRunner {
     private boolean isGyroLocked = false;
     private double gyroTarget = 0.0d;
     private IMU imu;
-    //private Camera camera;
 
+    // If botType = true then it is small bot
+    // if botType = false then it is large bot
+    public static boolean botType = true;
 
     // USEFUL REFERENCES
     private final Callisto robot;
@@ -102,10 +104,24 @@ public class Mecanum extends RoadRunner {
 //        double leftBackPower = -forward - strafe + turn;
 //        double rightBackPower = forward - strafe + turn;
 
-        double leftFrontPower =  -forward - strafe - turn;
-        double rightFrontPower = -forward + strafe + turn;
-        double leftBackPower = forward - strafe + turn;
-        double rightBackPower = -forward - strafe + turn;
+        double leftFrontPower, rightFrontPower;
+        double leftBackPower, rightBackPower;
+
+        // If botType = true then it is small bot
+        // if botType = false then it is large bot
+        if (botType) {
+            leftFrontPower =  -forward - strafe - turn;
+            rightFrontPower = -forward + strafe + turn;
+            leftBackPower = forward - strafe + turn;
+            rightBackPower = -forward - strafe + turn;
+        }
+        else {
+            leftFrontPower =  forward + strafe - turn;
+            rightFrontPower = -forward + strafe - turn;
+            leftBackPower = forward - strafe - turn;
+            rightBackPower = -forward - strafe - turn;
+        }
+
 
         double powerScale = Constants.MOTOR_MAX_SPEED * Math.max(1,
                 Math.max(
@@ -219,7 +235,6 @@ public class Mecanum extends RoadRunner {
     public double getZAngle() {
         return imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
     }
-
 }
 
 
