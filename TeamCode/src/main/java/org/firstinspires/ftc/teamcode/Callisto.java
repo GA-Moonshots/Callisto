@@ -122,10 +122,10 @@ public class Callisto extends Robot {
 
         // RED LEFT
         if(isRed)
-            start = new Pose2d(new Vector2d(-50,-50), 0.0);
+            start = new Pose2d(new Vector2d(-0,-0), 0.0);
            // start = new Pose2d(new Vector2d(0, 0), 0.0);
         else
-            start = new Pose2d(new Vector2d(-50, -500), 0.0);
+            start = new Pose2d(new Vector2d(0, -500), 0.0);
 
 
         mecanum = new Mecanum(this, start);

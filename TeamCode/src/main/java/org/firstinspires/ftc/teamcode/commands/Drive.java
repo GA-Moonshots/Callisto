@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
@@ -49,6 +50,13 @@ public class Drive extends CommandBase {
         double forward = applyDeadZone(player1.getLeftY());
         double strafe = applyDeadZone(player1.getLeftX());
         double turn = applyDeadZone(player1.getRightX());
+
+        robot.telemetry.addData("Right X", player1.getRightX());
+        robot.telemetry.addData("Right Y", player1.getRightY());
+
+        robot.telemetry.addData("IMU Angle", mecanum.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
+
+
 
         // Drive the robot with adjusted inputs:
         mecanum.drive(forward * speedMod, strafe * speedMod, turn * speedMod);

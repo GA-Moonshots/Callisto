@@ -143,9 +143,11 @@ public class RoadRunner extends SubsystemBase {
             imu = lazyImu.get();
 
             // TODO: reverse encoders if needed
-               leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-               rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-               rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+            // This should instead be done in ThreeDeadWheelLocalizer
+
+            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+//               rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
         @Override

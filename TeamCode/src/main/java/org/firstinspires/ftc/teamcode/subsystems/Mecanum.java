@@ -102,10 +102,10 @@ public class Mecanum extends RoadRunner {
 //        double leftBackPower = -forward - strafe + turn;
 //        double rightBackPower = forward - strafe + turn;
 
-        double leftFrontPower =  -forward - strafe - turn;
-        double rightFrontPower = -forward + strafe + turn;
+        double leftFrontPower =  forward + strafe + turn;
+        double rightFrontPower = forward - strafe - turn;
         double leftBackPower = forward - strafe + turn;
-        double rightBackPower = -forward - strafe + turn;
+        double rightBackPower = forward + strafe - turn;
 
         double powerScale = Constants.MOTOR_MAX_SPEED * Math.max(1,
                 Math.max(
