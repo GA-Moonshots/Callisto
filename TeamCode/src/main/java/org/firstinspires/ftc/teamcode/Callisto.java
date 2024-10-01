@@ -24,6 +24,8 @@ import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
 import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.Localizer;
 import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.ThreeDeadWheelLocalizer;
 
+import static org.firstinspires.ftc.teamcode.subsystems.Mecanum.botType;
+
 
 public class Callisto extends Robot {
 
@@ -77,6 +79,9 @@ public class Callisto extends Robot {
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
 
+        // If botType = true then it is small bot
+        // if botType = false then it is large bot
+        botType = true;
 
 
         /*
@@ -87,6 +92,7 @@ public class Callisto extends Robot {
         |   __/ |____/(____  // ____| \___  >|__|        |___|
         |__|               \/ \/          \/
         */
+
         Button aButtonP1 = new GamepadButton(player1, GamepadKeys.Button.A);
         aButtonP1.whenPressed(new InstantCommand(() -> {
             mecanum.toggleFieldCentric();
