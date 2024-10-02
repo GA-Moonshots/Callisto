@@ -124,7 +124,9 @@ public class Callisto extends Robot {
     public void initAuto(){
         sensors = new SensorPackage(this);
         Pose2d start;
-        Pose2d ending = new Pose2d(new Vector2d(60,0), 0);
+        Pose2d ending = new Pose2d(new Vector2d(40,10), 180);
+        Pose2d next = new Pose2d(new Vector2d(0,-10), 180);
+
 
         // RED LEFT
         if(isRed)
@@ -138,7 +140,8 @@ public class Callisto extends Robot {
         register(mecanum, sensors);
 
         new SequentialCommandGroup(
-                new MoveToPose(this,  ending)
+                new MoveToPose(this,  ending),
+                new MoveToPose(this, next)
         ).schedule();
     }
 }
