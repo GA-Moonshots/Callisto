@@ -49,14 +49,12 @@ public class Drive extends CommandBase {
 
         double forward = applyDeadZone(player1.getLeftY());
         double strafe = applyDeadZone(player1.getLeftX());
-        double turn = applyDeadZone(player1.getRightX());
+        double turn = applyDeadZone(-player1.getRightX());
 
         robot.telemetry.addData("Right X", player1.getRightX());
         robot.telemetry.addData("Right Y", player1.getRightY());
 
         robot.telemetry.addData("IMU Angle", mecanum.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
-
-
 
         // Drive the robot with adjusted inputs:
         mecanum.drive(forward * speedMod, strafe * speedMod, turn * speedMod);

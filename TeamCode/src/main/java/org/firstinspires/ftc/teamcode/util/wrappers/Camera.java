@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.util.wrappers;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.arcrobotics.ftclib.vision.AprilTag2dPipeline;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -59,14 +58,7 @@ public class Camera {
         // FTC Dashboard Camera Set up stuff
         FtcDashboard.getInstance().startCameraStream(camera, 60);
 
-        // Checks which pipeline we will use
-//        if(isAprilTag) {
-//            //Setting our pipeline to the camera
-//            camera.setPipeline(new AprilTag2dPipeline());
-//        } else {
-//            camera.setPipeline(new ObjectDetectionPipeline());
-//        }
-
+        // Sets our camera pipeline
         camera.setPipeline(new ObjectDetectionPipeline(robot.telemetry, detections));
 
         // Opening the camera
@@ -118,9 +110,7 @@ public class Camera {
 
         @Override
         public Mat processFrame(Mat input) {
-            // telemetry.addData("AprilTags", detections.size());
-
-            // Step 2: Process color detection
+            // Step 1: Process color detection
             Mat hsv = new Mat();
             Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
 
@@ -146,19 +136,22 @@ public class Camera {
 
             // Draw rectangles around the detected colors for visualization
             Scalar drawColor = new Scalar(255, 0, 0); // Default to blue
-            if (detectedColor.equals("RED")) {
-                drawColor = new Scalar(0, 0, 255);
-                Imgproc.rectangle(input, reccyBoi, drawColor, 2);
-            } else if (detectedColor.equals("YELLOW")) {
-                drawColor = new Scalar(0, 0, 255);
-                Imgproc.rectangle(input, reccyBoi, drawColor, 2);
-            } else if (detectedColor.equals("BLUE")) {
-                drawColor = new Scalar(0, 0, 255);
-                Imgproc.rectangle(input, reccyBoi, drawColor, 2);
+            switch (detectedColor) {
+                case "RED":
+                    drawColor = new Scalar(0, 0, 255);
+                    Imgproc.rectangle(input, reccyBoi, drawColor, 2);
+                    break;
+                case "BLUE":
+                    drawColor = new Scalar(0, 0, 255);
+                    Imgproc.rectangle(input, reccyBoi, drawColor, 2);
+                    break;
+                case "YELLOW":
+                    drawColor = new Scalar(0, 0, 255);
+                    Imgproc.rectangle(input, reccyBoi, drawColor, 2);
+                    break;
             }
 
-
-            // AprilTag Stuff
+            // Step 2: Apritag processing
             // Convert to greyscale
             Imgproc.cvtColor(input, grey, Imgproc.COLOR_RGBA2GRAY);
 
@@ -232,5 +225,3 @@ public class Camera {
         isAprilTag = state;
     }
 }
-
-

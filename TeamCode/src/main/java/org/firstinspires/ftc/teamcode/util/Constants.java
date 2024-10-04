@@ -58,6 +58,7 @@ public class Constants {
     public static final String RIGHT_BACK_NAME = "rightBack";
     public static final String ARM_MOTOR_NAME = "arm";
     public static final String ELEVATOR_MOTOR_NAME = "elevator";
+    public static final String SHOULDER_MOTOR_NAME = "Shoulder";
     // encoder aliases
     public static final String LEFT_ODOMETRY_NAME = LEFT_FRONT_NAME;
     // TODO: Right odom should be right front
@@ -72,4 +73,5 @@ public class Constants {
     public static final String LAUNCHER_SERVO_NAME = "launcher";
     public static final String ELEVATOR_LEFT_SERVO_NAME = "elevLeft";
     public static final String ELEVATOR_RIGHT_SERVO_NAME = "elevRight";
+    public static final String CLAW_SERVO_NAME = "Claw";
 }

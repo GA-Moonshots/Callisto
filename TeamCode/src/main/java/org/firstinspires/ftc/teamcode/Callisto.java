@@ -15,7 +15,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
+import org.firstinspires.ftc.teamcode.commands.MoveShoulder;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
+import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
 import org.firstinspires.ftc.teamcode.util.AutoBotDriveyPants;
@@ -38,6 +40,7 @@ public class Callisto extends Robot {
     // SUBSYSTEMS
     public Mecanum mecanum;
     public SensorPackage sensors;
+    public Arm arm;
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
@@ -71,17 +74,19 @@ public class Callisto extends Robot {
     public void initTele() {
         sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
+        arm = new Arm(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum, sensors);
+        register(mecanum, sensors, arm);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
+        arm.setDefaultCommand(new MoveShoulder(this));
 
         // If botType = true then it is small bot
         // if botType = false then it is large bot
-        botType = true;
+        botType = false;
 
 
         /*
