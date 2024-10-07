@@ -18,8 +18,10 @@ import org.firstinspires.ftc.teamcode.commands.MoveArm;
 import org.firstinspires.ftc.teamcode.commands.MoveShoulder;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
+import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
+import org.firstinspires.ftc.teamcode.util.experiments.ServoTest;
 
 import static org.firstinspires.ftc.teamcode.subsystems.Mecanum.botType;
 
@@ -39,6 +41,9 @@ public class Callisto extends Robot {
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
+    public ServoTest servo;
+
+    public Blinkin blinkin;
 
 
     /**
@@ -67,13 +72,15 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
-        sensors = new SensorPackage(this);
+      //  sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
+       // servo = new ServoTest(this);
+        //blinkin = new Blinkin(this);
         arm = new Arm(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum, sensors, arm);
+        register(mecanum, arm);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));

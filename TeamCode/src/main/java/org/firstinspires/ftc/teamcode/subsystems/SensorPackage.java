@@ -4,7 +4,6 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.wrappers.Camera;
 
@@ -25,6 +24,10 @@ public class SensorPackage extends SubsystemBase {
             this.camera = new Camera(robot, robot.opMode.telemetry);
         } catch (Exception ignored) {}
 
+        try {
+            this.camera = new Camera(robot, robot.opMode.telemetry);
+        }
+        catch (Exception ignored) {}
 
 
         // instantiate distance sensors using our wrapper
