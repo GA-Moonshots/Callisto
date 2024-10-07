@@ -10,21 +10,16 @@ import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
+import org.firstinspires.ftc.teamcode.commands.MoveArm;
 import org.firstinspires.ftc.teamcode.commands.MoveShoulder;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
-import org.firstinspires.ftc.teamcode.util.AutoBotDriveyPants;
-import org.firstinspires.ftc.teamcode.util.Constants;
-import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
-import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.Localizer;
-import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.ThreeDeadWheelLocalizer;
 
 import static org.firstinspires.ftc.teamcode.subsystems.Mecanum.botType;
 
@@ -129,6 +124,10 @@ public class Callisto extends Robot {
         aButtonP2.whenPressed(new InstantCommand(() -> {
             arm.toggleClaw();
         }));
+
+        Button dPadLeftP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_LEFT);
+        dPadLeftP2.whenHeld(new MoveArm(this));
+
     }
 
     public void initAuto(){
