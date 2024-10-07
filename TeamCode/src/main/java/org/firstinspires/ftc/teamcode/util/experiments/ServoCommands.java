@@ -1,10 +1,8 @@
-package org.firstinspires.ftc.teamcode.commands;
+package org.firstinspires.ftc.teamcode.util.experiments;
 
 import com.arcrobotics.ftclib.command.CommandBase;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Callisto;
-import org.firstinspires.ftc.teamcode.subsystems.ServoTest;
 
 public class ServoCommands extends CommandBase {
     private final Callisto robot;

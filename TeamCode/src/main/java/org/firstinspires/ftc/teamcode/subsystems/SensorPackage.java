@@ -22,6 +22,10 @@ public class SensorPackage extends SubsystemBase {
         //this.camera = new Camera(robot, telemetry);
         try {
             this.camera = new Camera(robot, robot.opMode.telemetry);
+        } catch (Exception ignored) {}
+
+        try {
+            this.camera = new Camera(robot, robot.opMode.telemetry);
         }
         catch (Exception ignored) {}
 

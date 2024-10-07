@@ -28,6 +28,7 @@ public class Mecanum extends RoadRunner {
     private boolean isGyroLocked = false;
     private double gyroTarget = 0.0d;
     private IMU imu;
+    //private Camera camera;
 
     // If botType = true then it is small bot
     // if botType = false then it is large bot
@@ -152,6 +153,9 @@ public class Mecanum extends RoadRunner {
                 leftBackPower,
                 rightBackPower
         );
+
+        telemetry.addData("Angle:", robot.hardwareMap.get(IMU.class,"imu").getRobotYawPitchRollAngles());
+        telemetry.update();
     }
 
     /**
@@ -235,6 +239,7 @@ public class Mecanum extends RoadRunner {
     public double getZAngle() {
         return imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle;
     }
+
 }
 
 

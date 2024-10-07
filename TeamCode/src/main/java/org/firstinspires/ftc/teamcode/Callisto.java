@@ -10,22 +10,17 @@ import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
+import org.firstinspires.ftc.teamcode.commands.MoveShoulder;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
-import org.firstinspires.ftc.teamcode.commands.ServoCommands;
+import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
-import org.firstinspires.ftc.teamcode.subsystems.ServoTest;
-import org.firstinspires.ftc.teamcode.util.AutoBotDriveyPants;
-import org.firstinspires.ftc.teamcode.util.Constants;
-import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
-import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.Localizer;
-import org.firstinspires.ftc.teamcode.util.roadrunnerfiles.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.util.experiments.ServoTest;
 
 import static org.firstinspires.ftc.teamcode.subsystems.Mecanum.botType;
 
@@ -41,6 +36,7 @@ public class Callisto extends Robot {
     // SUBSYSTEMS
     public Mecanum mecanum;
     public SensorPackage sensors;
+    public Arm arm;
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
@@ -75,24 +71,28 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
-        sensors = new SensorPackage(this);
+      //  sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
-        servo = new ServoTest(this);
-        blinkin = new Blinkin(this);
+       // servo = new ServoTest(this);
+        //blinkin = new Blinkin(this);
+        arm = new Arm(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum, sensors, servo);
+        register(mecanum, arm);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
+        arm.setDefaultCommand(new MoveShoulder(this));
 
         // If botType = true then it is small bot
         // if botType = false then it is large bot
-        botType = true;
+        botType = false;
+
         telemetry.addData("Trying to send command", botType);
-        blinkin.changeColorIsTeamRed(false);
+        //blinkin.changeColorIsTeamRed(false);
         telemetry.update();
+        botType = false;
 
 
         /*
@@ -115,7 +115,7 @@ public class Callisto extends Robot {
         }));
 
         Button xButtonP1 = new GamepadButton(player1, GamepadKeys.Button.X);
-        xButtonP1.whenPressed(new ServoCommands(this));
+       // xButtonP1.whenPressed(new ServoCommands(this));
 
 
         Button yButtonP1 = new GamepadButton(player1, GamepadKeys.Button.Y);
@@ -136,26 +136,34 @@ public class Callisto extends Robot {
         | ,__/'(___)`\__,_)`\__, |`\____)(_)      (_____/'
         | |                ( )_| |
         (_)                `\___/'-50  -50      */
+
+        Button aButtonP2 = new GamepadButton(player2, GamepadKeys.Button.A);
+        aButtonP2.whenPressed(new InstantCommand(() -> {
+            arm.toggleClaw();
+        }));
     }
 
     public void initAuto(){
         sensors = new SensorPackage(this);
         Pose2d start;
-        Pose2d ending = new Pose2d(new Vector2d(60,0), 0);
+        Pose2d ending = new Pose2d(new Vector2d(40,10), 180);
+        Pose2d next = new Pose2d(new Vector2d(0,-10), 180);
+
 
         // RED LEFT
         if(isRed)
-            start = new Pose2d(new Vector2d(-50,-50), 0.0);
+            start = new Pose2d(new Vector2d(-0,-0), 0.0);
            // start = new Pose2d(new Vector2d(0, 0), 0.0);
         else
-            start = new Pose2d(new Vector2d(-50, -500), 0.0);
+            start = new Pose2d(new Vector2d(0, -500), 0.0);
 
 
         mecanum = new Mecanum(this, start);
         register(mecanum, sensors);
 
         new SequentialCommandGroup(
-                new MoveToPose(this,  ending)
+                new MoveToPose(this,  ending),
+                new MoveToPose(this, next)
         ).schedule();
     }
 }
