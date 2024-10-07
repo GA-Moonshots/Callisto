@@ -16,8 +16,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
+import org.firstinspires.ftc.teamcode.commands.ServoCommands;
+import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
+import org.firstinspires.ftc.teamcode.subsystems.ServoTest;
 import org.firstinspires.ftc.teamcode.util.AutoBotDriveyPants;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.experiments.PureMecanum;
@@ -41,6 +44,9 @@ public class Callisto extends Robot {
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
+    public ServoTest servo;
+
+    public Blinkin blinkin;
 
 
     /**
@@ -71,10 +77,12 @@ public class Callisto extends Robot {
     public void initTele() {
         sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
+        servo = new ServoTest(this);
+        blinkin = new Blinkin(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum, sensors);
+        register(mecanum, sensors, servo);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
@@ -82,6 +90,9 @@ public class Callisto extends Robot {
         // If botType = true then it is small bot
         // if botType = false then it is large bot
         botType = true;
+        telemetry.addData("Trying to send command", botType);
+        blinkin.changeColorIsTeamRed(false);
+        telemetry.update();
 
 
         /*
@@ -104,11 +115,17 @@ public class Callisto extends Robot {
         }));
 
         Button xButtonP1 = new GamepadButton(player1, GamepadKeys.Button.X);
+        xButtonP1.whenPressed(new ServoCommands(this));
+
+
         Button yButtonP1 = new GamepadButton(player1, GamepadKeys.Button.Y);
         Button dPadUpP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_UP);
         Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
         Button dPadLeftP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
         Button dPadRightP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
+
+        //servo = new Mechanu
+        Button aButton = new GamepadButton(player1, GamepadKeys.Button.A);
 
         /*
                 _                                    __

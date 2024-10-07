@@ -23,9 +23,7 @@ public class SensorPackage extends SubsystemBase {
         try {
             this.camera = new Camera(robot, robot.opMode.telemetry);
         }
-        catch (Exception ignored) {
-
-        }
+        catch (Exception ignored) {}
 
 
         // instantiate distance sensors using our wrapper
