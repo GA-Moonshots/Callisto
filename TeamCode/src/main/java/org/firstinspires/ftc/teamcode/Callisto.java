@@ -124,6 +124,11 @@ public class Callisto extends Robot {
         | ,__/'(___)`\__,_)`\__, |`\____)(_)      (_____/'
         | |                ( )_| |
         (_)                `\___/'-50  -50      */
+
+        Button aButtonP2 = new GamepadButton(player2, GamepadKeys.Button.A);
+        aButtonP2.whenPressed(new InstantCommand(() -> {
+            arm.toggleClaw();
+        }));
     }
 
     public void initAuto(){
