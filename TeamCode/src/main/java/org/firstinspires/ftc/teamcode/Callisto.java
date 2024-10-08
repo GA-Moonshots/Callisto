@@ -72,7 +72,7 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
-      //  sensors = new SensorPackage(this);
+       sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
        // servo = new ServoTest(this);
         //blinkin = new Blinkin(this);
@@ -80,7 +80,7 @@ public class Callisto extends Robot {
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum, arm);
+        register(mecanum, arm, sensors);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
