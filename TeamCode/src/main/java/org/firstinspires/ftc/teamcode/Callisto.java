@@ -132,7 +132,7 @@ public class Callisto extends Robot {
             arm.toggleClaw();
         }));
 
-        Button dPadLeftP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_LEFT);
+        Button dPadLeftP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
         dPadLeftP2.whenHeld(new MoveArm(this));
 
     }
@@ -140,9 +140,8 @@ public class Callisto extends Robot {
     public void initAuto(){
         sensors = new SensorPackage(this);
         Pose2d start;
-        Pose2d ending = new Pose2d(new Vector2d(40,10), 180);
+        Pose2d ending = new Pose2d(new Vector2d(40,0), 0);
         Pose2d next = new Pose2d(new Vector2d(0,-10), 180);
-
 
         // RED LEFT
         if(isRed)
@@ -150,7 +149,6 @@ public class Callisto extends Robot {
            // start = new Pose2d(new Vector2d(0, 0), 0.0);
         else
             start = new Pose2d(new Vector2d(0, -500), 0.0);
-
 
         mecanum = new Mecanum(this, start);
         register(mecanum, sensors);

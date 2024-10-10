@@ -118,9 +118,9 @@ public class Mecanum extends RoadRunner {
         }
         else {
             leftFrontPower =  forward + strafe - turn;
-            rightFrontPower = -forward + strafe - turn;
+            rightFrontPower = forward - strafe + turn;
             leftBackPower = forward - strafe - turn;
-            rightBackPower = -forward - strafe - turn;
+            rightBackPower = forward + strafe + turn;
         }
 
 

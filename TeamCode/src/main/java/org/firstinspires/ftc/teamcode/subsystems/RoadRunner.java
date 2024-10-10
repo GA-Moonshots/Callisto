@@ -64,16 +64,16 @@ public class RoadRunner extends SubsystemBase {
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.UP;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         // drive model parameters
-        public double inPerTick = 0.00248188;
+        public double inPerTick = 0.029795158286778;
         public double lateralInPerTick = 0.0024668149594044117;
-        public double trackWidthTicks = 4750.175693701994;
+        public double trackWidthTicks = 75.10075553843612;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.6023528963875235;
-        public double kV = 0.0011747799202840488;
+        public double kS = 0.5576412238161932;
+        public double kV = 0.0006181251909843659;
         public double kA = 0.0001;
 
         // path profile parameters (in inches)
@@ -145,9 +145,9 @@ public class RoadRunner extends SubsystemBase {
             // TODO: reverse encoders if needed
             // This should instead be done in ThreeDeadWheelLocalizer
 
-            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            //leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
             rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//               rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
         @Override
@@ -236,8 +236,8 @@ public class RoadRunner extends SubsystemBase {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // TODO: reverse motor directions if needed
-           rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
-           rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+           //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+           //rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)

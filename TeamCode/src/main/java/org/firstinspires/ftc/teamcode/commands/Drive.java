@@ -55,8 +55,6 @@ public class Drive extends CommandBase {
         robot.telemetry.addData("Right Y", player1.getRightY());
 
         robot.telemetry.addData("IMU Angle", mecanum.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
-         // TODO: does this need to be negative ? Why are there 2 of them ?
-        turn = applyDeadZone(player1.getRightY());
 
         // Drive the robot with adjusted inputs:
         mecanum.drive(forward * speedMod, strafe * speedMod, turn * speedMod);

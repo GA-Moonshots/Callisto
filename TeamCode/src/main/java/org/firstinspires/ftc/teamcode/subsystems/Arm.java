@@ -29,7 +29,7 @@ public class Arm extends SubsystemBase {
         telemetry = robot.telemetry;
 
         shoulderMotor = new MotorEx(robot.hardwareMap, Constants.SHOULDER_MOTOR_NAME);
-        shoulderMotor.setVeloCoefficients(0.2, 0.2, 0.02);
+        shoulderMotor.setVeloCoefficients(0.03, 0.4, 0.02);
         shoulderMotor.setRunMode(Motor.RunMode.VelocityControl);
 
         clawServo = new SimpleServo(robot.hardwareMap, Constants.CLAW_SERVO_NAME, 0, 180);

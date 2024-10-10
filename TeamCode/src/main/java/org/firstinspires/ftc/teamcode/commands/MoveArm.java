@@ -22,6 +22,6 @@ public class MoveArm extends CommandBase {
 
     @Override
     public void execute() {
-        shoulderMotor.moveArm(player2.getRightY());
+        shoulderMotor.moveArm(player2.getLeftY());
     }
 }
