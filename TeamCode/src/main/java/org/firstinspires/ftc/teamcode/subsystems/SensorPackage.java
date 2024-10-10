@@ -11,7 +11,7 @@ public class SensorPackage extends SubsystemBase {
     // INSTANCE VARIABLES
     private Callisto robot;
     private final Telemetry telemetry;
-    private Camera camera;
+    public Camera camera;
     public DistanceSensor rearDistance;
     public DistanceSensor leftDistance;
     public DistanceSensor rightDistance;
@@ -34,6 +34,8 @@ public class SensorPackage extends SubsystemBase {
     @Override
     public void periodic() {
         robot.mecanum.postEncoderData();
+        telemetry.addData("Lift Position", robot.lift.motor1.getCurrentPosition());
         telemetry.update();
+
     }
 }

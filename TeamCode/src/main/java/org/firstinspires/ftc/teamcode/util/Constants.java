@@ -57,7 +57,7 @@ public class Constants {
     public static final String LEFT_BACK_NAME = "leftBack";
     public static final String RIGHT_BACK_NAME = "rightBack";
     public static final String ARM_MOTOR_NAME = "arm";
-    public static final String ELEVATOR_MOTOR_NAME = "elevator";
+    public static final String LIFT_MOTOR_NAME = "lift";
     public static final String SHOULDER_MOTOR_NAME = "Shoulder";
     // encoder aliases
     public static final String LEFT_ODOMETRY_NAME = LEFT_FRONT_NAME;

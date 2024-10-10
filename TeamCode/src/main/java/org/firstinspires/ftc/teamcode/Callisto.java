@@ -15,10 +15,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.MoveArm;
+import org.firstinspires.ftc.teamcode.commands.MoveLift;
 import org.firstinspires.ftc.teamcode.commands.MoveShoulder;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
+import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
 import org.firstinspires.ftc.teamcode.util.experiments.ServoTest;
@@ -38,6 +40,7 @@ public class Callisto extends Robot {
     public Mecanum mecanum;
     public SensorPackage sensors;
     public Arm arm;
+    public Lift lift;
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
@@ -72,15 +75,16 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
-       sensors = new SensorPackage(this);
+        sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
        // servo = new ServoTest(this);
         //blinkin = new Blinkin(this);
         arm = new Arm(this);
+        lift = new Lift(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum, arm, sensors);
+        register(mecanum, arm, sensors, lift);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
@@ -135,10 +139,13 @@ public class Callisto extends Robot {
         Button dPadLeftP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
         dPadLeftP2.whenHeld(new MoveArm(this));
 
+        Button bButtonP2 = new GamepadButton(player2, GamepadKeys.Button.B);
+        bButtonP2.whenHeld(new MoveLift(this, 100));
     }
 
     public void initAuto(){
         sensors = new SensorPackage(this);
+
         Pose2d start;
         Pose2d ending = new Pose2d(new Vector2d(40,0), 0);
         Pose2d next = new Pose2d(new Vector2d(0,-10), 180);

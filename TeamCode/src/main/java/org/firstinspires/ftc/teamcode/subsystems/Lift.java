@@ -15,53 +15,43 @@ public class Lift extends SubsystemBase {
     private boolean isLiftActivated = false;
 
     //motors
-    private MotorEx motor1;
-    private MotorEx motor2;
+    public MotorEx motor1;
 
-// set up all the different motors
+    // set up all the different motors
     public Lift(Callisto callisto){
-        motor1 = new MotorEx(robot.hardwareMap, "liftRight");
-        motor1.setRunMode(Motor.RunMode.VelocityControl);
-        motor1.setPositionCoefficient(0.5);
-        motor1.setPositionTolerance(3.6);
-
-
-        motor2 = new MotorEx(robot.hardwareMap,"liftRight");
         robot = callisto;
-
+        motor1 = new MotorEx(robot.hardwareMap, Constants.LIFT_MOTOR_NAME);
+//        motor1.setRunMode(Motor.RunMode.VelocityControl);
+//        motor1.setPositionCoefficient(0.5);
+//        motor1.setPositionTolerance(3.6);
     }
 
     public void togglePosition() {
         isLiftActivated = !isLiftActivated;
 
-        if (isLiftActivated) {
-            up();
-        } else {
-            down();
-        }
+        moveToPosition(-100);
     }
 
-    public void up(){
-        motor1.setTargetPosition(100);
-        motor1.set(0);
+    // For the lift to go up, the value is negative
+    // the Max value is -580
+    private void moveToPosition(int targetPosition) {
+        motor1.setTargetPosition(targetPosition);
 
-        while(!motor1.atTargetPosition()){
-            motor1.set(0.75);
-        }
+        robot.telemetry.addData("Oh No", motor1.getCurrentPosition());
+        robot.telemetry.update();
 
-        currentPosition = motor1.getCurrentPosition();
-        motor1.stopMotor(); // stop the motor
+        motor1.set(targetPosition);
+
+        // Non-blocking movement
+//        while (!motor1.atTargetPosition()) {
+//            motor1.set(targetPosition > motor1.getCurrentPosition() ? 0.75 : -0.75);
+//        }
+
+        motor1.stopMotor();
     }
 
-    public void down(){
-        motor1.setTargetPosition(0);
-
-        while(!motor1.atTargetPosition()){
-            motor1.set(-0.75);
-        }
-
-        currentPosition = motor1.getCurrentPosition();
-        motor1.stopMotor(); // stop the motor
+    public int getCurrentPosition() {
+        return motor1.getCurrentPosition();
     }
 
 

@@ -219,9 +219,4 @@ public class Camera {
             Imgproc.rectangle(buf, points[0], points[2], blue, 3);
         }
     }
-
-    // Method to determine which pipeline we will use
-    public void AprilTagPipelineSelected(boolean state) {
-        isAprilTag = state;
-    }
 }
