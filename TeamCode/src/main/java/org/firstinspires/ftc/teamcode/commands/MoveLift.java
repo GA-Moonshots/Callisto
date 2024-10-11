@@ -11,19 +11,19 @@ public class MoveLift extends CommandBase {
     private Callisto robot;
     private Lift lift;
 
-
     public MoveLift(Callisto callisto, int targetPosition) {
         robot = callisto;
         this.lift = robot.lift;
-        this.lift.motor1.setTargetPosition(-targetPosition);
+        lift.motor1.setTargetPosition(200);
 
         addRequirements(lift);
     }
 
     @Override
     public void execute() {
-        lift.motor1.set(-0.75);
-
+        while (robot.opMode.opModeIsActive() && !lift.motor1.atTargetPosition()) {
+            lift.motor1.set(0.5);
+        }
     }
 
     // Check if the command has finished

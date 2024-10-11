@@ -21,9 +21,12 @@ public class Lift extends SubsystemBase {
     public Lift(Callisto callisto){
         robot = callisto;
         motor1 = new MotorEx(robot.hardwareMap, Constants.LIFT_MOTOR_NAME);
+        motor1.encoder.setDirection(Motor.Direction.REVERSE);
 //        motor1.setRunMode(Motor.RunMode.VelocityControl);
-//        motor1.setPositionCoefficient(0.5);
-//        motor1.setPositionTolerance(3.6);
+        motor1.setRunMode(Motor.RunMode.PositionControl);
+        motor1.setPositionCoefficient(0.1);
+        motor1.set(0);
+        motor1.setPositionTolerance(10);
     }
 
     public void togglePosition() {
