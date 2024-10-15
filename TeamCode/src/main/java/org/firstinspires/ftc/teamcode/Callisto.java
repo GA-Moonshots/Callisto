@@ -140,7 +140,7 @@ public class Callisto extends Robot {
         dPadLeftP2.whenHeld(new MoveArm(this));
 
         Button bButtonP2 = new GamepadButton(player2, GamepadKeys.Button.B);
-        bButtonP2.whenPressed(new MoveLift(this, 150));
+        bButtonP2.whenPressed(new MoveLift(this));
     }
 
     public void initAuto(){

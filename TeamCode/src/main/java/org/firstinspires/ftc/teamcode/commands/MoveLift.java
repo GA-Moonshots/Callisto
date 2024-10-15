@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.commands;
 import android.telecom.Call;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
@@ -10,8 +11,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Lift;
 public class MoveLift extends CommandBase {
     private Callisto robot;
     private Lift lift;
+    private boolean controller = true;
 
-    public MoveLift(Callisto callisto, int targetPosition) {
+    public MoveLift(Callisto callisto) {
         robot = callisto;
         this.lift = robot.lift;
         lift.motor1.setTargetPosition(250);
@@ -21,11 +23,14 @@ public class MoveLift extends CommandBase {
 
     @Override
     public void execute() {
-        int i = 0;
+        boolean isNegative = false;
+
         while (robot.opMode.opModeIsActive() && !lift.motor1.atTargetPosition()) {
-            robot.telemetry.addData("is in while:", ++i);
-            robot.telemetry.update();
-            lift.motor1.set(0.5);
+            lift.motor1.set(isNegative ? -0.5 : 0.5);
+            if(robot.player2.wasJustPressed(GamepadKeys.Button.B)) {
+                lift.motor1.setTargetPosition(0);
+                isNegative = true;
+            }
         }
     }
 
