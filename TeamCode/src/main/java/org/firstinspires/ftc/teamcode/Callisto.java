@@ -161,8 +161,9 @@ public class Callisto extends Robot {
         register(mecanum, sensors);
 
         new SequentialCommandGroup(
-                new MoveToPose(this,  ending),
-                new MoveToPose(this, next)
+                new MoveToPose(this,  ending)
+//                ,
+//                new MoveToPose(this, next)
         ).schedule();
     }
 }
