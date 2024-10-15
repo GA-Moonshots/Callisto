@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.commands.MoveArm;
 import org.firstinspires.ftc.teamcode.commands.MoveLift;
 import org.firstinspires.ftc.teamcode.commands.MoveShoulder;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
+import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
@@ -38,7 +39,7 @@ public class Callisto extends Robot {
 
     // SUBSYSTEMS
     public Mecanum mecanum;
-    public SensorPackage sensors;
+    //public SensorPackage sensors;
     public Arm arm;
     public Lift lift;
 
@@ -75,7 +76,7 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
-        sensors = new SensorPackage(this);
+        //sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
        // servo = new ServoTest(this);
         //blinkin = new Blinkin(this);
@@ -84,7 +85,8 @@ public class Callisto extends Robot {
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum, arm, sensors, lift);
+        //register(mecanum, arm, sensors, lift);
+        register(mecanum, arm, lift);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
@@ -144,24 +146,25 @@ public class Callisto extends Robot {
     }
 
     public void initAuto(){
-        sensors = new SensorPackage(this);
+        //sensors = new SensorPackage(this);
 
         Pose2d start;
-        Pose2d ending = new Pose2d(new Vector2d(40,0), 0);
+        Pose2d ending = new Pose2d(new Vector2d(1000,0), 0);
         Pose2d next = new Pose2d(new Vector2d(0,-10), 180);
 
         // RED LEFT
         if(isRed)
-            start = new Pose2d(new Vector2d(-0,-0), 0.0);
+            start = new Pose2d(new Vector2d(0,0), 0.0);
            // start = new Pose2d(new Vector2d(0, 0), 0.0);
         else
             start = new Pose2d(new Vector2d(0, -500), 0.0);
 
         mecanum = new Mecanum(this, start);
-        register(mecanum, sensors);
+        //register(mecanum, sensors);
+        register(mecanum);
 
         new SequentialCommandGroup(
-                new MoveToPose(this,  ending)
+                new StrafeToPose(this,  ending)
 //                ,
 //                new MoveToPose(this, next)
         ).schedule();

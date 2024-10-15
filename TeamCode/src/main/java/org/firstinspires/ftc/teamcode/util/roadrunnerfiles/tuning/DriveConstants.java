@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.util.roadrunnerfiles.tuning;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.subsystems.RoadRunner;
+
 /*
  * Constants shared between multiple drive types.
  *
@@ -36,7 +38,7 @@ public class DriveConstants {
 
     // we are not using drive encoders
     public static final boolean RUN_USING_ENCODER = false;
-    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0, 0, 0,
+    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(0.5, 0.5, 0.5,
       getMotorVelocityF(MAX_RPM / 60 * TICKS_PER_REV));
 
     /*
@@ -59,9 +61,9 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0;
-    public static double kStatic = 0;
+    public static double kV = RoadRunner.PARAMS.kV;
+    public static double kA = RoadRunner.PARAMS.kA;
+    public static double kStatic = RoadRunner.PARAMS.kS;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
