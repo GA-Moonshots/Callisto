@@ -43,6 +43,14 @@ public class Constants {
     public static final double LOCK_ON_POSITION = 1.0;
     public static final double ELEVATOR_MAX_SPEED = 0.9;
 
+    // LIFT
+    public static final int LOW_HEIGHT = 0;
+    public static final int MID_HEIGHT = 250;
+    public static final int HIGH_HEIGHT = 500;
+    public static final double LIFT_MAX_SPEED = 0.9;
+
+
+
     // ----- HARDWARE MAP NAMES ------
     // -------- SENSOR NAMES ---------
     public static final String IMU_NAME = "imu";

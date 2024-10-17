@@ -92,6 +92,7 @@ public class Callisto extends Robot {
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
         arm.setDefaultCommand(new MoveShoulder(this));
+        lift.setDefaultCommand(new MoveLift(this));
 
         // If botType = true then it is small bot
         // if botType = false then it is large bot
