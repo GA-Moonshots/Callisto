@@ -16,6 +16,9 @@ public class MoveLift extends CommandBase {
     public MoveLift(Callisto callisto) {
         robot = callisto;
         this.lift = robot.lift;
+
+
+
         lift.motor1.setTargetPosition(250);
 
         addRequirements(lift);

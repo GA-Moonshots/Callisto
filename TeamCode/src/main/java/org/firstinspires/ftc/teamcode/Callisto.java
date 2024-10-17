@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
+import org.firstinspires.ftc.teamcode.commands.LineToPose;
 import org.firstinspires.ftc.teamcode.commands.MoveArm;
 import org.firstinspires.ftc.teamcode.commands.MoveLift;
 import org.firstinspires.ftc.teamcode.commands.MoveShoulder;
@@ -149,8 +150,8 @@ public class Callisto extends Robot {
         //sensors = new SensorPackage(this);
 
         Pose2d start;
-        Pose2d ending = new Pose2d(new Vector2d(1000,0), 0);
-        Pose2d next = new Pose2d(new Vector2d(0,-10), 180);
+        Pose2d ending = new Pose2d(new Vector2d(0,40), 0);
+        Pose2d next = new Pose2d(new Vector2d(50,20), 180);
 
         // RED LEFT
         if(isRed)
@@ -164,9 +165,9 @@ public class Callisto extends Robot {
         register(mecanum);
 
         new SequentialCommandGroup(
-                new StrafeToPose(this,  ending)
+                new StrafeToPose(this, ending)
 //                ,
-//                new MoveToPose(this, next)
+//                new MoveToPose(this,  next)
         ).schedule();
     }
 }

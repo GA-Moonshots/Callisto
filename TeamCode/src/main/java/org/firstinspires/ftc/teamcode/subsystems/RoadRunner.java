@@ -67,17 +67,23 @@ public class RoadRunner extends SubsystemBase {
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         // drive model parameters
-        public double inPerTick = 0.029795158286778;
+        //public double inPerTick = 0.029795158286778;
+
+        // ChatGPT suggested to calculate it rather than go off ForwardPushTest number
+        public double inPerTick = (2.75 * 2 * Math.PI) / (537.6 * 25);
         public double lateralInPerTick = 0.0024668149594044117;
         public double trackWidthTicks = 75.10075553843612;
 
         // feedforward parameters (in tick units)
         public double kS = 0.5576412238161932;
-        public double kV = 0.0006181251909843659;
-        public double kA = 0.0001;
+//        public double kV = 0.0006181251909843659;
+//        public double kA = 0.0001;
+        // temporary testing values
+        public double kV = 0.00002;
+        public double kA = 0.001;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
+        public double maxWheelVel = 20;
         public double minProfileAccel = -30;
         public double maxProfileAccel = 50;
 
@@ -86,11 +92,12 @@ public class RoadRunner extends SubsystemBase {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 0.0;
-        public double lateralGain = 1;
-        public double headingGain = 2; // shared with turn
 
-        public double axialVelGain = 0.0;
+        public double axialGain = 0.05 ;
+        public double lateralGain = 0.05;
+        public double headingGain = 2 ; // shared with turn
+
+        public double axialVelGain = 0.01;
         public double lateralVelGain = 0.1;
         public double headingVelGain = 1.9; // shared with turn
     }
