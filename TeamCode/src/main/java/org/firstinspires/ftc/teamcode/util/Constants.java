@@ -81,6 +81,7 @@ public class Constants {
     public static final String LAUNCHER_SERVO_NAME = "launcher";
     public static final String ELEVATOR_LEFT_SERVO_NAME = "elevLeft";
     public static final String ELEVATOR_RIGHT_SERVO_NAME = "elevRight";
+    public static final String LIFT_BASKET_SERVO_NAME = "basket";
 
     // -----Other------
 

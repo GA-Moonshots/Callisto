@@ -79,7 +79,7 @@ public class RoadRunner extends SubsystemBase {
 //        public double kV = 0.0006181251909843659;
 //        public double kA = 0.0001;
         // temporary testing values
-        public double kV = 0.00002;
+        public double kV = 0.000018;
         public double kA = 0.001;
 
         // path profile parameters (in inches)

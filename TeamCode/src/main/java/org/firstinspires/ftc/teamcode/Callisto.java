@@ -14,17 +14,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
-import org.firstinspires.ftc.teamcode.commands.LineToPose;
-import org.firstinspires.ftc.teamcode.commands.MoveArm;
-import org.firstinspires.ftc.teamcode.commands.MoveLift;
-import org.firstinspires.ftc.teamcode.commands.MoveShoulder;
+import org.firstinspires.ftc.teamcode.commands.RetractArm;
+import org.firstinspires.ftc.teamcode.commands.RaiseLift;
+import org.firstinspires.ftc.teamcode.commands.RaiseArm;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
-import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
-import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
 import org.firstinspires.ftc.teamcode.util.experiments.ServoTest;
 
 import static org.firstinspires.ftc.teamcode.subsystems.Mecanum.botType;
@@ -91,8 +88,8 @@ public class Callisto extends Robot {
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
-        arm.setDefaultCommand(new MoveShoulder(this));
-        lift.setDefaultCommand(new MoveLift(this));
+        arm.setDefaultCommand(new RaiseArm(this));
+        lift.setDefaultCommand(new RaiseLift(this, 0));
 
         // If botType = true then it is small bot
         // if botType = false then it is large bot
@@ -140,35 +137,51 @@ public class Callisto extends Robot {
             arm.toggleClaw();
         }));
 
-        Button dPadLeftP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
-        dPadLeftP2.whenHeld(new MoveArm(this));
-
         Button bButtonP2 = new GamepadButton(player2, GamepadKeys.Button.B);
-        bButtonP2.whenPressed(new MoveLift(this));
+        bButtonP2.whenPressed(new InstantCommand(() -> {
+            lift.dumpBasket();
+        }));
+
+        Button yButtonP2 = new GamepadButton(player2, GamepadKeys.Button.Y);
+        yButtonP2.whenPressed(new InstantCommand(() -> {
+            lift.levelBasket();
+        }));
+
+        Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
+        leftBumperP2.whenHeld(new RetractArm(this));
+
+        Button downDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_DOWN);
+        downDpadP2.whenPressed(new RaiseLift(this, 0));
+
+        Button leftDpadP2 =  new GamepadButton(player2, GamepadKeys.Button.DPAD_LEFT);
+        leftDpadP2.whenPressed(new RaiseLift(this, 250));
+
+        Button upDpadP2 =  new GamepadButton(player2, GamepadKeys.Button.DPAD_UP);
+        upDpadP2.whenPressed(new RaiseLift(this, 500));
+
     }
 
     public void initAuto(){
         //sensors = new SensorPackage(this);
 
         Pose2d start;
-        Pose2d ending = new Pose2d(new Vector2d(0,40), 0);
-        Pose2d next = new Pose2d(new Vector2d(50,20), 180);
+        Pose2d ending = new Pose2d(new Vector2d(0,0), 180);
+        Pose2d next = new Pose2d(new Vector2d(15,0), 180);
 
         // RED LEFT
-        if(isRed)
-            start = new Pose2d(new Vector2d(0,0), 0.0);
+
+
+        start = new Pose2d(new Vector2d(0,0), 0.0);
            // start = new Pose2d(new Vector2d(0, 0), 0.0);
-        else
-            start = new Pose2d(new Vector2d(0, -500), 0.0);
+//        else
+//            start = new Pose2d(new Vector2d(0, -500), 0.0);
 
         mecanum = new Mecanum(this, start);
         //register(mecanum, sensors);
         register(mecanum);
 
         new SequentialCommandGroup(
-                new StrafeToPose(this, ending)
-//                ,
-//                new MoveToPose(this,  next)
+                new MoveToPose(this, ending)
         ).schedule();
     }
 }
