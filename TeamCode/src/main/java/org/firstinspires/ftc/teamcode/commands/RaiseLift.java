@@ -7,23 +7,22 @@ import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 
 public class RaiseLift extends CommandBase {
+    // REFERENCES
     private Callisto robot;
     private Lift lift;
     private final GamepadEx player2;
+    // ASSETS
     private boolean controller = true;
     private boolean isNegative = false;
     private int targetPosition;
 
 
-    public RaiseLift(Callisto callisto, int targetPosition) {
+    public RaiseLift(Callisto robot, int targetPosition) {
         //TODO: Auto timeout this command
-        robot = callisto;
+        this.robot = robot;
         this.lift = robot.lift;
         this.targetPosition = targetPosition;
-
-        player2 = callisto.player2;
-
-
+        this.player2 = robot.player2;
 
         lift.motor1.setTargetPosition(targetPosition);
 
@@ -42,6 +41,8 @@ public class RaiseLift extends CommandBase {
 //        }
 
         robot.telemetry.addData("Target Position", targetPosition);
+
+        // TODO: remove this update. We only want to update the telemetry once (in the SensorPackage)
         robot.telemetry.update();
         // Set the motor to the target position
         lift.motor1.setTargetPosition(targetPosition);
@@ -60,6 +61,7 @@ public class RaiseLift extends CommandBase {
     // Check if the command has finished
     @Override
     public boolean isFinished() {
+        // TODO: include a timeout so we don't burn out the motor
         return false;
     }
 

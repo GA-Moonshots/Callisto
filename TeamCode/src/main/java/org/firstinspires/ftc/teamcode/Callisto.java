@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
-import org.firstinspires.ftc.teamcode.commands.RetractArm;
+import org.firstinspires.ftc.teamcode.commands.ExtendArm;
 import org.firstinspires.ftc.teamcode.commands.RaiseLift;
 import org.firstinspires.ftc.teamcode.commands.RaiseArm;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
@@ -74,16 +74,17 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
+        // TODO: restore sensors
         //sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
-       // servo = new ServoTest(this);
+
         //blinkin = new Blinkin(this);
         arm = new Arm(this);
         lift = new Lift(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        //register(mecanum, arm, sensors, lift);
+        // TODO: add sensors back in
         register(mecanum, arm, lift);
 
         // Setting Default Commands
@@ -148,7 +149,7 @@ public class Callisto extends Robot {
         }));
 
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
-        leftBumperP2.whenHeld(new RetractArm(this));
+        leftBumperP2.whenHeld(new ExtendArm(this));
 
         Button downDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_DOWN);
         downDpadP2.whenPressed(new RaiseLift(this, 0));
@@ -170,14 +171,11 @@ public class Callisto extends Robot {
 
         // RED LEFT
 
-
         start = new Pose2d(new Vector2d(0,0), 0.0);
-           // start = new Pose2d(new Vector2d(0, 0), 0.0);
-//        else
-//            start = new Pose2d(new Vector2d(0, -500), 0.0);
 
         mecanum = new Mecanum(this, start);
-        //register(mecanum, sensors);
+
+        // TODO: Add sensors back in
         register(mecanum);
 
         new SequentialCommandGroup(

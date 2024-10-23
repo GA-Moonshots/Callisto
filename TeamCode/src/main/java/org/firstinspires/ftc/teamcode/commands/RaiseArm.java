@@ -22,6 +22,9 @@ public class RaiseArm extends CommandBase {
 
     @Override
     public void execute() {
+        // TODO: include dead zone for joystick input
         shoulderMotor.moveShoulder(player2.getRightY());
     }
+
+    // TODO: include an end function to safely power down any motion
 }

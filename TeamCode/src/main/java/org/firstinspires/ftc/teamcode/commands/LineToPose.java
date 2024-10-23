@@ -48,9 +48,10 @@ public class LineToPose extends CommandBase {
         this.targetPose = targetPose;
         this.dashboard = FtcDashboard.getInstance();
 
+        // Set the timeout for the command
         timer = new Timing.Timer((long)timeout);
 
-
+        // this will allow us to interrupt any other command that may be running
         addRequirements(mecanum);
 
     }
@@ -62,7 +63,8 @@ public class LineToPose extends CommandBase {
         timer.start();
 
         // Build the trajectory from the current pose to the target pose
-        action = mecanum.actionBuilder(mecanum.pose).lineToX(targetPose.position.x, mecanum.defaultVelConstraint).build();
+        action = mecanum.actionBuilder(mecanum.pose).lineToX(targetPose.position.x,
+                mecanum.defaultVelConstraint).build();
 
     }
 
@@ -92,6 +94,10 @@ public class LineToPose extends CommandBase {
         // Use the telemetryPacket with the action's run method:
         finished = !action.run(packet);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
+
+        // Update the action based on the current pose for the next cycle
+        action = mecanum.actionBuilder(mecanum.pose).lineToX(targetPose.position.x,
+                mecanum.defaultVelConstraint).build();
     }
 
     // Check if the command has finished

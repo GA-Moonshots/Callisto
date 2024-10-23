@@ -49,7 +49,6 @@ public class MoveToPose extends CommandBase {
 
         timer = new Timing.Timer((long)timeout);
 
-
         addRequirements(mecanum);
 
     }
@@ -71,7 +70,6 @@ public class MoveToPose extends CommandBase {
     public void execute() {
         // Create Packet for dashboard
         TelemetryPacket packet = new TelemetryPacket();
-
         packet.put("x", mecanum.pose.position.x);
         packet.put("y", mecanum.pose.position.y);
         packet.put("heading", mecanum.pose.heading.toDouble());
@@ -83,6 +81,11 @@ public class MoveToPose extends CommandBase {
         // Use the telemetryPacket with the action's run method:
         finished = !action.run(packet);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
+
+        // Update the action based on the current pose for the next cycle
+        action = mecanum.actionBuilder(mecanum.pose)
+                .splineTo(targetPose.position, targetPose.heading)
+                .build();
     }
 
     // Check if the command has finished

@@ -50,7 +50,7 @@ public class StrafeToPose extends CommandBase {
 
         timer = new Timing.Timer((long)timeout);
 
-
+        // this will allow us to interrupt the other command that may be running
         addRequirements(mecanum);
 
     }
@@ -63,7 +63,6 @@ public class StrafeToPose extends CommandBase {
 
         // Build the trajectory from the current pose to the target pose
         action = mecanum.actionBuilder(mecanum.pose).strafeTo(targetPose.position).build();
-
     }
 
     // The execute method keeps updating the trajectory following
@@ -83,6 +82,9 @@ public class StrafeToPose extends CommandBase {
         // Use the telemetryPacket with the action's run method:
         finished = !action.run(packet);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
+
+        // Update the action based on the current pose for the next cycle
+        action = mecanum.actionBuilder(mecanum.pose).strafeTo(targetPose.position).build();
     }
 
     // Check if the command has finished

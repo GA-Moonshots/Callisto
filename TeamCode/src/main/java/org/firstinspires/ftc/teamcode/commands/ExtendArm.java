@@ -6,12 +6,12 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 
-public class RetractArm extends CommandBase {
+public class ExtendArm extends CommandBase {
     private final Callisto callisto;
     private final Arm shoulderMotor;
     private final GamepadEx player2;
 
-    public RetractArm(Callisto callisto) {
+    public ExtendArm(Callisto callisto) {
         this.callisto = callisto;
         shoulderMotor = this.callisto.arm;
 
