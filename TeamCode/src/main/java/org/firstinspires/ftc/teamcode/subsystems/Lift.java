@@ -34,33 +34,37 @@ public class Lift extends SubsystemBase {
         basket = robot.hardwareMap.get(Servo.class, Constants.LIFT_BASKET_SERVO_NAME);
         motor1 = new MotorEx(robot.hardwareMap, Constants.LIFT_MOTOR_NAME);
         motor1.setInverted(true);
-//        motor1.setRunMode(Motor.RunMode.VelocityControl);
         motor1.setRunMode(Motor.RunMode.PositionControl);
         motor1.setPositionCoefficient(0.17);
-        motor1.setPositionTolerance(10);
+        motor1.setPositionTolerance(5);
         motor1.set(0);
     }
 
+    /**
+     * Levels the basket.
+     *
+     * This method moves the basket to a level position by calling {@link #moveBasket(double)} with a
+     * value of 0.0. It then updates the {@link #currentBasketState} to {@link BasketState#LEVEL}.
+     */
     public void nestBasket(){
         moveBasket(0.0);
         currentBasketState = BasketState.NEST;
     }
 
     public void levelBasket(){
-        moveBasket(0.5);
+        moveBasket(0.4);
         currentBasketState = BasketState.LEVEL;
     }
 
-
+    /**
+     * Dumps the contents of the basket.*
+     * This method fully tilts the basket by calling {@link #moveBasket(double)} with a
+     * value of 1.0. It then updates the {@link #currentBasketState} to {@link BasketState#DUMP}.
+     */
     public void dumpBasket(){
         moveBasket(1.0);
         currentBasketState = BasketState.DUMP;
-
     }
-
-
-
-
 
     /**
      *Moves the basket to a new location.

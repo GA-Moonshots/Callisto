@@ -14,14 +14,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
+import org.firstinspires.ftc.teamcode.commands.DumpThenLevel;
 import org.firstinspires.ftc.teamcode.commands.ExtendArm;
+import org.firstinspires.ftc.teamcode.commands.ExtendShoulderByAmount;
 import org.firstinspires.ftc.teamcode.commands.RaiseLift;
-import org.firstinspires.ftc.teamcode.commands.RaiseArm;
+import org.firstinspires.ftc.teamcode.commands.RaiseShoulder;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
 import org.firstinspires.ftc.teamcode.subsystems.Arm;
 import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
+import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
 import org.firstinspires.ftc.teamcode.util.experiments.ServoTest;
 
 import static org.firstinspires.ftc.teamcode.subsystems.Mecanum.botType;
@@ -37,7 +40,7 @@ public class Callisto extends Robot {
 
     // SUBSYSTEMS
     public Mecanum mecanum;
-    //public SensorPackage sensors;
+    public SensorPackage sensors;
     public Arm arm;
     public Lift lift;
 
@@ -75,7 +78,7 @@ public class Callisto extends Robot {
      */
     public void initTele() {
         // TODO: restore sensors
-        //sensors = new SensorPackage(this);
+        sensors = new SensorPackage(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
 
         //blinkin = new Blinkin(this);
@@ -85,11 +88,11 @@ public class Callisto extends Robot {
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
         // TODO: add sensors back in
-        register(mecanum, arm, lift);
+        register(mecanum, arm, lift, sensors);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
-        arm.setDefaultCommand(new RaiseArm(this));
+        arm.setDefaultCommand(new RaiseShoulder(this));
         lift.setDefaultCommand(new RaiseLift(this, 0));
 
         // If botType = true then it is small bot
@@ -147,6 +150,16 @@ public class Callisto extends Robot {
         yButtonP2.whenPressed(new InstantCommand(() -> {
             lift.levelBasket();
         }));
+
+        Button rightBumperP2 = new GamepadButton(player2, GamepadKeys.Button.RIGHT_BUMPER);
+        rightBumperP2.whenPressed(new SequentialCommandGroup(
+//                new ExtendShoulderByAmount(this, 0.6),
+//                new ExtendShoulderByAmount(this, -0.5),
+                new RaiseLift(this, 500),
+                new DumpThenLevel(this, 5),
+                new RaiseLift(this, 0),
+                new RaiseLift(this, 0)
+        ));
 
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
         leftBumperP2.whenHeld(new ExtendArm(this));
