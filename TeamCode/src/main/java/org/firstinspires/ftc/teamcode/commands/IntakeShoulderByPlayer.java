@@ -4,20 +4,19 @@ import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeExperimental;
 
 
 public class IntakeShoulderByPlayer extends CommandBase {
 
     private final Callisto robot;
-    private final IntakeExperimental intake;
+    private final Intake intake;
 
     public IntakeShoulderByPlayer (Callisto robot){
         this.robot = robot;
-        this.intake = this.robot.intakeExperimental;
+        this.intake = this.robot.intake;
 
 
-        addRequirements(robot.intakeExperimental);
+        addRequirements(robot.intake);
     }
 
     @Override

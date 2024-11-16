@@ -1,16 +1,14 @@
-package org.firstinspires.ftc.teamcode.subsystems;
+package org.firstinspires.ftc.teamcode.util.experiments;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
-public class IntakeExperimental extends SubsystemBase {
+public class IntakeOld extends SubsystemBase {
+
     private Callisto robot;
 
     // Constant Rotation SERVOS
@@ -18,9 +16,7 @@ public class IntakeExperimental extends SubsystemBase {
     public com.qualcomm.robotcore.hardware.CRServo extendServo;
 
     //MOTOR for the shoulder
-    //public DcMotorEx shoulderMotor;
     public MotorEx shoulderMotor;
-
 
     // Declare the limit switch and  states
     public TouchSensor nearSwitch; // as in near to the robot
@@ -28,11 +24,9 @@ public class IntakeExperimental extends SubsystemBase {
 
     public boolean isShoulderUp = true;
 
-    public IntakeExperimental(Callisto robot){
+    public IntakeOld(Callisto robot){
         this.robot = robot;
         shoulderMotor = new MotorEx(robot.hardwareMap, Constants.SHOULDER_MOTOR_NAME);
-        shoulderMotor.setRunMode(Motor.RunMode.VelocityControl);
-
         // set up the servos
         extendServo = robot.hardwareMap.get(com.qualcomm.robotcore.hardware.CRServo.class, Constants.EXTEND_INTAKE_SERVO);
         spinServo = robot.hardwareMap.get(com.qualcomm.robotcore.hardware.CRServo.class, Constants.SPIN_INTAKE_SERVO);
@@ -72,24 +66,6 @@ public class IntakeExperimental extends SubsystemBase {
     }
 
     public void stopSpin() { spinServo.setPower(0.0); }
-
-    public void moveShoulderUp() {
-        shoulderMotor.setTargetPosition(1100);
-    }
-
-    public void moveShoulderDown() {
-        shoulderMotor.setTargetPosition(0);
-    }
-
-    public void shoulderPositionToggle() {
-        if (isShoulderUp) {
-            shoulderMotor.setTargetPosition(0);
-        } else {
-            shoulderMotor.setTargetPosition(-200);
-        }
-
-        isShoulderUp = !isShoulderUp;
-    }
 
     @Override
     public void periodic() {

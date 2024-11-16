@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.util.Timing;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.util.experiments.IntakeOld;
 
 public class IntakeShoulderUp extends CommandBase {
     // PID constants moved here
@@ -58,6 +59,5 @@ public class IntakeShoulderUp extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         intake.shoulderMotor.stopMotor();
-        intake.isShoulderUp = !intake.isShoulderUp;
     }
 }

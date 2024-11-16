@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.Robot;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -23,14 +21,13 @@ import org.firstinspires.ftc.teamcode.commands.IntakeRetract;
 //import org.firstinspires.ftc.teamcode.commands.IntakeShoulderByTime;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderDown;
-import org.firstinspires.ftc.teamcode.commands.IntakeShoulderUpExperimental;
+import org.firstinspires.ftc.teamcode.commands.IntakeShoulderToggle;
+import org.firstinspires.ftc.teamcode.commands.IntakeShoulderUpBangBang;
 import org.firstinspires.ftc.teamcode.commands.LiftLower;
 import org.firstinspires.ftc.teamcode.commands.LiftRaise;
-import org.firstinspires.ftc.teamcode.commands.IntakeShoulderUp;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
 //import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeExperimental;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
@@ -50,7 +47,6 @@ public class Callisto extends Robot {
     public SensorPackage sensors;
     public Lift lift;
     public Intake intake;
-    public IntakeExperimental intakeExperimental;
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
@@ -90,16 +86,14 @@ public class Callisto extends Robot {
         lift = new Lift(this);
         intake = new Intake(this);
         sensors = new SensorPackage(this);
-        intakeExperimental = new IntakeExperimental(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum,lift, intake, intakeExperimental, sensors);
+        register(mecanum,lift, intake, intake, sensors);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
-        intakeExperimental.setDefaultCommand(new IntakeShoulderByPlayer(this));
-       // intake.setDefaultCommand(new IntakeShoulder(this));
+        intake.setDefaultCommand(new IntakeShoulderByPlayer(this));
 
         /*
                 .__                                      ____
@@ -157,13 +151,14 @@ public class Callisto extends Robot {
             lift.levelBasket();
         }));
 
-        // LEFT BUMPER -- SHOULDER DOWN
+        // LEFT BUMPER -- SHOULDER TOGGLE
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
-        leftBumperP2.whenPressed(new InstantCommand(() -> {
-            intakeExperimental.shoulderPositionToggle();
-        }));
+        leftBumperP2.whenPressed(new IntakeShoulderUpBangBang(this));
 
+        // LEFT TRIGGER -- SPIN INTAKE
         Trigger leftTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5);
+        leftTriggerP2.whenActive(new IntakeShoulderDown(this));
+
 
         // DPAD DOWN -- LIFT LOWER
         Button downDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_DOWN);
@@ -185,13 +180,17 @@ public class Callisto extends Robot {
         rightBumperP2.whenHeld(new InstantCommand(()->{
             intake.setSpinSpeed(-0.5);
         }));
+        // RIGHT BUMPER RELEASE -- SPIN STOP
+        rightBumperP2.whenReleased(new InstantCommand(()->{
+            intake.setSpinSpeed(0);
+        }));
 
         // RIGHT TRIGGER -- SPIN INTAKE
         Trigger rightTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5);
         rightTriggerP2.whenActive(new InstantCommand(()->{
             intake.setSpinSpeed(0.5);
         }));
-        // RIGHT TRIGGER -- SPIN STOP ( will this fight against right bumper ?)
+        // RIGHT TRIGGER RELEASE -- SPIN STOP
         rightTriggerP2.whenInactive(new InstantCommand(()->{
             intake.setSpinSpeed(0.0);
         }));

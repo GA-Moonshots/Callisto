@@ -1,17 +1,14 @@
-package org.firstinspires.ftc.teamcode.commands;
+package org.firstinspires.ftc.teamcode.util.experiments;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.util.Timing;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Callisto;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeExperimental;
-
-import java.util.Timer;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 public class IntakeShoulderUpExperimental extends CommandBase {
     private Callisto m_robot;
-    private IntakeExperimental m_intake;
+    private Intake m_intake;
 
     private Timing.Timer timer;
     private long TIMEOUT = 12;
@@ -20,7 +17,7 @@ public class IntakeShoulderUpExperimental extends CommandBase {
 
     public IntakeShoulderUpExperimental(Callisto robot, int targetPosition) {
         m_robot = robot;
-        m_intake = m_robot.intakeExperimental;
+        m_intake = m_robot.intake;
 
         this.targetPosition = targetPosition;
 
