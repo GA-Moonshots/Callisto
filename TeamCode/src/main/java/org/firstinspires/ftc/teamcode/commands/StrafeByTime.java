@@ -10,6 +10,8 @@ import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
+import java.util.concurrent.TimeUnit;
+
 public class StrafeByTime extends CommandBase {
 
     // REFERENCES
@@ -35,7 +37,7 @@ public class StrafeByTime extends CommandBase {
         this.dashboard = FtcDashboard.getInstance();
         this.speed = speed;
 
-        timer = new Timing.Timer((long)timeout);
+        timer = new Timing.Timer((long)(timeout * 1000), TimeUnit.MILLISECONDS);
 
         addRequirements(mecanum);
 

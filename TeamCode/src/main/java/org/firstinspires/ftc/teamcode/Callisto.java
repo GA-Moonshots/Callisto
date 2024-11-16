@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.commands.LiftLower;
 import org.firstinspires.ftc.teamcode.commands.LiftRaise;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
 //import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
+import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
@@ -214,7 +215,7 @@ public class Callisto extends Robot {
 
         register(mecanum, lift, sensors);
 
-        new SequentialCommandGroup(
+       /* new SequentialCommandGroup(
            new InstantCommand(() -> {
                lift.levelBasket(); }) ,
            new ForwardByTime(this, 2, 0.25),
@@ -224,6 +225,8 @@ public class Callisto extends Robot {
            new ForwardByTime(this, 2.25, -0.33),
            new RotateByIMU(this, 30, 1.0,0.30),
            new ForwardByTime(this, 1.0, -0.20)
-        ).schedule();
+        ).schedule(); */
+
+        new StrafeByTime(this, 2.0, 0.25).schedule();
     }
 }

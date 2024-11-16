@@ -7,14 +7,15 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.util.Timing;
 
 @Config
 public class LiftRaise extends CommandBase {
     // PID constants moved here
-    public static double kP = 0.05;
-    public static double kI = 0.2;
-    public static double kD = 0.25;
+    public static double kP = 0.25;
+    public static double kI = 0.055;
+    public static double kD = 1.3;
 
     private final Callisto robot;
     private final Lift lift;
@@ -55,19 +56,15 @@ public class LiftRaise extends CommandBase {
     @Override
     public void initialize(){
         timer.start();
+        lift.motor1.setRunMode(Motor.RunMode.PositionControl);
     }
 
     @Override
     public void execute() {
         double currentPosition = lift.motor1.getCurrentPosition();
         double power = pid.calculate(currentPosition);
-        power = Math.max(Math.min(power, 0.75), 0.75); // constrain power between -0.75 and 0.75
 
         lift.motor1.set(power);
-
-        if (pid.atSetPoint()) {
-            lift.motor1.stopMotor();
-        }
 
         // Telemetry for debugging
         robot.telemetry.addData("Target Position", targetPosition);

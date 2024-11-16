@@ -21,8 +21,6 @@ public class LiftLower extends CommandBase {
     private final double TIMEOUT = 1.5;
     protected Timing.Timer timer;
 
-
-
     public LiftLower(Callisto robot, int targetPosition) {
         //TODO: Auto timeout this command
         this.robot = robot;
@@ -43,9 +41,8 @@ public class LiftLower extends CommandBase {
             lift.levelBasket();
         }
         timer.start();
-        lift.motor1.setRunMode(Motor.RunMode.PositionControl);
+        lift.motor1.setRunMode(Motor.RunMode.RawPower);
     }
-
 
     @Override
     public void execute() {
@@ -53,8 +50,7 @@ public class LiftLower extends CommandBase {
         robot.telemetry.addData("Target Position", targetPosition);
         robot.telemetry.addData("Position", lift.motor1.getCurrentPosition());
 
-        lift.motor1.set(-.25);
-
+        lift.motor1.set(-.1);
     }
 
     // Check if the command has finished
@@ -67,6 +63,7 @@ public class LiftLower extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         // Stop the drive if interrupted or completed
+        lift.motor1.setRunMode(Motor.RunMode.PositionControl);
         lift.motor1.stopMotor();
         lift.motor1.resetEncoder();
     }
