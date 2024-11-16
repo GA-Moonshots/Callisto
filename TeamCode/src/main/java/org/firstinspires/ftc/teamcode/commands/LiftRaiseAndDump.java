@@ -20,7 +20,7 @@ public class LiftRaiseAndDump extends CommandBase {
     private final PIDController pid;
     private final int targetPosition;
     private final double TOLERANCE = 8; // acceptable error in ticks
-    private final double DEFAULT_TIMEOUT = 12.0; // seconds
+    private final double TIMEOUT = 12.0; // seconds
     protected Timing.Timer timer;
     private boolean isFinished;
 
@@ -32,21 +32,7 @@ public class LiftRaiseAndDump extends CommandBase {
         pid.setSetPoint(targetPosition);
         pid.setTolerance(TOLERANCE);
 
-        timer = new Timing.Timer((long) DEFAULT_TIMEOUT);
-        lift.motor1.setTargetPosition(targetPosition);
-
-        addRequirements(lift);
-    }
-
-    public LiftRaiseAndDump(Callisto robot, int targetPosition, double timeout) {
-        this.robot = robot;
-        this.lift = robot.lift;
-        this.targetPosition = targetPosition;
-        pid = new PIDController(kP, kI, kD);  // Updated reference
-        pid.setSetPoint(targetPosition);
-        pid.setTolerance(TOLERANCE);
-
-        timer = new Timing.Timer((long) timeout);
+        timer = new Timing.Timer((long) TIMEOUT);
         lift.motor1.setTargetPosition(targetPosition);
 
         addRequirements(lift);
@@ -61,11 +47,8 @@ public class LiftRaiseAndDump extends CommandBase {
     public void execute() {
         double currentPosition = lift.motor1.getCurrentPosition();
         double power = pid.calculate(currentPosition);
-        power = Math.max(Math.min(power, 0.75), -0.75); // constrain power between -0.75 and 0.75
 
         lift.motor1.set(power);
-
-
 
         if (pid.atSetPoint()) {
             lift.dumpBasket();

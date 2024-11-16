@@ -15,8 +15,6 @@ public class LiftLower extends CommandBase {
     private Lift lift;
     private final GamepadEx player2;
     // ASSETS
-    private boolean controller = true;
-    private boolean isNegative = false;
     private int targetPosition;
     private final double TIMEOUT = 1.5;
     protected Timing.Timer timer;
@@ -65,7 +63,7 @@ public class LiftLower extends CommandBase {
         // Stop the drive if interrupted or completed
         lift.motor1.setRunMode(Motor.RunMode.PositionControl);
         lift.motor1.stopMotor();
-        lift.motor1.resetEncoder();
+        if(!interrupted) lift.motor1.resetEncoder();
     }
 }
  

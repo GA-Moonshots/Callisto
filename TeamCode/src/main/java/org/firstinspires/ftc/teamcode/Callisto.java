@@ -18,15 +18,11 @@ import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.ForwardByTime;
 import org.firstinspires.ftc.teamcode.commands.IntakeExtend;
 import org.firstinspires.ftc.teamcode.commands.IntakeRetract;
-//import org.firstinspires.ftc.teamcode.commands.IntakeShoulderByTime;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderDown;
-import org.firstinspires.ftc.teamcode.commands.IntakeShoulderToggle;
-import org.firstinspires.ftc.teamcode.commands.IntakeShoulderUpBangBang;
 import org.firstinspires.ftc.teamcode.commands.LiftLower;
 import org.firstinspires.ftc.teamcode.commands.LiftRaise;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
-//import org.firstinspires.ftc.teamcode.subsystems.Blinkin;
 import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
@@ -82,7 +78,6 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
-        //blinkin = new Blinkin(this);
         mecanum = new Mecanum(this, new Pose2d(new Vector2d(0,0),0));
         lift = new Lift(this);
         intake = new Intake(this);
@@ -152,9 +147,8 @@ public class Callisto extends Robot {
             lift.levelBasket();
         }));
 
-        // LEFT BUMPER -- SHOULDER TOGGLE
+        // TODO: LEFT BUMPER -- SHOULDER TOGGLE
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
-        leftBumperP2.whenPressed(new IntakeShoulderUpBangBang(this));
 
         // LEFT TRIGGER -- SPIN INTAKE
         Trigger leftTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5);
@@ -227,6 +221,6 @@ public class Callisto extends Robot {
            new ForwardByTime(this, 1.0, -0.20)
         ).schedule(); */
 
-        new StrafeByTime(this, 2.0, 0.25).schedule();
+        new StrafeByTime(this, 3.0, 0.25).schedule();
     }
 }
