@@ -60,7 +60,7 @@ public class LiftRaise extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return lift.motor1.atTargetPosition() || timer.done();
+        return timer.done();
     }
 
     @Override

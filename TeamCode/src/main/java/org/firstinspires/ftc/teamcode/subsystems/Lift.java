@@ -10,10 +10,8 @@ import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
 public class Lift extends SubsystemBase {
-
+    // instance variables
     private Callisto robot;
-    private int currentPosition;
-    private boolean isLiftActivated = false;
 
     // Enum to represent the different states of the basket (dump, nest, level)
     public enum BasketState {
@@ -81,7 +79,7 @@ public class Lift extends SubsystemBase {
     }
 
     public boolean isUp() {
-        return currentPosition >= Constants.MID_HEIGHT;
+        return motor1.getCurrentPosition() >= Constants.MID_HEIGHT;
     }
 
     @Override
