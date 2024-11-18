@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.opencv.core.MatOfPoint;
-import org.opencv.imgproc.Moments; // Correct import for Moments
+import org.opencv.imgproc.Moments;
 import org.opencv.core.Point;
 import org.openftc.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Camera {
+public class Camera implements AutoCloseable {
     // Instance variables
     public boolean isAprilTag = true;
     private List<AprilTagDetection> detections;
@@ -58,7 +58,7 @@ public class Camera {
         WebcamName webcamName = m_robot.opMode.hardwareMap.get(WebcamName.class, Constants.WEBCAM_NAME);
         camera = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        // FTC Dashboard Camera Set up stuff
+        // FTC Dashboard Camera Set up
         FtcDashboard.getInstance().startCameraStream(camera, 60);
 
         // Sets our camera pipeline
@@ -78,16 +78,14 @@ public class Camera {
                 /*
                  * This will be called if the camera could not be opened
                  */
+                telemetry.addData("Camera Error", "Error code: " + errorCode);
+                telemetry.update();
             }
         });
     }
 
     /**
      * Returns the centroid point of the detected game piece.
-     *
-     * A centroid is the arithmetic mean position of all the points in a shape. In image processing,
-     * the centroid of a contour (detected object) is calculated based on the spatial moments of the contour.
-     * It represents the center point of the object.
      *
      * @return The centroid point. If no object is detected, returns (-1, -1).
      */
@@ -104,6 +102,16 @@ public class Camera {
         return pipeline.getDetectedColor();
     }
 
+    @Override
+    public void close() {
+        if (pipeline != null) {
+            pipeline.releaseResources();
+        }
+        if (camera != null) {
+            camera.closeCameraDevice();
+        }
+    }
+
     class ObjectDetectionPipeline extends OpenCvPipeline {
         private String detectedColor = "UNKNOWN"; // Variable to store the detected color
         private Point detectedCentroid = new Point(-1, -1); // Centroid of the detected object
@@ -111,8 +119,6 @@ public class Camera {
         private final Telemetry telemetry;
 
         private ArrayList<AprilTagDetection> detections = new ArrayList<>();
-        private Mat grey = new Mat();
-
         private ArrayList<AprilTagDetection> detectionsUpdate = new ArrayList<>();
         private final Object detectionsUpdateSync = new Object();
 
@@ -127,6 +133,17 @@ public class Camera {
         private boolean needToSetDecimation;
         private final Object decimationSync = new Object();
 
+        // Reusable Mats
+        private Mat hsv = new Mat();
+        private Mat maskYellow = new Mat();
+        private Mat maskRed1 = new Mat();
+        private Mat maskRed2 = new Mat();
+        private Mat maskRed = new Mat();
+        private Mat maskBlue = new Mat();
+        private Mat mask = new Mat();
+        private Mat hierarchy = new Mat();
+        private Mat grey = new Mat();
+
         public ObjectDetectionPipeline(Telemetry telemetry) {
             this.telemetry = telemetry;
             nativeAprilTagPtr = AprilTagDetectorJNI.createApriltagDetector(
@@ -135,111 +152,119 @@ public class Camera {
 
         @Override
         public Mat processFrame(Mat input) {
-            // Convert the image from RGB to HSV color space
-            Mat hsv = new Mat();
-            Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+            try {
+                // Convert the image from RGB to HSV color space
+                Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
 
-            // Define color ranges
-            Scalar lowerYellow = new Scalar(20, 100, 100);
-            Scalar upperYellow = new Scalar(30, 255, 255);
+                // Define color ranges
+                Scalar lowerYellow = new Scalar(20, 100, 100);
+                Scalar upperYellow = new Scalar(30, 255, 255);
 
-            Scalar lowerRed1 = new Scalar(0, 150, 70);
-            Scalar upperRed1 = new Scalar(10, 255, 255);
-            Scalar lowerRed2 = new Scalar(170, 150, 70);
-            Scalar upperRed2 = new Scalar(180, 255, 255);
+                Scalar lowerRed1 = new Scalar(0, 150, 70);
+                Scalar upperRed1 = new Scalar(10, 255, 255);
+                Scalar lowerRed2 = new Scalar(170, 150, 70);
+                Scalar upperRed2 = new Scalar(180, 255, 255);
 
-            Scalar lowerBlue = new Scalar(100, 150, 70);
-            Scalar upperBlue = new Scalar(140, 255, 255);
+                Scalar lowerBlue = new Scalar(100, 150, 70);
+                Scalar upperBlue = new Scalar(140, 255, 255);
 
-            // Create masks for each color
-            Mat maskYellow = new Mat();
-            Mat maskRed1 = new Mat();
-            Mat maskRed2 = new Mat();
-            Mat maskRed = new Mat();
-            Mat maskBlue = new Mat();
-            Mat mask = new Mat();
+                // Create masks for each color
+                Core.inRange(hsv, lowerYellow, upperYellow, maskYellow);
+                Core.inRange(hsv, lowerRed1, upperRed1, maskRed1);
+                Core.inRange(hsv, lowerRed2, upperRed2, maskRed2);
+                Core.inRange(hsv, lowerBlue, upperBlue, maskBlue);
 
-            Core.inRange(hsv, lowerYellow, upperYellow, maskYellow);
-            Core.inRange(hsv, lowerRed1, upperRed1, maskRed1);
-            Core.inRange(hsv, lowerRed2, upperRed2, maskRed2);
-            Core.inRange(hsv, lowerBlue, upperBlue, maskBlue);
+                // Combine red masks
+                Core.bitwise_or(maskRed1, maskRed2, maskRed);
 
-            // Combine red masks
-            Core.bitwise_or(maskRed1, maskRed2, maskRed);
+                // Combine masks based on team color
+                if (m_robot.isRed) {
+                    Core.bitwise_or(maskRed, maskYellow, mask);
+                } else {
+                    Core.bitwise_or(maskBlue, maskYellow, mask);
+                }
 
-            // Combine masks based on team color
-            if (m_robot.isRed) {
-                Core.bitwise_or(maskRed, maskYellow, mask);
-            } else {
-                Core.bitwise_or(maskBlue, maskYellow, mask);
-            }
+                // Find contours in the mask
+                List<MatOfPoint> contours = new ArrayList<>();
+                Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-            // Find contours in the mask
-            List<MatOfPoint> contours = new ArrayList<>();
-            Mat hierarchy = new Mat();
-            Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+                if (!contours.isEmpty()) {
+                    // Find the largest contour
+                    double maxArea = 0;
+                    MatOfPoint largestContour = null;
+                    for (MatOfPoint contour : contours) {
+                        double area = Imgproc.contourArea(contour);
+                        if (area > maxArea) {
+                            maxArea = area;
+                            largestContour = contour;
+                        }
+                    }
 
-            if (!contours.isEmpty()) {
-                // Find the largest contour
-                double maxArea = 0;
-                MatOfPoint largestContour = null;
-                for (MatOfPoint contour : contours) {
-                    double area = Imgproc.contourArea(contour);
-                    if (area > maxArea) {
-                        maxArea = area;
-                        largestContour = contour;
+                    if (largestContour != null) {
+                        // Calculate the centroid of the largest contour
+                        Moments moments = Imgproc.moments(largestContour);
+                        if (moments.m00 != 0) {
+                            int cX = (int) (moments.m10 / moments.m00);
+                            int cY = (int) (moments.m01 / moments.m00);
+                            detectedCentroid = new Point(cX, cY);
+                        } else {
+                            detectedCentroid = new Point(-1, -1);
+                        }
+
+                        // Draw the largest contour and centroid
+                        Imgproc.drawContours(input, Arrays.asList(largestContour), -1, new Scalar(0, 255, 0), 2);
+                        Imgproc.circle(input, detectedCentroid, 5, new Scalar(255, 0, 0), -1);
+
+                        // Determine the detected color
+                        if (Core.countNonZero(maskYellow) > 0) {
+                            detectedColor = "YELLOW";
+                        } else if (Core.countNonZero(maskRed) > 0) {
+                            detectedColor = "RED";
+                        } else if (Core.countNonZero(maskBlue) > 0) {
+                            detectedColor = "BLUE";
+                        } else {
+                            detectedColor = "UNKNOWN";
+                        }
+                    }
+                } else {
+                    detectedCentroid = new Point(-1, -1);
+                    detectedColor = "UNKNOWN";
+                }
+
+                // AprilTag processing (if needed)
+                // Convert to greyscale
+                Imgproc.cvtColor(input, grey, Imgproc.COLOR_RGBA2GRAY);
+
+                synchronized (decimationSync) {
+                    if (needToSetDecimation) {
+                        AprilTagDetectorJNI.setApriltagDetectorDecimation(nativeAprilTagPtr, decimation);
+                        needToSetDecimation = false;
                     }
                 }
 
-                if (largestContour != null) {
-                    // Calculate the centroid of the largest contour
-                    Moments moments = Imgproc.moments(largestContour);
-                    int cX = (int) (moments.m10 / moments.m00);
-                    int cY = (int) (moments.m01 / moments.m00);
-                    detectedCentroid = new Point(cX, cY);
-
-                    // Draw the largest contour and centroid
-                    Imgproc.drawContours(input, Arrays.asList(largestContour), -1, new Scalar(0, 255, 0), 2);
-                    Imgproc.circle(input, detectedCentroid, 5, new Scalar(255, 0, 0), -1);
-
-                    // Determine the detected color
-                    if (Core.countNonZero(maskYellow) > 0) {
-                        detectedColor = "YELLOW";
-                    } else if (Core.countNonZero(maskRed) > 0) {
-                        detectedColor = "RED";
-                    } else if (Core.countNonZero(maskBlue) > 0) {
-                        detectedColor = "BLUE";
-                    } else {
-                        detectedColor = "UNKNOWN";
-                    }
+                // Run AprilTag
+                detections = AprilTagDetectorJNI.runAprilTagDetectorSimple(nativeAprilTagPtr, grey, tagSize, fx, fy, cx, cy);
+                synchronized (detectionsUpdateSync) {
+                    detectionsUpdate = detections;
                 }
-            } else {
-                detectedCentroid = new Point(-1, -1);
-                detectedColor = "UNKNOWN";
-            }
 
-            // AprilTag processing (if needed)
-            // Convert to greyscale
-            Imgproc.cvtColor(input, grey, Imgproc.COLOR_RGBA2GRAY);
-
-            synchronized (decimationSync) {
-                if (needToSetDecimation) {
-                    AprilTagDetectorJNI.setApriltagDetectorDecimation(nativeAprilTagPtr, decimation);
-                    needToSetDecimation = false;
+                for (AprilTagDetection detection : detections) {
+                    draw2dSquare(input, detection.corners);
                 }
-            }
 
-            // Run AprilTag
-            detections = AprilTagDetectorJNI.runAprilTagDetectorSimple(nativeAprilTagPtr, grey, tagSize, fx, fy, cx, cy);
-            synchronized (detectionsUpdateSync) {
-                detectionsUpdate = detections;
+                return input;
+            } finally {
+                // Release Mats to prevent memory leaks
+                hsv.release();
+                maskYellow.release();
+                maskRed1.release();
+                maskRed2.release();
+                maskRed.release();
+                maskBlue.release();
+                mask.release();
+                hierarchy.release();
+                grey.release();
             }
-
-            for (AprilTagDetection detection : detections) {
-                draw2dSquare(input, detection.corners);
-            }
-
-            return input;
         }
 
         /**
@@ -254,10 +279,6 @@ public class Camera {
         /**
          * Returns the centroid point of the detected game piece.
          *
-         * A centroid is the arithmetic mean position of all the points in a shape. In image processing,
-         * the centroid of a contour (detected object) is calculated based on the spatial moments of the contour.
-         * It represents the center point of the object.
-         *
          * @return The centroid point. If no object is detected, returns (-1, -1).
          */
         public Point getDetectedCentroid() {
@@ -270,18 +291,26 @@ public class Camera {
             Core.inRange(mat, lowerBound, upperBound, mask);
             double nonZeroCount = Core.countNonZero(mask);
             double totalPixels = mat.total();
+            mask.release();
             return (nonZeroCount / totalPixels) > 0.5; // Threshold to determine if the color is present
         }
 
-        @Override
-        protected void finalize() {
-            // Might be null if createApriltagDetector() threw an exception
+        public void releaseResources() {
+            // Release all reusable Mats
+            hsv.release();
+            maskYellow.release();
+            maskRed1.release();
+            maskRed2.release();
+            maskRed.release();
+            maskBlue.release();
+            mask.release();
+            hierarchy.release();
+            grey.release();
+
+            // Release AprilTag detector
             if (nativeAprilTagPtr != 0) {
-                // Delete the native context we created in the constructor
                 AprilTagDetectorJNI.releaseApriltagDetector(nativeAprilTagPtr);
                 nativeAprilTagPtr = 0;
-            } else {
-                System.out.println("AprilTagDetectionPipeline.finalize(): nativeAprilTagPtr was NULL");
             }
         }
 
@@ -300,6 +329,13 @@ public class Camera {
         void draw2dSquare(Mat buf, Point[] points) {
             Scalar blue = new Scalar(7, 197, 235, 255);
             Imgproc.rectangle(buf, points[0], points[2], blue, 3);
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            // As a fallback, ensure resources are released
+            releaseResources();
+            super.finalize();
         }
     }
 }
