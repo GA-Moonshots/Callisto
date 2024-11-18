@@ -13,6 +13,7 @@ public class AutoBotDriveyPants extends CommandOpMode {
     public boolean isRed;
     public boolean left;
 
+
     /**
      * Set up robot such that it asks the player what our starting position is and kicks off
      * a FTCLib-style RoadRunner.

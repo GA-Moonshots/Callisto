@@ -20,14 +20,18 @@ import org.firstinspires.ftc.teamcode.commands.IntakeExtend;
 import org.firstinspires.ftc.teamcode.commands.IntakeRetract;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderDown;
-import org.firstinspires.ftc.teamcode.commands.LiftLower;
-import org.firstinspires.ftc.teamcode.commands.LiftRaise;
+import org.firstinspires.ftc.teamcode.commands.IntakeShoulderUp;
+import org.firstinspires.ftc.teamcode.commands.LiftDumpThenLevel;
+import org.firstinspires.ftc.teamcode.commands.LiftRaiseThenDump;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
 import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Lift;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
+import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.commands.LiftLowerRTP;
+import org.firstinspires.ftc.teamcode.subsystems.Lift;
+import org.firstinspires.ftc.teamcode.commands.LiftRaiseRTP;
 import org.firstinspires.ftc.teamcode.util.experiments.ServoTest;
 
 public class Callisto extends Robot {
@@ -48,8 +52,6 @@ public class Callisto extends Robot {
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
     public ServoTest servo;
-
-   // public Blinkin blinkin;
     
     /**
      * Welcome to the Command pattern. Here we assemble the robot and kick-off the command
@@ -85,7 +87,7 @@ public class Callisto extends Robot {
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
-        register(mecanum,lift, intake, intake, sensors);
+        register(mecanum, lift, intake, sensors);
 
         // Setting Default Commands
         mecanum.setDefaultCommand(new Drive(this));
@@ -149,6 +151,7 @@ public class Callisto extends Robot {
 
         // TODO: LEFT BUMPER -- SHOULDER TOGGLE
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
+        leftBumperP2.whenPressed(new IntakeShoulderUp(this));
 
         // LEFT TRIGGER -- SPIN INTAKE
         Trigger leftTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5);
@@ -157,17 +160,21 @@ public class Callisto extends Robot {
 
         // DPAD DOWN -- LIFT LOWER
         Button downDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_DOWN);
-        downDpadP2.whenPressed(new LiftLower(this, 0));
+        downDpadP2.whenPressed(new LiftLowerRTP(this));
 
-        // DPAD LEFT -- LIFT RAISE HALF WAY
+        // DPAD LEFT -- Secuence
         Button leftDpadP2 =  new GamepadButton(player2, GamepadKeys.Button.DPAD_LEFT);
-        leftDpadP2.whenPressed(new LiftRaise(this, 150));
+        leftDpadP2.whenPressed(new SequentialCommandGroup(
+                new LiftLowerRTP(this),
+                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT),
+                new LiftLowerRTP(this)
+        ));
 
         // DPAD UP -- LIFT RAISE
         Button upDpadP2 =  new GamepadButton(player2, GamepadKeys.Button.DPAD_UP);
         upDpadP2.whenPressed(new SequentialCommandGroup(
-                new LiftLower(this,0),
-                new LiftRaise(this, 2000)
+                new LiftLowerRTP(this),
+                new LiftRaiseRTP(this, Constants.HIGH_HEIGHT)
         ));
 
         // RIGHT BUMPER -- NEGATIVE SPIN INTAKE
@@ -209,18 +216,24 @@ public class Callisto extends Robot {
 
         register(mecanum, lift, sensors);
 
-       /* new SequentialCommandGroup(
-           new InstantCommand(() -> {
-               lift.levelBasket(); }) ,
-           new ForwardByTime(this, 2, 0.25),
-           new RotateByIMU(this,130, 3.7, 0.27),
-           new ForwardByTime(this, 2.25, 0.33),
-           //new LiftRaiseAndDump(this, 500, 5),
-           new ForwardByTime(this, 2.25, -0.33),
-           new RotateByIMU(this, 30, 1.0,0.30),
-           new ForwardByTime(this, 1.0, -0.20)
-        ).schedule(); */
+        if(left) {
+            new SequentialCommandGroup(
+                    new InstantCommand(() -> {
+                        lift.levelBasket(); }) ,
+                    new ForwardByTime(this, 2, 0.25),
+                    new RotateByIMU(this,130, 3.7, 0.27),
+                    new ForwardByTime(this, 2.25, 0.33),
+                    new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT),
+                    new ForwardByTime(this, 2.25, -0.33),
+                    new RotateByIMU(this, 30, 1.0,0.30),
+                    new ForwardByTime(this, 1.0, -0.20)
 
-        new StrafeByTime(this, 3.0, 0.25).schedule();
+
+
+            ).schedule();
+        } else {
+            new StrafeByTime(this, 3.0, 0.25).schedule();
+        }
+
     }
 }

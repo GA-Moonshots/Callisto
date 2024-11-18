@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -49,7 +50,7 @@ public class LiftDumpThenLevel extends CommandBase {
         TelemetryPacket packet = new TelemetryPacket();
 
         lift.dumpBasket();
-        if(timer.elapsedTime() >= 2 /* autoboxing to long */) {
+        if(timer.elapsedTime() >= 2 /* autoboxing to long */ ) {
             lift.levelBasket();
         }
     }

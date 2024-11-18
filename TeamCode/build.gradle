@@ -21,7 +21,10 @@ android {
     packagingOptions {
         jniLibs.useLegacyPackaging true
     }
+
 }
+
+
 
 repositories {
     maven {

@@ -9,29 +9,23 @@ import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.util.experiments.IntakeOld;
 
+import java.util.concurrent.TimeUnit;
+
 public class IntakeShoulderUp extends CommandBase {
-    // PID constants moved here
-    private static double kP = 0.4;
-    private static double kI = 0.005;
-    private static double kD = 0.01;
+
 
     private final Callisto robot;
     private final Intake intake;
-    private final PIDController pid;
-    private final int targetPosition;
-    private final double TOLERANCE = 5; // acceptable error in ticks
-    private final double TIMEOUT = 12.0; // seconds
+     // acceptable error in ticks
+    private final double TIMEOUT = 3.0; // seconds
     protected Timing.Timer timer;
 
-    public IntakeShoulderUp(Callisto robot, int targetPosition) {
+    public IntakeShoulderUp(Callisto robot) {
         this.robot = robot;
         this.intake = this.robot.intake;
-        this.targetPosition = targetPosition;
-        pid = new PIDController(kP, kI, kD);  // Updated reference
-        pid.setSetPoint(targetPosition);
-        pid.setTolerance(TOLERANCE);
 
-        timer = new Timing.Timer((long) TIMEOUT);
+
+        timer = new Timing.Timer((long) TIMEOUT * 1000, TimeUnit.MILLISECONDS);
 
         addRequirements(intake);
     }
@@ -43,17 +37,22 @@ public class IntakeShoulderUp extends CommandBase {
 
     @Override
     public void execute() {
-        robot.telemetry.addData("Shoulder:", intake.shoulderMotor.getCurrentPosition());
-        double currentPosition = intake.shoulderMotor.getCurrentPosition();
-        double power = pid.calculate(currentPosition);
-        power = Math.max(Math.min(power, 0), 0.8);
+        double power;
 
-        intake.shoulderMotor.set(power);
+        if (timer.elapsedTime() < 1500) {
+            intake.shoulderMotor.set(0.75); // First 1500ms
+        } else if (timer.elapsedTime() < 2000 && timer.elapsedTime() >= 1500) {
+            intake.shoulderMotor.set(0.2); // Next 500ms (1500-2000ms)
+        } else {
+            intake.shoulderMotor.set(0);
+        }
+
+
     }
 
     @Override
     public boolean isFinished() {
-        return pid.atSetPoint() || timer.done();
+        return timer.done();
     }
 
     @Override

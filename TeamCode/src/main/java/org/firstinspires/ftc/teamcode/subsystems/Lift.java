@@ -1,16 +1,13 @@
- package org.firstinspires.ftc.teamcode.subsystems;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
 public class Lift extends SubsystemBase {
-    // instance variables
+    // Instance variables
     private Callisto robot;
 
     // Enum to represent the different states of the basket (dump, nest, level)
@@ -19,73 +16,71 @@ public class Lift extends SubsystemBase {
         NEST,
         LEVEL
     }
-    // The current state of the basket
-    private BasketState currentBasketState = BasketState.NEST;
 
-    // MOTORS + SERVOS
-    public MotorEx motor1;
+    // The current state of the basket
+    public BasketState currentBasketState = BasketState.NEST;
+
+    // Motors and Servos
+    public DcMotorEx motor1;
     public Servo basket;
 
-    // set up all the different motors
-    public Lift(Callisto robot){
+    // Constructor
+    public Lift(Callisto robot) {
         this.robot = robot;
         basket = robot.hardwareMap.get(Servo.class, Constants.LIFT_BASKET_SERVO_NAME);
-        motor1 = new MotorEx(robot.hardwareMap, Constants.LIFT_MOTOR_NAME);
-        motor1.resetEncoder();
-        motor1.setInverted(false);
-        motor1.setRunMode(Motor.RunMode.PositionControl);
-        motor1.setPositionCoefficient(0.2);
-        motor1.setPositionTolerance(5);
-        motor1.set(0);
+
+        // Initialize motor1 as DcMotorEx to use RUN_TO_POSITION
+        motor1 = robot.hardwareMap.get(DcMotorEx.class, Constants.LIFT_MOTOR_NAME);
+        motor1.setDirection(DcMotorEx.Direction.FORWARD);
+        motor1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        motor1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setTargetPosition(0);
+        motor1.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        motor1.setPower(0);
     }
 
     /**
-     * Levels the basket.
-     *
-     * This method moves the basket to a level position by calling {@link #moveBasket(double)} with a
-     * value of 0.0. It then updates the {@link #currentBasketState} to {@link BasketState#LEVEL}.
+     * Nests the basket.
      */
-    public void nestBasket(){
+    public void nestBasket() {
         moveBasket(0.0);
         currentBasketState = BasketState.NEST;
     }
 
-    public void levelBasket(){
+    /**
+     * Levels the basket.
+     */
+    public void levelBasket() {
         moveBasket(0.4);
         currentBasketState = BasketState.LEVEL;
     }
 
     /**
-     * Dumps the contents of the basket.*
-     * This method fully tilts the basket by calling {@link #moveBasket(double)} with a
-     * value of 1.0. It then updates the {@link #currentBasketState} to {@link BasketState#DUMP}.
+     * Dumps the contents of the basket.
      */
-    public void dumpBasket(){
+    public void dumpBasket() {
         moveBasket(1.0);
         currentBasketState = BasketState.DUMP;
     }
 
     /**
-     *Moves the basket to a new location.
+     * Moves the basket to a specified position.
      *
-     * <p>This method is intended for internal use within the basket subsystem.
-     * It is not recommended for general use as higher-level shorthands,
-     * such as those for dumping the basket, are typically more appropriate.
-     *
-     * @param pos The new location for the basket.
+     * @param pos The new position for the basket servo.
      */
-    public void moveBasket(double pos){
+    public void moveBasket(double pos) {
         basket.setPosition(pos);
     }
 
     public boolean isUp() {
-        return motor1.getCurrentPosition() >= Constants.MID_HEIGHT;
+        return Math.abs(motor1.getCurrentPosition() - Constants.HIGH_HEIGHT) < 230;
     }
+
+    public boolean isDown() { return motor1.getCurrentPosition() <= Constants.LOW_HEIGHT;}
 
     @Override
     public void periodic() {
-        // EVERY SUBSYSTEM MUST HAVE A PERIODIC FUNCTION TO CONCISELY OUTPUT STATUS
-        robot.telemetry.addData("Lift Position", robot.lift.motor1.getCurrentPosition());
+        // Telemetry for debugging
+        robot.telemetry.addData("Lift Position", motor1.getCurrentPosition());
     }
 }
-

@@ -1,22 +1,31 @@
+
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.util.Timing;
+
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.util.experiments.IntakeOld;
+
+import java.util.concurrent.TimeUnit;
 
 public class IntakeShoulderDown extends CommandBase {
+
+
     private final Callisto robot;
     private final Intake intake;
-
-    private final int targetPosition = 0; // Target position when shoulder is down
-    private final double TIMEOUT = 3.0; // seconds
-    private final Timing.Timer timer;
+    // acceptable error in ticks
+    private final double TIMEOUT = 2.0; // seconds
+    protected Timing.Timer timer;
 
     public IntakeShoulderDown(Callisto robot) {
         this.robot = robot;
-        this.intake = robot.intake;
-        this.timer = new Timing.Timer((long) (TIMEOUT * 1000)); // Convert to milliseconds
+        this.intake = this.robot.intake;
+
+
+        timer = new Timing.Timer((long) TIMEOUT * 1000, TimeUnit.MILLISECONDS);
 
         addRequirements(intake);
     }
@@ -28,29 +37,26 @@ public class IntakeShoulderDown extends CommandBase {
 
     @Override
     public void execute() {
-        robot.telemetry.addData("Intake Shoulder Down", "Running");
-        double power = 0.0;
+        double power;
 
-        if (!intake.isUp()) { // Add a small buffer
-            // Apply a small upward power to control descent
-            power = -0.15; // Adjust this value as needed to prevent slamming
-        }
-        else if (intake.isNearDown()) {
-            //Apply break
-            power = 0.05;
+        if (timer.elapsedTime() < 800) {
+            intake.shoulderMotor.set(-0.40); // First 500ms
+        } else if (timer.elapsedTime() < 1250 && timer.elapsedTime() >= 800) {
+            intake.shoulderMotor.set(0.2); // Next 500ms (500-1000ms)
+        } else {
+            intake.shoulderMotor.set(0); // Remaining time (1000-2000ms)
         }
 
 
-        intake.shoulderMotor.set(power);
     }
 
     @Override
     public boolean isFinished() {
-        return intake.isDown() || timer.done();
+        return timer.done();
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.stopShoulder();
+        intake.shoulderMotor.stopMotor();
     }
 }
