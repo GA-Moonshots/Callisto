@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
+import java.util.concurrent.TimeUnit;
+
 public class ForwardByTime extends CommandBase {
 
     // REFERENCES
@@ -30,13 +32,13 @@ public class ForwardByTime extends CommandBase {
     private FtcDashboard dashboard;
 
 
-    public ForwardByTime(Callisto robot, double timeout, double speed) {
+    public ForwardByTime(Callisto robot, double timeoutMilliseconds, double speed) {
         this.robot = robot;
         this.mecanum = robot.mecanum;
         this.dashboard = FtcDashboard.getInstance();
         this.speed = speed;
 
-        timer = new Timing.Timer((long)timeout);
+        timer = new Timing.Timer((long)timeoutMilliseconds, TimeUnit.MILLISECONDS);
 
         addRequirements(mecanum);
 

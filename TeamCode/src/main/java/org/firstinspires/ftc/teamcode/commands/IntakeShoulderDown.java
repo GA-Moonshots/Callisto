@@ -40,11 +40,11 @@ public class IntakeShoulderDown extends CommandBase {
         double power;
 
         if (timer.elapsedTime() < 800) {
-            intake.shoulderMotor.set(-0.40); // First 500ms
+            intake.shoulderMotor.setPower(-0.40); // First 500ms
         } else if (timer.elapsedTime() < 1250 && timer.elapsedTime() >= 800) {
-            intake.shoulderMotor.set(0.2); // Next 500ms (500-1000ms)
+            intake.shoulderMotor.setPower(0.2); // Next 500ms (500-1000ms)
         } else {
-            intake.shoulderMotor.set(0); // Remaining time (1000-2000ms)
+            intake.shoulderMotor.setPower(0); // Remaining time (1000-2000ms)
         }
 
 
@@ -57,6 +57,6 @@ public class IntakeShoulderDown extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        intake.shoulderMotor.stopMotor();
+        intake.stopShoulder();
     }
 }

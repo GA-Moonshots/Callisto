@@ -36,7 +36,7 @@ public class LiftRaiseThenDump extends CommandBase {
         lift.motor1.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         PIDFCoefficients pidfCoefficients = lift.motor1.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
         double pValue = pidfCoefficients.p;  // Extract the P value
-        lift.motor1.setPositionPIDFCoefficients( pValue * 0.75);
+        lift.motor1.setPositionPIDFCoefficients( pValue * 0.8);
         lift.motor1.setTargetPositionTolerance(100);
         lift.motor1.setPower(0.99);
 

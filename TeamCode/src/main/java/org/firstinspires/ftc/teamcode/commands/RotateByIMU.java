@@ -6,6 +6,8 @@ import com.arcrobotics.ftclib.util.Timing;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 
+import java.util.concurrent.TimeUnit;
+
 public class RotateByIMU extends CommandBase {
 
     private final Callisto robot;
@@ -27,7 +29,7 @@ public class RotateByIMU extends CommandBase {
         // Calculate the absolute target angle by adding offset to the current angle
         this.targetAngle = mecanum.getZAngle() + targetAngleOffset;
 
-        timer = new Timing.Timer((long) timeout);
+        timer = new Timing.Timer((long) timeout * 1000, TimeUnit.MILLISECONDS);
         dashboard = FtcDashboard.getInstance();
         addRequirements(mecanum);
     }

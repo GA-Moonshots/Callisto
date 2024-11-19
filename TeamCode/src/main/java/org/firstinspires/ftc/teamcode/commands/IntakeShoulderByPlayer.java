@@ -29,7 +29,7 @@ public class IntakeShoulderByPlayer extends CommandBase {
             power = 0;
         }
 
-        intake.shoulderMotor.set(power);
+        intake.shoulderMotor.setPower(power);
     }
 
     public boolean isFinished() {

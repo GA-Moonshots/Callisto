@@ -12,8 +12,6 @@ import org.firstinspires.ftc.teamcode.util.experiments.IntakeOld;
 import java.util.concurrent.TimeUnit;
 
 public class IntakeShoulderUp extends CommandBase {
-
-
     private final Callisto robot;
     private final Intake intake;
      // acceptable error in ticks
