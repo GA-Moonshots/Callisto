@@ -43,6 +43,6 @@ public class IntakeSpinByTime extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        intake.shoulderMotor.set(0);
+        intake.shoulderMotor.setPower(0.0);  //set(0);
     }
 }

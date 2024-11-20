@@ -38,11 +38,11 @@ public class IntakeShoulderUp extends CommandBase {
         double power;
 
         if (timer.elapsedTime() < 1500) {
-            intake.shoulderMotor.set(0.75); // First 1500ms
+            intake.shoulderMotor.setPower(0.75); // First 1500ms
         } else if (timer.elapsedTime() < 2000 && timer.elapsedTime() >= 1500) {
-            intake.shoulderMotor.set(0.2); // Next 500ms (1500-2000ms)
+            intake.shoulderMotor.setPower(0.2); // Next 500ms (1500-2000ms)
         } else {
-            intake.shoulderMotor.set(0);
+            intake.shoulderMotor.setPower(0);
         }
 
 
@@ -55,6 +55,6 @@ public class IntakeShoulderUp extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        intake.shoulderMotor.stopMotor();
+        intake.shoulderMotor.setPower(0.0);
     }
 }

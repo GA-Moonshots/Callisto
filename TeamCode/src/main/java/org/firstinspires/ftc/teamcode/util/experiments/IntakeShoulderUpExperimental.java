@@ -33,7 +33,7 @@ public class IntakeShoulderUpExperimental extends CommandBase {
 
     @Override
     public void execute() {
-        m_intake.shoulderMotor.set(0.5);
+        m_intake.shoulderMotor.setPower(0.5);
     }
 
     @Override
@@ -43,6 +43,6 @@ public class IntakeShoulderUpExperimental extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        m_intake.shoulderMotor.set(0);
+        m_intake.shoulderMotor.setPower(0);
     }
 }

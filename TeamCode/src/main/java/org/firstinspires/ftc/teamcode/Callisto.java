@@ -136,11 +136,11 @@ public class Callisto extends Robot {
 
         // BUTTON A -- INTAKE RETRACT
         Button aButtonP2 = new GamepadButton(player2, GamepadKeys.Button.A);
-        aButtonP2.whenPressed(new IntakeRetract(this));
+       // aButtonP2.whenPressed(new IntakeShoulderByPlayer(this));
 
         // BUTTON X -- INTAKE EXTEND
         Button xButtonP2 = new GamepadButton(player2, GamepadKeys.Button.X);
-        xButtonP2.whenPressed(new IntakeExtend(this));
+       // xButtonP2.whenPressed(new IntakeExtend(this));
 
         // BUTTON B -- DUMP BASKET
         Button bButtonP2 = new GamepadButton(player2, GamepadKeys.Button.B);

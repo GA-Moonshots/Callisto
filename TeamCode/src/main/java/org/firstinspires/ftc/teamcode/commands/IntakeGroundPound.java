@@ -33,7 +33,7 @@ public class IntakeGroundPound extends CommandBase {
 
     @Override
     public void execute() {
-        // TODO: see if positive or negative 0.1 skibidi big justice
+        // TODO: see if positive or negative 0.1
         intake.shoulderMotor.setPower(0.1);
         // sigma protection
         if (intake.shoulderMotor.isOverCurrent()){
