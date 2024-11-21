@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.commands.ForwardByTime;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderByTime;
 import org.firstinspires.ftc.teamcode.commands.IntakeShoulderDown;
-import org.firstinspires.ftc.teamcode.commands.IntakeShoulderUp;
+import org.firstinspires.ftc.teamcode.commands.IntakeShoulderRTP;
 import org.firstinspires.ftc.teamcode.commands.IntakeSpinByTime;
 import org.firstinspires.ftc.teamcode.commands.LiftRaiseThenDump;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
@@ -134,13 +134,14 @@ public class Callisto extends Robot {
         | |                ( )_| |
         (_)                `\___/'-50  -50      */
 
-        // BUTTON A -- INTAKE RETRACT
+        // BUTTON A -- INTAKE DOWN AND RESET ENCODER
         Button aButtonP2 = new GamepadButton(player2, GamepadKeys.Button.A);
-       // aButtonP2.whenPressed(new IntakeShoulderByPlayer(this));
+        aButtonP2.whenPressed(new InstantCommand(() -> {intake.setExtension(1);}));
 
         // BUTTON X -- INTAKE EXTEND
         Button xButtonP2 = new GamepadButton(player2, GamepadKeys.Button.X);
        // xButtonP2.whenPressed(new IntakeExtend(this));
+        xButtonP2.whenPressed(new InstantCommand(() -> {intake.setExtension(0);}));
 
         // BUTTON B -- DUMP BASKET
         Button bButtonP2 = new GamepadButton(player2, GamepadKeys.Button.B);
@@ -156,7 +157,9 @@ public class Callisto extends Robot {
 
         //  BUMPER -- SHOULDER UP
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
-        leftBumperP2.whenPressed(new IntakeShoulderUp(this));
+        //leftBumperP2.whenPressed(new IntakeShoulderUp(this));
+        //leftBumperP2.whenPressed(new IntakeShoulderByPot(this));
+
 
         // LEFT TRIGGER -- SHOULDER DOWN
         Trigger leftTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5);
@@ -183,6 +186,9 @@ public class Callisto extends Robot {
                 new LiftRaiseRTP(this, Constants.HIGH_HEIGHT)
         ));
 
+        // DPAD RIGHT
+        Button rightDpadP2 =  new GamepadButton(player2, GamepadKeys.Button.DPAD_RIGHT);
+
         // RIGHT BUMPER -- NEGATIVE SPIN INTAKE
         Button rightBumperP2 = new GamepadButton(player2, GamepadKeys.Button.RIGHT_BUMPER);
         rightBumperP2.whenHeld(new InstantCommand(()->{
@@ -204,6 +210,11 @@ public class Callisto extends Robot {
             // these servo functions don't know when to stop, so we kill 'em on release
             intake.setSpinSpeed(0.0);
         }));
+
+        leftBumperP2.and(upDpadP2).whenActive(new IntakeShoulderRTP(this, Constants.INTAKE_SHOULDER_MAX_UP));
+        leftBumperP2.and(downDpadP2).whenActive(new IntakeShoulderRTP(this, Constants.INTAKE_SHOULDER_GROUND));
+        leftBumperP2.and(leftDpadP2).whenActive(new IntakeShoulderRTP(this, Constants.INTAKE_SHOULDER_BASKET));
+        leftBumperP2.and(rightDpadP2).whenActive(new IntakeShoulderRTP(this, Constants.INTAKE_SHOULDER_BAR));
     }
 
     /**

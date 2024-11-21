@@ -1,23 +1,6 @@
 package org.firstinspires.ftc.teamcode.util;
 
 public class Constants {
-    // ----ARM VARIABLES----
-    public static final int ARM_UP_POSITION = -1000;
-    public static final int ARM_DOWN_POSITION = 0;
-    public static final double ARM_MOTOR_STRENGTH = 0.9;
-    public static final double WRIST_ON_WALL =  0.6;
-    public static final double CLAW_OPEN_POS = 0.5;
-    public static final double CLAW_CLOSED_POS = 0.9;
-    public static final double WRIST_INC = 0.01;
-    public static final double WRIST_MAX = 0.8;
-    public static final double WRIST_ON_GROUND = 0.36;
-    public static final double WRIST_MIN = 0.0;
-    public static final double ROLL_MAX = 0.72;
-    public static final double ROLL_MIN = 0;
-    public static final double ROLL_INC = 0.03;
-    public static final double ARM_MOTOR_kP = 0.05;
-    public static final double ARM_MOTOR_TOLERANCE = 13.6;
-
     // -------DRIVE--------
     // -------DRIVE--------
     public static final double MOTOR_MAX_SPEED = 1;
@@ -49,7 +32,11 @@ public class Constants {
     public static final int HIGH_HEIGHT = 2200;
     public static final double LIFT_MAX_SPEED = 0.9;
 
-
+    // ----- INTAKE SECTION -----
+    public static final int INTAKE_SHOULDER_GROUND = -1894;
+    public static final int INTAKE_SHOULDER_MAX_UP = -7;
+    public static final int INTAKE_SHOULDER_BASKET = -400;
+    public static final int INTAKE_SHOULDER_BAR = -200;
 
     // ----- HARDWARE MAP NAMES ------
     // -------- SENSOR NAMES ---------
@@ -86,6 +73,7 @@ public class Constants {
     public static final String SPIN_INTAKE_SERVO = "intakeSpin"; // might need to fix name
     public static final String EXTEND_INTAKE_SERVO = "intakeExtend";
     //public static final String SHOULDER_INTAKE_SERVO = "intakeShoulder";
+    public static final String INTAKE_SHOULDER_POT = "shoulderPot";
 
     // -----Other------
     public static final String NEAR_SENSOR = "nearSwitch";

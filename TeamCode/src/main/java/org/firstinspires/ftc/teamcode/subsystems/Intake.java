@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
@@ -11,19 +13,18 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 public class Intake extends SubsystemBase {
     private Callisto robot;
 
+    public Servo extensionServo;
     public CRServo spinServo;
 
     // Motor for the shoulder
     public DcMotorEx shoulderMotor;
 
-    // Declare the extension servo
-    public Servo extensionServo;
-
+    public boolean isExtended = false;
 
     public Intake(Callisto robot) {
         this.robot = robot;
         shoulderMotor = robot.hardwareMap.get(DcMotorEx.class, Constants.SHOULDER_MOTOR_NAME);
-        shoulderMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        shoulderMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         // Set up the servos
         extensionServo = robot.hardwareMap.get(Servo.class, Constants.EXTEND_INTAKE_SERVO);
@@ -41,23 +42,20 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean isUp() {
-        return shoulderMotor.getCurrentPosition() > - 50;
-
+        return shoulderMotor.getCurrentPosition() > -50;
     }
 
     public boolean isNearUp() {
-        return shoulderMotor.getCurrentPosition() > - 100 ;
+        return shoulderMotor.getCurrentPosition() > -100;
     }
 
     public boolean isNearDown() {
-        return shoulderMotor.getCurrentPosition() < - 275;
+        return shoulderMotor.getCurrentPosition() < -275;
     }
 
     public boolean isDown() {
-        return shoulderMotor.getCurrentPosition() < - 325;
+        return shoulderMotor.getCurrentPosition() < -325;
     }
-
-
 
     public void setExtension(double position) {
         extensionServo.setPosition(position);
@@ -81,6 +79,13 @@ public class Intake extends SubsystemBase {
         shoulderMotor.setPower(0);
     }
 
+    // Accessor method to calculate the shoulder angle using the potentiometer
+    public double calculateVoltageByAngle(double angle) {
+
+        // https://docs.revrobotics.com/rev-crossover-products/sensors/potentiometer/application-examples
+        return (445.5 * (angle - 270)) / (Math.pow(angle, 2) - (270 - angle) - 36450);
+    }
+
     @Override
     public void periodic() {
 
@@ -89,9 +94,12 @@ public class Intake extends SubsystemBase {
                 : isDown() ? "Down"
                 : isNearDown() ? "Near Down"
                 : "Unknown";
+        if(extensionServo != null)
+            robot.telemetry.addData("Intake: ", "Extension: " + extensionServo.getPosition() + ", Shoulder: " + shoulderState);
+        // Output the current position of the shoulder motor
+        if(shoulderMotor != null)
+            robot.telemetry.addData("Shoulder Position", getShoulderPosition());
 
-        robot.telemetry.addData("Intake: ", "Extension: " + extensionServo.getPosition() + ", Shoulder: " + shoulderState);
-        // output the current position of the shoulder motor
-        robot.telemetry.addData("Shoulder Position", getShoulderPosition());
+        robot.telemetry.addData(("Shoulder Angle:"), getShoulderPosition());
     }
 }
