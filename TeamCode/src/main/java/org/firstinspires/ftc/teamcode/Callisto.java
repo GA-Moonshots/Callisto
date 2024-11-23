@@ -119,6 +119,8 @@ public class Callisto extends Robot {
         }));
 
         Button yButtonP1 = new GamepadButton(player1, GamepadKeys.Button.Y);
+        yButtonP1.whenPressed(new InstantCommand(() -> {mecanum.resetFieldCentricTarget();}));
+
         Button dPadUpP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_UP);
         Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
         Button dPadLeftP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
@@ -210,11 +212,6 @@ public class Callisto extends Robot {
             // these servo functions don't know when to stop, so we kill 'em on release
             intake.setSpinSpeed(0.0);
         }));
-
-        leftBumperP2.and(upDpadP2).whenActive(new IntakeShoulderRTP(this, Constants.INTAKE_SHOULDER_MAX_UP));
-        leftBumperP2.and(downDpadP2).whenActive(new IntakeShoulderRTP(this, Constants.INTAKE_SHOULDER_GROUND));
-        leftBumperP2.and(leftDpadP2).whenActive(new IntakeShoulderRTP(this, Constants.INTAKE_SHOULDER_BASKET));
-        leftBumperP2.and(rightDpadP2).whenActive(new IntakeShoulderRTP(this, Constants.INTAKE_SHOULDER_BAR));
     }
 
     /**
@@ -238,29 +235,36 @@ public class Callisto extends Robot {
         if(left) {
             new SequentialCommandGroup(
                     new InstantCommand(() -> { lift.levelBasket(); }),
-                    new ForwardByTime(this, 2, 0.25),
+                    new ForwardByTime(this, 2000, 0.25),
                     new ParallelCommandGroup(
-                            new RotateByIMU(this,130, 3.7, 0.27),
+                            new RotateByIMU(this,130, 2.75, 0.30),
                             new IntakeShoulderByTime(this, 0.1, 2250 )
                     ),
-                    new ForwardByTime(this, 2.25, 0.33),
-//                    new ParallelCommandGroup(
-//                            new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT),
-//                            new IntakeShoulderByTime(this, 0.1, 2250 )
-//                    ),
-                    new LiftLowerRTP(this),
-                    new ParallelCommandGroup(
-                            new ForwardByTime(this, 2.5, -0.33),
-                            new IntakeShoulderByTime(this, 0.1, 2500)
+                    new ForwardByTime(this, 2250, 0.33),
+                     new ParallelCommandGroup(
+                            new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT),
+                            new IntakeShoulderByTime(this, 0.1, 2250 )
                     ),
-                    new RotateByIMU(this, 30, 2.5,0.30),
-                    new ForwardByTime(this, 1.0, -0.20),
-                    new IntakeShoulderByTime(this, -0.5, 1000),
-                    // forward + intake
-                    new ParallelCommandGroup(
-                            new ForwardByTime(this, 2.25, 0.33),
-                            new IntakeSpinByTime(this, 2250)
-                    )
+                    new LiftLowerRTP(this)
+                    // PARKING 3 pt
+//                    new ParallelCommandGroup(
+//                            new ForwardByTime(this, 2250, -0.33),
+//                            new IntakeShoulderByTime(this, 0.1, 2250)
+//                    )
+
+                    //,
+//                    new ParallelCommandGroup(
+//                            new ForwardByTime(this, 1800, -0.33),
+//                            new IntakeShoulderByTime(this, 0.1, 2500)
+//                    ),
+//                    new RotateByIMU(this, 30 , 1000,0.25),
+//                    new ForwardByTime(this, 1000, -0.20),
+//                    new IntakeShoulderByTime(this, -0.5, 1000),
+//                    // forward + intake
+//                    new ParallelCommandGroup(
+//                            new ForwardByTime(this, 2250, 0.33),
+//                            new IntakeSpinByTime(this, 2250)
+//                    )
             ).schedule();
         // RIGHT SIDE: JUST PARK
         } else {
