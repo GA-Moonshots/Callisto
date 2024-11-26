@@ -67,22 +67,22 @@ public class RoadRunner extends SubsystemBase {
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         // drive model parameters
-        //public double inPerTick = 0.029795158286778;
+        public double inPerTick = 0.003004757534;
 
         // ChatGPT suggested to calculate it rather than go off ForwardPushTest number
-        public double inPerTick = (2.75 * 2 * Math.PI) / (6066);
-        //public double inPerTick = 0.00181;
+        //public double inPerTick = (2.75 * 2 * Math.PI) / (6066);
+
             //public double lateralInPerTick =  0.0015330573060621906;
         //public double lateralInPerTick = 0.002962;
-        public double lateralInPerTick = 0.002962 / 2;
-        public double trackWidthTicks = 75.10075553843612;
+        public double lateralInPerTick = 0.002396723769742768;
+        public double trackWidthTicks = 4671.274286480367;
 
 
         // feedforward parameters (in tick units)
         //public double kS = 0.6891724468066125;
-        public double kS = 0.45;
+        public double kS = 1.4895249721776433;
         // temporary testing values
-        public double kV = 0.0006202195252708841;
+        public double kV = 0.0004895060750799223;
         public double kA = 0.0001;
 
         // path profile parameters (in inches)
@@ -96,15 +96,15 @@ public class RoadRunner extends SubsystemBase {
 
         // path controller gains
 
-        public double axialGain = 0.025 ;
-        public double lateralGain = 1;
+        public double axialGain = 6 ;
+        public double lateralGain = 3;
         //TODO: Bring back turning
-        public double headingGain = 0; // shared with turn
+        public double headingGain = 3; // shared with turn
 
-        public double axialVelGain = 0.01;
+        public double axialVelGain = 0.4;
         public double lateralVelGain = 0.25;
         //TODO: Bring back turning
-        public double headingVelGain = 0; // shared with turn
+        public double headingVelGain = 0.3; // shared with turn
     }
 
     public static Params PARAMS = new Params();

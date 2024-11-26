@@ -96,9 +96,9 @@ public class Intake extends SubsystemBase {
         if(extensionServo != null)
             robot.telemetry.addData("Intake: ", "Extension: " + extensionServo.getPosition() + ", Shoulder: " + shoulderState);
         // Output the current position of the shoulder motor
-        if(shoulderMotor != null)
-            robot.telemetry.addData("Shoulder Position", getShoulderPosition());
+   //     if(shoulderMotor != null)
+           // robot.telemetry.addData("Shoulder Position", getShoulderPosition());
 
-        robot.telemetry.addData(("Shoulder Angle:"), getShoulderPosition());
+       // robot.telemetry.addData(("Shoulder Angle:"), getShoulderPosition());
     }
 }

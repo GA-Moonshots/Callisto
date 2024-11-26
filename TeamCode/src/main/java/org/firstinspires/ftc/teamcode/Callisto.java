@@ -17,6 +17,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.ForwardByTime;
+import org.firstinspires.ftc.teamcode.commands.MoveToPose;
+import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimout;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByTime;
@@ -108,10 +110,16 @@ public class Callisto extends Robot {
             mecanum.toggleFieldCentric();
         }));
 
-        // BUTTON B -- RESET FIELD CENTRIC TARGET
+      /*  // BUTTON B -- RESET FIELD CENTRIC TARGET
         Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
         bButtonP1.whenPressed(new InstantCommand(() -> {
             mecanum.resetFieldCentricTarget();
+        })); */
+
+        // BUTTON B -- TURN 90
+        Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
+        bButtonP1.whenPressed(new InstantCommand(() -> {
+            new RotateByIMU(this, 180, 1.45, 0.385).schedule();
         }));
 
         // BUTTON X -- TURN 180
@@ -120,7 +128,7 @@ public class Callisto extends Robot {
             new RotateByIMU(this, 180, 2.92, 0.385).schedule();
         }));
 
-        // BUTTON Y -- experimental intake shoulder RTP
+        // BUTTON Y -- Reset to Field centric
         Button yButtonP1 = new GamepadButton(player1, GamepadKeys.Button.Y);
         yButtonP1.whenPressed(
                 new InstantCommand(() -> {mecanum.resetFieldCentricTarget();})
@@ -130,6 +138,7 @@ public class Callisto extends Robot {
         Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
         Button dPadLeftP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
         Button dPadRightP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
+
 
         /*
                 _                                    __
@@ -162,14 +171,14 @@ public class Callisto extends Robot {
             lift.levelBasket();
         }));
 
-        //  BUMPER -- SHOULDER UP
+        //  BUMPER -- sequantial command to put blocks in the basket
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
         //leftBumperP2.whenPressed(new IntakeShoulderUp(this));
         //leftBumperP2.whenPressed(new IntakeShoulderByPot(this));
         leftBumperP2.whenPressed(new SequentialCommandGroup(new InstantCommand(() -> {lift.levelBasket();}),
                                                             new IntakeExtensionWithTimout(this, 0, 3000),
                                                             new IntakeShoulderByTime(this, 0.4, 2000),
-                                                            new IntakeSpinByTime(this, 2000, 0.5),
+                                                            new IntakeSpinByTime(this, 2000, 0.3),
                                                             new InstantCommand(() -> {lift.nestBasket();}),
                                                             new IntakeShoulderByTime(this, -0.4, 1500),
                                                             new IntakeExtensionWithTimout(this, 1, 3000),
@@ -233,8 +242,12 @@ public class Callisto extends Robot {
      */
     public void initAuto(){
         Pose2d start;
-
-        start = new Pose2d(new Vector2d(0,0), 0.0);
+        if(left) {
+            start = new Pose2d(new Vector2d(65, -8), 0);
+        }
+        else {
+            start = new Pose2d(new Vector2d(0, 0), 0);
+        }
 
         mecanum = new Mecanum(this, start);
         lift = new Lift(this);
@@ -247,37 +260,7 @@ public class Callisto extends Robot {
         // LEFT SIDE: GO BIG
         if(left) {
             new SequentialCommandGroup(
-                    new InstantCommand(() -> { lift.levelBasket(); }),
-                    new ForwardByTime(this, 2000, 0.25),
-                    new ParallelCommandGroup(
-                            new RotateByIMU(this,130, 2.75, 0.30),
-                            new IntakeShoulderByTime(this, 0.1, 2250 )
-                    ),
-                    new ForwardByTime(this, 2250, 0.33),
-                     new ParallelCommandGroup(
-                            new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT),
-                            new IntakeShoulderByTime(this, 0.1, 2250 )
-                    ),
-                    new LiftLowerRTP(this)
-                    // PARKING 3 pt
-//                    new ParallelCommandGroup(
-//                            new ForwardByTime(this, 2250, -0.33),
-//                            new IntakeShoulderByTime(this, 0.1, 2250)
-//                    )
-
-                    //,
-//                    new ParallelCommandGroup(
-//                            new ForwardByTime(this, 1800, -0.33),
-//                            new IntakeShoulderByTime(this, 0.1, 2500)
-//                    ),
-//                    new RotateByIMU(this, 30 , 1000,0.25),
-//                    new ForwardByTime(this, 1000, -0.20),
-//                    new IntakeShoulderByTime(this, -0.5, 1000),
-//                    // forward + intake
-//                    new ParallelCommandGroup(
-//                            new ForwardByTime(this, 2250, 0.33),
-//                            new IntakeSpinByTime(this, 2250)
-//                    )
+                    new StrafeToPose(this, new Pose2d(new Vector2d(65, 0), 0))
             ).schedule();
         // RIGHT SIDE: JUST PARK
         } else {

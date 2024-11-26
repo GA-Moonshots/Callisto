@@ -63,9 +63,14 @@ public class MoveToPose extends CommandBase {
 
 
         // Build the trajectory from the current pose to the target pose
-        action = mecanum.actionBuilder(mecanum.pose)
-                .splineTo(targetPose.position, targetPose.heading)
-                .build();
+        try {
+            action = mecanum.actionBuilder(mecanum.pose)
+                    .splineTo(targetPose.position, targetPose.heading)
+                    .build();
+        } catch (IllegalArgumentException e){
+            System.out.println("error during action builder... why I know not" + e.getLocalizedMessage());
+            throw e;
+        }
     }
 
     // The execute method keeps updating the trajectory following
