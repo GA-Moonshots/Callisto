@@ -8,21 +8,21 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 import java.util.concurrent.TimeUnit;
 
-public class IntakeSpinByTime extends CommandBase {
-    private Callisto m_robot;
+public class IntakeExtensionWithTimout extends CommandBase {
+    private Callisto robot;
     private Intake intake;
 
     private Timing.Timer timer;
 
-    private double power;
+    private int position;
 
-    public IntakeSpinByTime(Callisto robot, long timeMilliseconds, double power) {
-        m_robot = robot;
-        intake = m_robot.intake;
+    public IntakeExtensionWithTimout(Callisto robot, int position, long timeoutMilliseconds) {
+        this.robot = robot;
+        intake = this.robot.intake;
 
-        timer = new Timing.Timer(timeMilliseconds, TimeUnit.MILLISECONDS);
+        this.position = position;
 
-        this.power = power;
+        timer = new Timing.Timer(timeoutMilliseconds, TimeUnit.MILLISECONDS);
 
         addRequirements(intake);
     }
@@ -34,16 +34,11 @@ public class IntakeSpinByTime extends CommandBase {
 
     @Override
     public void execute() {
-        intake.spinServo.setPower(power);
+        intake.setExtension(position);
     }
 
     @Override
     public boolean isFinished() {
-        return timer.done();
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        intake.spinServo.setPower(0.0);  //set(0);
+        return timer.done() || (intake.extensionServo.getPosition() == position);
     }
 }

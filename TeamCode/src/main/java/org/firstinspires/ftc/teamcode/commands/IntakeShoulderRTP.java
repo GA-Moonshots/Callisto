@@ -8,8 +8,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Lift;
-import org.firstinspires.ftc.teamcode.util.Constants;
 
 public class IntakeShoulderRTP extends CommandBase {
     private final Callisto robot;
@@ -17,6 +15,10 @@ public class IntakeShoulderRTP extends CommandBase {
     private final int targetPosition;
     private final double TIMEOUT = 12.0; // seconds
     private ElapsedTime timer;
+    double pValue;
+    double iValue;
+    double dValue;
+    double fValue;
 
     public IntakeShoulderRTP(Callisto robot, int targetPosition) {
         this.robot = robot;
@@ -34,9 +36,14 @@ public class IntakeShoulderRTP extends CommandBase {
         intake.shoulderMotor.setTargetPosition(targetPosition);
         intake.shoulderMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         PIDFCoefficients pidfCoefficients = intake.shoulderMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION);
-        double pValue = pidfCoefficients.p;  // Extract the P value
-        intake.shoulderMotor.setPositionPIDFCoefficients( pValue * 1);
-        intake.shoulderMotor.setPower(0.85);
+        pValue = pidfCoefficients.p * 0.65;
+        iValue = pidfCoefficients.i;
+        dValue = pidfCoefficients.d;
+        fValue = pidfCoefficients.f;
+        PIDFCoefficients tune = new PIDFCoefficients(pValue, iValue, dValue, fValue);
+        intake.shoulderMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION , tune);
+        intake.shoulderMotor.setTargetPositionTolerance(100);
+        intake.shoulderMotor.setPower(0.45);
     }
 
     @Override
@@ -44,12 +51,12 @@ public class IntakeShoulderRTP extends CommandBase {
         // Telemetry for debugging
         robot.telemetry.addData("Shoulder RTP", timer.seconds());
         robot.telemetry.addData("Target Position", targetPosition);
-        robot.telemetry.addData("Motor Power", intake.shoulderMotor.getPower());
+        robot.telemetry.addData("Pid",pValue);
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return timer.seconds() > TIMEOUT;
     }
 
     @Override

@@ -32,12 +32,11 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean isExtended() {
-        // TODO: guess; assuming 0 is extended skibidi big justice
         return extensionServo.getPosition() == 0;
     }
 
     public boolean isRetracted() {
-        // TODO: guess; assuming 1 is retracted skibidi big justice
+        // TODO: guess; assuming 1 is retracted
         return extensionServo.getPosition() == 1;
     }
 

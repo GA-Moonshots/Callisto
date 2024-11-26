@@ -36,7 +36,7 @@ public class Constants {
     public static final int INTAKE_SHOULDER_GROUND = -1894;
     public static final int INTAKE_SHOULDER_MAX_UP = -7;
     public static final int INTAKE_SHOULDER_BASKET = -400;
-    public static final int INTAKE_SHOULDER_BAR = -200;
+    public static final int INTAKE_SHOULDER_BAR = -1900;
 
     // ----- HARDWARE MAP NAMES ------
     // -------- SENSOR NAMES ---------
