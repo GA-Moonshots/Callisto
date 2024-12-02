@@ -72,7 +72,7 @@ public class RoadRunner extends SubsystemBase {
         // ChatGPT suggested to calculate it rather than go off ForwardPushTest number
         //public double inPerTick = (2.75 * 2 * Math.PI) / (6066);
 
-            //public double lateralInPerTick =  0.0015330573060621906;
+        //public double lateralInPerTick =  0.0015330573060621906;
         //public double lateralInPerTick = 0.002962;
         public double lateralInPerTick = 0.002396723769742768;
         public double trackWidthTicks = 4671.274286480367;
@@ -86,7 +86,7 @@ public class RoadRunner extends SubsystemBase {
         public double kA = 0.0001;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 10;
+        public double maxWheelVel = 10; // over-estimating leads to instability
         public double minProfileAccel = -30;
         public double maxProfileAccel = 30;
 
@@ -95,16 +95,21 @@ public class RoadRunner extends SubsystemBase {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
+        public double axialGain = 5.5;
+        public double lateralGain = 2.5;
+        public double headingGain = 3.0;
 
-        public double axialGain = 6 ;
-        public double lateralGain = 3;
-        //TODO: Bring back turning
+        public double axialVelGain = 0.3;
+        public double lateralVelGain = 0.15;
+        public double headingVelGain = 0.3;
+
+       /* public double axialGain = 6 ;
+        public double lateralGain = 2.5;
         public double headingGain = 3; // shared with turn
 
-        public double axialVelGain = 0.4;
-        public double lateralVelGain = 0.25;
-        //TODO: Bring back turning
-        public double headingVelGain = 0.3; // shared with turn
+        public double axialVelGain =  0.3;//0.4;//forward and backward speed control
+        public double lateralVelGain =  0.15; //0.25 -> old value ;// side to side speed
+        public double headingVelGain = 0.3;//rotation speed // shared with turn */
     }
 
     public static Params PARAMS = new Params();

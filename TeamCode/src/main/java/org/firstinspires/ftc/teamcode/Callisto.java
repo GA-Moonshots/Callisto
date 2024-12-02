@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.ForwardByTime;
+import org.firstinspires.ftc.teamcode.commands.LineToPose;
 import org.firstinspires.ftc.teamcode.commands.MoveToPose;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimout;
@@ -243,7 +244,8 @@ public class Callisto extends Robot {
     public void initAuto(){
         Pose2d start;
         if(left) {
-            start = new Pose2d(new Vector2d(65, -8), 0);
+            //start = new Pose2d(new Vector2d(65, -8), 0); // starting position for red left
+            start = new Pose2d(new Vector2d(0, 0), Math.toRadians(0));
         }
         else {
             start = new Pose2d(new Vector2d(0, 0), 0);
@@ -260,7 +262,9 @@ public class Callisto extends Robot {
         // LEFT SIDE: GO BIG
         if(left) {
             new SequentialCommandGroup(
-                    new StrafeToPose(this, new Pose2d(new Vector2d(65, 0), 0))
+                    //new MoveToPose(this, new Pose2d(new Vector2d(12,-60 ), 0)),
+                  // new MoveToPose(this, new Pose2d(new Vector2d(48,-85 ), 0))
+                    new StrafeToPose(this,new Pose2d(new Vector2d(0,-48 ), Math.toRadians(0)))
             ).schedule();
         // RIGHT SIDE: JUST PARK
         } else {
