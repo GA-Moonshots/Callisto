@@ -29,7 +29,7 @@ public class Constants {
     // LIFT
     public static final int LOW_HEIGHT = 0;
     public static final int MID_HEIGHT = 1000;
-    public static final int HIGH_HEIGHT = 2200;
+    public static final int HIGH_HEIGHT = 2350;
     public static final double LIFT_MAX_SPEED = 0.9;
 
     // ----- INTAKE SECTION -----

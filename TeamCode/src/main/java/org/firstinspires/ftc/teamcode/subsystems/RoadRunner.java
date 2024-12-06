@@ -95,20 +95,20 @@ public class RoadRunner extends SubsystemBase {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 5.5;
-        public double lateralGain = 2.5;
-        public double headingGain = 3.0;
+        public double axialGain = 0.5;
+        public double lateralGain = 0.1;
+        public double headingGain = 0.2;
 
         public double axialVelGain = 0.3;
-        public double lateralVelGain = 0.15;
-        public double headingVelGain = 0.3;
+        public double lateralVelGain = 0.6;
+        public double headingVelGain = 0.1;
 
        /* public double axialGain = 6 ;
         public double lateralGain = 2.5;
         public double headingGain = 3; // shared with turn
 
-        public double axialVelGain =  0.3;//0.4;//forward and backward speed control
-        public double lateralVelGain =  0.15; //0.25 -> old value ;// side to side speed
+        public double axialVelGain = 0.4;//forward and backward speed control
+        public double lateralVelGain =  0.25 -> old value ;// side to side speed
         public double headingVelGain = 0.3;//rotation speed // shared with turn */
     }
 

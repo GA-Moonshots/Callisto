@@ -265,10 +265,11 @@ public class Callisto extends Robot {
                     //new MoveToPose(this, new Pose2d(new Vector2d(12,-60 ), 0)),
                   // new MoveToPose(this, new Pose2d(new Vector2d(48,-85 ), 0))
                     new StrafeToPose(this,new Pose2d(new Vector2d(0,-48 ), Math.toRadians(0)))
+                 // new MoveToPose(this,new Pose2d(new Vector2d(0,-48 ), Math.toRadians(0)))
             ).schedule();
         // RIGHT SIDE: JUST PARK
         } else {
-            new StrafeByTime(this, 3.0, 0.25).schedule();
+           new StrafeByTime(this, 3.0, 0.25).schedule();
         }
 
     }

@@ -80,12 +80,18 @@ public class StrafeToPose extends CommandBase {
                 .setStrokeWidth(1).setStroke("Blue")
                 .fillCircle(mecanum.pose.position.x, mecanum.pose.position.y,3);
 
+        robot.telemetry.addData("leftFront:", robot.mecanum.leftFront.getVelocity());
+        robot.telemetry.addData("rightFront:", robot.mecanum.rightFront.getVelocity());
+        robot.telemetry.addData("leftBack:", robot.mecanum.leftBack.getVelocity());
+        robot.telemetry.addData("rightBack:", robot.mecanum.rightBack.getVelocity());
+
+
         // Use the telemetryPacket with the action's run method:
         finished = !action.run(packet);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
         // Update the action based on the current pose for the next cycle
-        action = mecanum.actionBuilder(mecanum.pose).strafeTo(targetPose.position).build();
+      //  action = mecanum.actionBuilder(mecanum.pose).strafeTo(targetPose.position).build();
     }
 
     // Check if the command has finished
