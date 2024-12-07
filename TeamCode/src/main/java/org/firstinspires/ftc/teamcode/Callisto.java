@@ -16,9 +16,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
-import org.firstinspires.ftc.teamcode.commands.ForwardByTime;
-import org.firstinspires.ftc.teamcode.commands.LineToPose;
-import org.firstinspires.ftc.teamcode.commands.MoveToPose;
+import org.firstinspires.ftc.teamcode.commands.Rotate;
+import org.firstinspires.ftc.teamcode.commands.SplineToPose;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimout;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByPlayer;
@@ -199,7 +198,7 @@ public class Callisto extends Robot {
         leftDpadP2.whenPressed(new SequentialCommandGroup(
                 // we always lower first to reset encoder
                 new LiftLowerRTP(this),
-                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT),
+                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
                 new LiftLowerRTP(this)
         ));
 
@@ -244,8 +243,8 @@ public class Callisto extends Robot {
     public void initAuto(){
         Pose2d start;
         if(left) {
-            //start = new Pose2d(new Vector2d(65, -8), 0); // starting position for red left
-            start = new Pose2d(new Vector2d(0, 0), Math.toRadians(0));
+            start = new Pose2d(new Vector2d(-15, -65), Math.toRadians(90)); // starting position for red left
+            //start = new Pose2d(new Vector2d(0, 0), Math.toRadians(0));
         }
         else {
             start = new Pose2d(new Vector2d(0, 0), 0);
@@ -262,10 +261,35 @@ public class Callisto extends Robot {
         // LEFT SIDE: GO BIG
         if(left) {
             new SequentialCommandGroup(
-                    //new MoveToPose(this, new Pose2d(new Vector2d(12,-60 ), 0)),
+                  // new SplineToPose(this, new Pose2d(new Vector2d(24,0 ), 0))
                   // new MoveToPose(this, new Pose2d(new Vector2d(48,-85 ), 0))
-                    new StrafeToPose(this,new Pose2d(new Vector2d(0,-48 ), Math.toRadians(0)))
+                  //  new StrafeToPose(this,new Pose2d(new Vector2d(0,0 ), Math.toRadians(0)))
                  // new MoveToPose(this,new Pose2d(new Vector2d(0,-48 ), Math.toRadians(0)))
+               //   new Rotate(this, 135)
+                 //   new StrafeToPose(this,new Pose2d(new Vector2d(-48,-60 ),90))
+                    new StrafeToPose(this, new Pose2d(new Vector2d(-38,-40), 90)),
+                    new ParallelCommandGroup(
+                        new Rotate(this, 225),
+                        new InstantCommand(()-> {
+                            lift.levelBasket();
+                        })
+                    ),
+                    new ParallelCommandGroup(
+                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, false),
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-60,-62),225)
+                        )
+                    ),
+                    new InstantCommand(()-> {
+                        lift.dumpBasket();
+                    }),
+                    new ParallelCommandGroup(
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-26,-44), 135)),
+                        new LiftLowerRTP(this)
+                    ),
+                    new Rotate(this,135)
+
+
+
             ).schedule();
         // RIGHT SIDE: JUST PARK
         } else {

@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.util.Timing;
 
-public class MoveToPose extends CommandBase {
+public class SplineToPose extends CommandBase {
 
     // REFERENCES
     private Callisto robot;
@@ -30,7 +30,7 @@ public class MoveToPose extends CommandBase {
     private FtcDashboard dashboard;
 
     // Constructor to initialize the command
-    public MoveToPose(Callisto robot, Pose2d targetPose) {
+    public SplineToPose(Callisto robot, Pose2d targetPose) {
         this.robot = robot;
         this.mecanum = robot.mecanum;
         this.targetPose = targetPose;
@@ -42,7 +42,7 @@ public class MoveToPose extends CommandBase {
         addRequirements(mecanum);
     }
 
-    public MoveToPose(Callisto robot, Pose2d targetPose, double timeout) {
+    public SplineToPose(Callisto robot, Pose2d targetPose, double timeout) {
         this.robot = robot;
         this.mecanum = robot.mecanum;
         this.targetPose = targetPose;
@@ -65,7 +65,7 @@ public class MoveToPose extends CommandBase {
         // Build the trajectory from the current pose to the target pose
         try {
             action = mecanum.actionBuilder(mecanum.pose)
-                    .splineTo(targetPose.position, targetPose.heading)
+                    .splineTo(targetPose.position, Math.toRadians(targetPose.heading.toDouble()))
                     .build();
         } catch (IllegalArgumentException e){
             System.out.println("error during action builder... why I know not" + e.getLocalizedMessage());

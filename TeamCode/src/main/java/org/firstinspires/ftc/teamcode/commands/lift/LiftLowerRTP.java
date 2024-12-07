@@ -48,7 +48,7 @@ public class LiftLowerRTP extends CommandBase {
         if(lift.motor1.getCurrentPosition() >= Constants.MID_HEIGHT){
             lift.motor1.setPower(-0.80);
         }else if(lift.motor1.getCurrentPosition() < Constants.MID_HEIGHT){
-            lift.motor1.setPower(-0.40);
+            lift.motor1.setPower(-0.45);
         }
     }
 

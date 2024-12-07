@@ -86,7 +86,7 @@ public class RoadRunner extends SubsystemBase {
         public double kA = 0.0001;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 10; // over-estimating leads to instability
+        public double maxWheelVel = 17.5; // over-estimating leads to instability
         public double minProfileAccel = -30;
         public double maxProfileAccel = 30;
 
@@ -97,19 +97,19 @@ public class RoadRunner extends SubsystemBase {
         // path controller gains
         public double axialGain = 0.5;
         public double lateralGain = 0.1;
+        public double headingGain = 0.4;
+
+        public double axialVelGain = 0.25;
+        public double lateralVelGain = 0.6;
+        public double headingVelGain = 0.3;
+
+     /*  public double axialGain = 0.5;
+        public double lateralGain = 0.1;
         public double headingGain = 0.2;
 
         public double axialVelGain = 0.3;
         public double lateralVelGain = 0.6;
-        public double headingVelGain = 0.1;
-
-       /* public double axialGain = 6 ;
-        public double lateralGain = 2.5;
-        public double headingGain = 3; // shared with turn
-
-        public double axialVelGain = 0.4;//forward and backward speed control
-        public double lateralVelGain =  0.25 -> old value ;// side to side speed
-        public double headingVelGain = 0.3;//rotation speed // shared with turn */
+        public double headingVelGain = 0.1; */
     }
 
     public static Params PARAMS = new Params();

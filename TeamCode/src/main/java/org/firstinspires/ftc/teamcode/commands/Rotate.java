@@ -61,7 +61,7 @@ public class Rotate extends CommandBase {
 
         // Build the rotation action from the current pose to the target angle
         action = mecanum.actionBuilder(mecanum.pose)
-                .turnTo(targetAngle)
+                .turnTo(Math.toRadians(targetAngle))
                 .build();
     }
 

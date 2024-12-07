@@ -90,8 +90,7 @@ public class StrafeToPose extends CommandBase {
         finished = !action.run(packet);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
-        // Update the action based on the current pose for the next cycle
-      //  action = mecanum.actionBuilder(mecanum.pose).strafeTo(targetPose.position).build();
+
     }
 
     // Check if the command has finished

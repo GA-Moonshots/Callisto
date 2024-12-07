@@ -16,6 +16,7 @@ public class LiftRaiseRTP extends CommandBase {
     private final double TIMEOUT = 12.0; // seconds
     private ElapsedTime timer;
 
+
     public LiftRaiseRTP(Callisto robot, int targetPosition) {
         this.robot = robot;
         this.lift = robot.lift;

@@ -14,17 +14,27 @@ public class LiftRaiseThenDump extends CommandBase {
     private final Callisto robot;
     private final Lift lift;
     private final int targetPosition;
-    private final double TIMEOUT = 12.0; // seconds
+    private double timeout = 12.0; // seconds
     private ElapsedTime timer;
     private boolean finished = false;
     private double dumpTime = 0;
+    private boolean skipDelay = true;
 
-    public LiftRaiseThenDump(Callisto robot, int targetPosition) {
+    public LiftRaiseThenDump(Callisto robot, int targetPosition, boolean skipDelay) {
         this.robot = robot;
         this.lift = robot.lift;
         this.targetPosition = targetPosition;
+        this.skipDelay = skipDelay;
+
+
 
         addRequirements(lift);
+    }
+
+    public LiftRaiseThenDump(Callisto robot, int targetPosition, boolean skipDelay, double timeout){
+       this(robot, targetPosition, skipDelay);
+       this.timeout = timeout;
+
     }
 
     @Override
@@ -49,17 +59,19 @@ public class LiftRaiseThenDump extends CommandBase {
         robot.telemetry.addData("Target Position", targetPosition);
         robot.telemetry.addData("Motor Power", lift.motor1.getPower());
 
+        // Avoid over extending the belt
         if(lift.motor1.getCurrentPosition() > Constants.HIGH_HEIGHT * 0.9) {
             lift.motor1.setPower(0);
         }else{
             lift.motor1.setPower(0.85);
         }
 
-        if(lift.isUp()){
+        // dump basket after delay
+        if(lift.isUp() && (skipDelay || timer.seconds() > 3)){
             lift.dumpBasket();
             if(dumpTime == 0){ dumpTime = timer.seconds(); }
 
-            if(dumpTime != 0 && timer.seconds() >= 2 + dumpTime ) {
+            if(dumpTime != 0 && timer.seconds() >= 1 + dumpTime ) {
                 lift.levelBasket();
                 finished = true;
             }
@@ -68,7 +80,7 @@ public class LiftRaiseThenDump extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return finished || timer.seconds() >= TIMEOUT;
+        return finished || timer.seconds() >= timeout;
     }
 
     @Override
