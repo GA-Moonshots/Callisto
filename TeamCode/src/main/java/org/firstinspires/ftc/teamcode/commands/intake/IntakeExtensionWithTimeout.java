@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 import java.util.concurrent.TimeUnit;
 
-public class IntakeExtensionWithTimout extends CommandBase {
+public class IntakeExtensionWithTimeout extends CommandBase {
     private Callisto robot;
     private Intake intake;
 
@@ -16,7 +16,7 @@ public class IntakeExtensionWithTimout extends CommandBase {
 
     private int position;
 
-    public IntakeExtensionWithTimout(Callisto robot, int position, long timeoutMilliseconds) {
+    public IntakeExtensionWithTimeout(Callisto robot, int position, long timeoutMilliseconds) {
         this.robot = robot;
         intake = this.robot.intake;
 

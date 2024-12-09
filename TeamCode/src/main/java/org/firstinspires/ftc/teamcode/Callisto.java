@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.Robot;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Button;
@@ -17,9 +16,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.Rotate;
-import org.firstinspires.ftc.teamcode.commands.SplineToPose;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
-import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimout;
+import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimeout;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByTime;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderDown;
@@ -176,12 +174,12 @@ public class Callisto extends Robot {
         //leftBumperP2.whenPressed(new IntakeShoulderUp(this));
         //leftBumperP2.whenPressed(new IntakeShoulderByPot(this));
         leftBumperP2.whenPressed(new SequentialCommandGroup(new InstantCommand(() -> {lift.levelBasket();}),
-                                                            new IntakeExtensionWithTimout(this, 0, 3000),
+                                                            new IntakeExtensionWithTimeout(this, 0, 3000),
                                                             new IntakeShoulderByTime(this, 0.4, 2000),
                                                             new IntakeSpinByTime(this, 2000, 0.3),
                                                             new InstantCommand(() -> {lift.nestBasket();}),
-                                                            new IntakeShoulderByTime(this, -0.4, 1500),
-                                                            new IntakeExtensionWithTimout(this, 1, 3000),
+                                                            new IntakeShoulderByTime(this, -0.3, 1500),
+                                                            new IntakeExtensionWithTimeout(this, 1, 3000),
                                                             new IntakeShoulderByTime(this, 0.4, 2000)));
 
 
@@ -243,7 +241,7 @@ public class Callisto extends Robot {
     public void initAuto(){
         Pose2d start;
         if(left) {
-            start = new Pose2d(new Vector2d(-32, -62), Math.toRadians(180)); // starting position for red left
+            start = new Pose2d(new Vector2d(-36, -62), Math.toRadians(180)); // starting position for red left
             //start = new Pose2d(new Vector2d(0, 0), Math.toRadians(0));
         }
         else {
@@ -263,10 +261,16 @@ public class Callisto extends Robot {
             new SequentialCommandGroup(
                 new StrafeToPose(this, new Pose2d(new Vector2d(-60, -54), Math.toRadians(180))),
                 new Rotate(this, 225),
-                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true)
-
-
-
+                //new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                //new LiftLowerRTP(this),
+                    //-24, -48
+                new StrafeToPose(this, new Pose2d(new Vector2d(-24, -48), Math.toRadians(255))),
+                new StrafeToPose(this, new Pose2d(new Vector2d(-25, -36), Math.toRadians(255))),
+                new Rotate(this, 160) ,
+                new IntakeShoulderByTime(this, -0.3, 1500),
+                new IntakeExtensionWithTimeout(this, 1, 3000),
+                new IntakeExtensionWithTimeout(this, 0, 3000),
+                new IntakeSpinByTime(this, 2000, 0.3)
             ).schedule();
         // RIGHT SIDE: JUST PARK
         } else {
