@@ -21,8 +21,8 @@ public class AutoBotDriveyPants extends CommandOpMode {
     @Override
     public void initialize() {
 
-        isRed = false;
-        left = true;
+        isRed = true ;//false;
+        left =  true;
 
         while(opModeInInit()) {
             // press X for blue and B for red

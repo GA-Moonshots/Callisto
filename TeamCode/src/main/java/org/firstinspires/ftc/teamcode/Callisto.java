@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.Robot;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Button;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.Drive;
+import org.firstinspires.ftc.teamcode.commands.ForwardByTime;
 import org.firstinspires.ftc.teamcode.commands.Rotate;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimeout;
@@ -153,6 +155,7 @@ public class Callisto extends Robot {
         aButtonP2.whenPressed(new InstantCommand(() -> {intake.setExtension(1);}));
 
         // BUTTON X -- INTAKE EXTEND
+        // TO DO retract it first before extend
         Button xButtonP2 = new GamepadButton(player2, GamepadKeys.Button.X);
        // xButtonP2.whenPressed(new IntakeExtend(this));
         xButtonP2.whenPressed(new InstantCommand(() -> {intake.setExtension(0);}));
@@ -240,12 +243,13 @@ public class Callisto extends Robot {
      */
     public void initAuto(){
         Pose2d start;
-        if(left) {
+        if(left && isRed) {
             start = new Pose2d(new Vector2d(-36, -62), Math.toRadians(180)); // starting position for red left
             //start = new Pose2d(new Vector2d(0, 0), Math.toRadians(0));
         }
         else {
-            start = new Pose2d(new Vector2d(0, 0), 0);
+          //  start = new Pose2d(new Vector2d(0, 0), 0);
+             start = new Pose2d(new Vector2d(36, 62), Math.toRadians(0));
         }
 
         mecanum = new Mecanum(this, start);
@@ -257,22 +261,195 @@ public class Callisto extends Robot {
         register(mecanum, lift, sensors);
 
         // LEFT SIDE: GO BIG
-        if(left) {
+        if(left && isRed) {
             new SequentialCommandGroup(
-                new StrafeToPose(this, new Pose2d(new Vector2d(-60, -54), Math.toRadians(180))),
-                new Rotate(this, 225),
-                //new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                //new LiftLowerRTP(this),
-                    //-24, -48
-                new StrafeToPose(this, new Pose2d(new Vector2d(-24, -48), Math.toRadians(255))),
-                new StrafeToPose(this, new Pose2d(new Vector2d(-25, -36), Math.toRadians(255))),
-                new Rotate(this, 160) ,
-                new IntakeShoulderByTime(this, -0.3, 1500),
-                new IntakeExtensionWithTimeout(this, 1, 3000),
-                new IntakeExtensionWithTimeout(this, 0, 3000),
-                new IntakeSpinByTime(this, 2000, 0.3)
+                new InstantCommand(() -> {
+                lift.levelBasket();
+            }),
+            //go to basket
+            new ParallelCommandGroup(
+                new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(180))),
+                new  IntakeShoulderByTime(this,0.25, 2000)
+            ),
+            // rotate to face basket
+            new ParallelCommandGroup(
+                new Rotate(this, 230),
+                new IntakeShoulderByTime(this,0.25, 2000)
+            ),
+            //dump the block
+            new ParallelCommandGroup(
+                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                new IntakeShoulderByTime(this,0.25, 2000)
+            ),
+            // dump block
+            new ParallelCommandGroup(
+                new LiftLowerRTP(this),
+                new IntakeShoulderByTime(this,0.25, 2000)
+            ),
+            // rotate to face other block
+            new Rotate(this, 87),
+            new InstantCommand(() -> {
+                lift.levelBasket();
+            }),
+            // move forward to other block
+            new StrafeToPose(this, new Pose2d(new Vector2d(-58, -53.25), Math.toRadians(225))),
+            //extend the arm
+            new IntakeExtensionWithTimeout(this,0,1000),
+            //intake block
+            new IntakeSpinByTime(this, 800, 0.5),
+            // lift the shoulder
+            new IntakeShoulderByTime(this,0.4, 2500),
+            // spit it out
+            new IntakeSpinByTime(this,2000, -0.3),
+            // to to basket
+            new ParallelCommandGroup(
+                    new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(180))),
+                    new  IntakeShoulderByTime(this,-0.1, 2000)
+            ),
+                    // rotate to face basket
+
+                    new ParallelCommandGroup(
+                            new Rotate(this, 230),
+                            new IntakeShoulderByTime(this,-0.1, 2000)
+                    ),
+                    //dump the block
+                    new ParallelCommandGroup(
+                            new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                            new IntakeShoulderByTime(this,-0.1, 2000)
+                    ),
+                    // dump block
+                    new ParallelCommandGroup(
+                            new LiftLowerRTP(this),
+                            new IntakeShoulderByTime(this,-0.1, 2000)
+                    )
+
+
+
+
+         /*  the auto that bumps blocks
+          new SequentialCommandGroup(//-54 used to be
+                    new InstantCommand(() -> {
+                        lift.levelBasket();
+                    }),
+                    // go to baskets
+                     new ParallelCommandGroup(
+                            new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(180))),
+                            new IntakeShoulderByTime(this,-0.1, 2000)
+                    ),
+
+                    // rotate to face baskets
+                    new ParallelCommandGroup(
+                            new Rotate(this, 230),
+                            new IntakeShoulderByTime(this,-0.1, 2000)
+                    ),
+                    // dump the block
+                     new ParallelCommandGroup(
+                            new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                            new IntakeShoulderByTime(this,-0.1, 2000)
+                    ),
+                    new ParallelCommandGroup(
+                        new LiftLowerRTP(this),
+                        new IntakeShoulderByTime(this,-0.1, 2000)
+                    ),
+                    // move a little to alight with second block
+                    new StrafeToPose(this, new Pose2d(new Vector2d(-58, -57.25), Math.toRadians(225))),
+                    // rotate to face the second block
+                    new Rotate(this, 85),
+                    // lower the arm
+                    new IntakeShoulderByTime(this, -0.3, 1000),
+                    // extend the arm
+                    new IntakeExtensionWithTimeout(this, 0, 1000),
+                    // Nudge the block to get it straight
+                    new Rotate(this, 95),
+                    new ParallelCommandGroup(
+                            new SequentialCommandGroup(
+                                    new StrafeToPose(this, new Pose2d(new Vector2d(-58, -56.5), Math.toRadians(95)))
+                            ),
+                            new IntakeSpinByTime(this, 750, 0.5)
+                    ),
+                    // go forward to intake and intake
+                    new ParallelCommandGroup(
+                            new StrafeToPose(this, new Pose2d(new Vector2d(-58, -55), Math.toRadians(95))),
+                            new IntakeSpinByTime(this, 1250, 0.5),
+                            new InstantCommand(() -> {
+                                lift.levelBasket();
+                            })
+                    ),
+                    new SequentialCommandGroup(
+                            new IntakeShoulderByTime(this, 0.4, 2000),
+                            new IntakeSpinByTime(this, 2000, 0.3),
+                            new IntakeExtensionWithTimeout(this, 1, 1500)
+                    ),
+                    // rotate to face basket
+                    new Rotate(this, 225),
+                    // go to basket
+                    new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(225))),
+                    // dump the block
+                    new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                    new LiftLowerRTP(this) */
+
+
+
             ).schedule();
-        // RIGHT SIDE: JUST PARK
+            // RIGHT SIDE: JUST PARK
+
+        }else if(left && isRed == false) {
+            new SequentialCommandGroup(
+                    new InstantCommand(() -> {
+                        lift.levelBasket();
+                    }),
+                    // go to baskets
+                    //new ParallelCommandGroup(),
+                        new StrafeToPose(this, new Pose2d(new Vector2d(60, 51), Math.toRadians(0))),
+                    // rotate to face baskets
+                    new Rotate(this, 53),
+                    // dump the block
+                    new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                    new LiftLowerRTP(this),
+                    // move a little to alight with second block
+                    new StrafeToPose(this, new Pose2d(new Vector2d(58, 57), Math.toRadians(53))),
+                    // rotate to face the second block
+                    new Rotate(this, 270),//this is fine all the other coradiants
+                    // lower the arm
+                    new IntakeShoulderByTime(this, -0.4, 1000),
+                    // extend the arm
+                    new IntakeExtensionWithTimeout(this, 0, 1000),
+                    // Nudge the block to get it straight
+                    new Rotate(this, 282),
+                    new ParallelCommandGroup(
+                            new SequentialCommandGroup(
+                                    new StrafeToPose(this, new Pose2d(new Vector2d(58, 56.5), Math.toRadians(282)))
+
+                            ),
+                            new IntakeSpinByTime(this, 700/*1000*/, 0.5)
+                    ),
+                    // go forward to intake and intake
+                    new ParallelCommandGroup(
+
+                            new StrafeToPose(this, new Pose2d(new Vector2d(58, 55), Math.toRadians(282))),
+                            new IntakeSpinByTime(this, 750/*1500*/, 0.5),
+                            new InstantCommand(() -> {
+                                lift.levelBasket();
+                            })
+                    ),
+                    new SequentialCommandGroup(
+                            new IntakeShoulderByTime(this, 0.4, 2000),
+                            new IntakeSpinByTime(this, 2000, -0.3),
+                            new IntakeExtensionWithTimeout(this, 1, 1500)
+                    ),
+                    // rotate to face basket
+                    new Rotate(this, 53),
+                    // go to basket
+                    new StrafeToPose(this, new Pose2d(new Vector2d(59, 59.5), Math.toRadians(53))),
+                    // dump the block
+                    new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                    new LiftLowerRTP(this)
+
+
+
+            ).schedule();
+
+
         } else {
            new StrafeByTime(this, 3.0, 0.25).schedule();
         }

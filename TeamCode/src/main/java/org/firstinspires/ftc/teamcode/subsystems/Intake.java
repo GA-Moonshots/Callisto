@@ -29,6 +29,8 @@ public class Intake extends SubsystemBase {
         // Set up the servos
         extensionServo = robot.hardwareMap.get(Servo.class, Constants.EXTEND_INTAKE_SERVO);
         spinServo = robot.hardwareMap.get(com.qualcomm.robotcore.hardware.CRServo.class, Constants.SPIN_INTAKE_SERVO);
+
+        extensionServo.setPosition(1);
     }
 
     public boolean isExtended() {
@@ -87,6 +89,8 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        robot.telemetry.addData("Intake Servo", extensionServo.getPosition());
 
         String shoulderState = isUp() ? "Up"
                 : isNearUp() ? "Near Up"

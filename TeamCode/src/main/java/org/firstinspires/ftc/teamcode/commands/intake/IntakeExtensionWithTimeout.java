@@ -39,6 +39,6 @@ public class IntakeExtensionWithTimeout extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return timer.done() || (intake.extensionServo.getPosition() == position);
+        return timer.done();// || (Math.abs(intake.extensionServo.getPosition() - position) < 0.05);
     }
 }
