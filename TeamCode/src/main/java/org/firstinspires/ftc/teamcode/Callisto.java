@@ -263,68 +263,52 @@ public class Callisto extends Robot {
         // LEFT SIDE: GO BIG
         if(left && isRed) {
             new SequentialCommandGroup(
-                new InstantCommand(() -> {
-                lift.levelBasket();
-            }),
-            //go to basket
-            new ParallelCommandGroup(
+
+                //level basket
+                    new InstantCommand(() -> {
+                    lift.levelBasket();
+                }),
+                //go to basket
                 new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(180))),
-                new  IntakeShoulderByTime(this,0.25, 2000)
-            ),
-            // rotate to face basket
-            new ParallelCommandGroup(
+                // rotate to face basket
                 new Rotate(this, 230),
-                new IntakeShoulderByTime(this,0.25, 2000)
-            ),
-            //dump the block
-            new ParallelCommandGroup(
+                //dump the block
                 new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                new IntakeShoulderByTime(this,0.25, 2000)
-            ),
-            // dump block
-            new ParallelCommandGroup(
+
+                // lower lift
                 new LiftLowerRTP(this),
-                new IntakeShoulderByTime(this,0.25, 2000)
-            ),
-            // rotate to face other block
-            new Rotate(this, 87),
-            new InstantCommand(() -> {
-                lift.levelBasket();
-            }),
-            // move forward to other block
-            new StrafeToPose(this, new Pose2d(new Vector2d(-58, -53.25), Math.toRadians(225))),
-            //extend the arm
-            new IntakeExtensionWithTimeout(this,0,1000),
-            //intake block
-            new IntakeSpinByTime(this, 800, 0.5),
-            // lift the shoulder
-            new IntakeShoulderByTime(this,0.4, 2500),
-            // spit it out
-            new IntakeSpinByTime(this,2000, -0.3),
-            // to to basket
-            new ParallelCommandGroup(
-                    new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(180))),
-                    new  IntakeShoulderByTime(this,-0.1, 2000)
-            ),
-                    // rotate to face basket
 
-                    new ParallelCommandGroup(
-                            new Rotate(this, 230),
-                            new IntakeShoulderByTime(this,-0.1, 2000)
-                    ),
-                    //dump the block
-                    new ParallelCommandGroup(
-                            new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                            new IntakeShoulderByTime(this,-0.1, 2000)
-                    ),
-                    // dump block
-                    new ParallelCommandGroup(
-                            new LiftLowerRTP(this),
-                            new IntakeShoulderByTime(this,-0.1, 2000)
-                    )
+                // rotate to face other block
+                new Rotate(this, 98 ),
+                new InstantCommand(() -> {
+                    lift.levelBasket();
+                }),
+                // move forward to other block
+                new StrafeToPose(this, new Pose2d(new Vector2d(-58, -53.25), Math.toRadians(225))),
+                    // lower shoulder
+                    new IntakeShoulderByTime(this,-0.4, 2500),
+                    //extend the arm
+                new IntakeExtensionWithTimeout(this,0,1000),
 
+                    //intake block
+                new IntakeSpinByTime(this, 800, 0.5),
+                // lift the shoulder
+                new IntakeShoulderByTime(this,0.4, 2500),
+                // spit it out
+                new IntakeSpinByTime(this,2000, -0.3),
+                //intake arm
+                new IntakeExtensionWithTimeout(this, 1, 1500),
+                // to to basket
+                new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(180))),
+                //rotate to face basket
+                new Rotate(this, 230),
 
+                // dump the block
+                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
 
+                // lower lift
+                new LiftLowerRTP(this)
+            ).schedule();
 
          /*  the auto that bumps blocks
           new SequentialCommandGroup(//-54 used to be
@@ -390,7 +374,7 @@ public class Callisto extends Robot {
 
 
 
-            ).schedule();
+
             // RIGHT SIDE: JUST PARK
 
         }else if(left && isRed == false) {
