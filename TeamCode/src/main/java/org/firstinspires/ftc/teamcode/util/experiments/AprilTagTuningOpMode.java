@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.util.experiments;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Callisto;
-import org.firstinspires.ftc.teamcode.util.AprilTagPositionTracker;
+import org.firstinspires.ftc.teamcode.util.experiments.AprilTagPositionTracker;
 import org.openftc.apriltag.AprilTagDetection;
 import java.util.ArrayList;
 
