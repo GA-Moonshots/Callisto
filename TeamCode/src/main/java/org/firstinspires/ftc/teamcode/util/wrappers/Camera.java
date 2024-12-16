@@ -32,6 +32,7 @@ public class Camera implements AutoCloseable {
     public boolean isAprilTag = true;
     private List<AprilTagDetection> detections;
     private final AprilTagProcessor aprilTag;
+    private long lastDetectionTime = 0;
 
     // Hardware
     private Callisto m_robot;
@@ -91,6 +92,28 @@ public class Camera implements AutoCloseable {
      */
     public Point getDetectedCentroid() {
         return pipeline.getDetectedCentroid();
+    }
+
+
+    /**
+     * Gets the latest detections if they are fresh (within the last second)
+     * @return ArrayList of AprilTagDetection or null if detections are stale or nonexistent
+     */
+    public ArrayList<AprilTagDetection> getLatestFreshDetections() {
+        ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
+        long currentTime = System.currentTimeMillis();
+
+        if (currentDetections != null && !currentDetections.isEmpty()) {
+            lastDetectionTime = currentTime;
+            return currentDetections;
+        }
+
+        // Return null if detections are stale (older than 1 second) or nonexistent
+        if (currentTime - lastDetectionTime > 1000) {
+            return null;
+        }
+
+        return pipeline.getLatestDetections();
     }
 
     /**
@@ -294,6 +317,7 @@ public class Camera implements AutoCloseable {
             mask.release();
             return (nonZeroCount / totalPixels) > 0.5; // Threshold to determine if the color is present
         }
+
 
         public void releaseResources() {
             // Release all reusable Mats
