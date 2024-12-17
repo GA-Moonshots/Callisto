@@ -54,6 +54,7 @@ public class Callisto extends Robot {
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
     public ServoTest servo;
+    public Pose2d startOfTele;
 
     /**
      * Welcome to the Command pattern. Here we assemble the robot and kick-off the command
@@ -83,7 +84,7 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
-        mecanum = new Mecanum(this, new Pose2d(new Vector2d(0, 0), 0));
+        mecanum = new Mecanum(this, startOfTele);
         lift = new Lift(this);
         intake = new Intake(this);
         sensors = new SensorPackage(this);
@@ -95,6 +96,12 @@ public class Callisto extends Robot {
         // Setting Default Commands. When not doing anything, respond to the controller
         mecanum.setDefaultCommand(new Drive(this));
         intake.setDefaultCommand(new IntakeShoulderByPlayer(this));
+
+
+
+
+
+
 
         /*
                 .__                                      ____
@@ -137,10 +144,15 @@ public class Callisto extends Robot {
                 })
         );
 
+
+
         Button dPadUpP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_UP);
         Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
         Button dPadLeftP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
         Button dPadRightP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
+
+        dPadRightP1.whenPressed(new StrafeToPose(this, new Pose2d(new Vector2d(-36, -62), Math.toRadians(180))));
+
 
 
         /*
@@ -179,23 +191,22 @@ public class Callisto extends Robot {
             lift.levelBasket();
         }));
 
-        //  BUMPER -- sequantial command to put blocks in the basket
+        //  LEFT BUMPER -- transfer block to the basket
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
-        //leftBumperP2.whenPressed(new IntakeShoulderUp(this));
-        //leftBumperP2.whenPressed(new IntakeShoulderByPot(this));
-        leftBumperP2.whenPressed(new SequentialCommandGroup(new InstantCommand(() -> {
-            lift.levelBasket();
-        }),
-                new IntakeExtensionWithTimeout(this, 0, 3000),
-                new IntakeShoulderByTime(this, 0.4, 2000),
+        leftBumperP2.whenPressed(new SequentialCommandGroup(
+                // LEVEL BASKET WHILE EXTENDING INTAKE
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> {lift.levelBasket();}),
+                    new IntakeExtensionWithTimeout(this, 0, 1000)
+                ),
+                // LIFT UP SHOULDER
+                new IntakeShoulderByTime(this, 0.6, 1000),
+                // SPIT OUT BLOCK
                 new IntakeSpinByTime(this, 2000, 0.3),
-                new InstantCommand(() -> {
-                    lift.nestBasket();
-                }),
-                new IntakeShoulderByTime(this, -0.3, 1500),
-                new IntakeExtensionWithTimeout(this, 1, 3000),
-                new IntakeShoulderByTime(this, 0.4, 2000)));
-
+                // RETRACT INTAKE (while it's still upright)
+                new IntakeExtensionWithTimeout(this, 1, 2000),
+                new IntakeShoulderByTime(this, 0.25, 1500))
+        );
 
         // LEFT TRIGGER -- SHOULDER DOWN
         Trigger leftTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5);
@@ -228,7 +239,7 @@ public class Callisto extends Robot {
         // RIGHT BUMPER -- NEGATIVE SPIN INTAKE
         Button rightBumperP2 = new GamepadButton(player2, GamepadKeys.Button.RIGHT_BUMPER);
         rightBumperP2.whenHeld(new InstantCommand(() -> {
-            intake.setSpinSpeed(-0.5);
+            intake.setSpinSpeed(-0.8);
         }));
         // RIGHT BUMPER RELEASE -- SPIN STOP
         rightBumperP2.whenReleased(new InstantCommand(() -> {
@@ -239,7 +250,7 @@ public class Callisto extends Robot {
         // RIGHT TRIGGER -- SPIN INTAKE
         Trigger rightTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5);
         rightTriggerP2.whenActive(new InstantCommand(() -> {
-            intake.setSpinSpeed(0.5);
+            intake.setSpinSpeed(0.8);
         }));
         // RIGHT TRIGGER RELEASE -- SPIN STOP
         rightTriggerP2.whenInactive(new InstantCommand(() -> {
@@ -272,53 +283,76 @@ public class Callisto extends Robot {
         if (left) {
             // RED LEFT
             if (isRed) {
-                new SequentialCommandGroup(
-
+                 new SequentialCommandGroup(
                         //level basket
                         new InstantCommand(() -> {
                             lift.levelBasket();
                         }),
                         //go to basket
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(180))),
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(180))),
                         // rotate to face basket
                         new Rotate(this, 230),
                         //dump the block
                         new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-
                         // lower lift
                         new LiftLowerRTP(this),
+                         // rotate
+                         new Rotate(this, 90),
+                         // rotate
+                         new Rotate(this, 88),
+                         // lower shoulder
+                         new IntakeShoulderByTime(this, -0.4, 1000),
+                         // extend arm
+                         new IntakeExtensionWithTimeout(this, 0, 1500),
+                         // go forward and intake the block
+                         new ParallelCommandGroup(
+                            new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -51), Math.toRadians(180))),
+                            new IntakeSpinByTime(this,3000, 0.3)
 
-                        // rotate to face other block
-                        new Rotate(this, 98),
+                         ),
+                        // lift shoulder and level basket
+                         new ParallelCommandGroup(
+                                 new IntakeShoulderByTime(this, 0.5, 2500),
+                                 new InstantCommand(() -> {
+                                     lift.levelBasket();
+                                 })
+                         ),
+                        // spit it out
+                        new IntakeSpinByTime(this,3000, -0.3),
+                        // retract arm
+                         new IntakeExtensionWithTimeout(this, 1, 1500),
+                        // go to basket
+                         new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(180))),
+                         // rotate to face basket
+                         new Rotate(this, 230),
+                         //dump the block
+                         new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                         // lower lift
+                         new LiftLowerRTP(this)
+
+
+
+
+                  /*      // rotate to face the submersible
+                        new Rotate(this, 0),
                         new InstantCommand(() -> {
                             lift.levelBasket();
                         }),
-                        // move forward to other block
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-58, -53.25), Math.toRadians(225))),
-                        // lower shoulder
-                        new IntakeShoulderByTime(this, -0.4, 2500),
-                        //extend the arm
+                        // go half way
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-65, 0), Math.toRadians(180))),
+                        // lower arm
+                        new IntakeShoulderByTime(this, -0.35, 1000),
+                        // extend it
                         new IntakeExtensionWithTimeout(this, 0, 1000),
+                        // bring it up
+                        new IntakeShoulderByTime(this, 0.5, 1500),
+                        // go to bar
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-26, 0), Math.toRadians(180))),
+                        // put hand on bar
+                        new IntakeShoulderByTime(this, -0.2, 1500)*/
 
-                        //intake block
-                        new IntakeSpinByTime(this, 800, 0.5),
-                        // lift the shoulder
-                        new IntakeShoulderByTime(this, 0.4, 2500),
-                        // spit it out
-                        new IntakeSpinByTime(this, 2000, -0.3),
-                        //intake arm
-                        new IntakeExtensionWithTimeout(this, 1, 1500),
-                        // to to basket
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-59, -59.5), Math.toRadians(180))),
-                        //rotate to face basket
-                        new Rotate(this, 230),
-
-                        // dump the block
-                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-
-                        // lower lift
-                        new LiftLowerRTP(this)
                 ).schedule();
+
             }
 
             // BLUE LEFT
@@ -332,7 +366,7 @@ public class Callisto extends Robot {
                         // go to basket (mirrored from -59, -59.5 to 59, 59.5)
                         new StrafeToPose(this, new Pose2d(new Vector2d(59, 59.5), Math.toRadians(0))),
                         // rotate to face basket (230 becomes 130 for blue side)
-                        new Rotate(this, 130),
+                        new Rotate(this, 50),
                         // dump the block
                         new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
                         // lower lift
@@ -361,7 +395,7 @@ public class Callisto extends Robot {
                         // go to basket (mirrored from -59, -59.5 to 59, 59.5)
                         new StrafeToPose(this, new Pose2d(new Vector2d(59, 59.5), Math.toRadians(0))),
                         // rotate to face basket (230 becomes 130)
-                        new Rotate(this, 130),
+                        new Rotate(this, 50),
 
                         // dump the block
                         new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
@@ -374,5 +408,7 @@ public class Callisto extends Robot {
         else {
             new StrafeByTime(this, 3.0, 0.25).schedule();
         }
+
+
     }
 }

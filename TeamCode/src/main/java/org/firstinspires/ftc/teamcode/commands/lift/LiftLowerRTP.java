@@ -35,7 +35,7 @@ public class LiftLowerRTP extends CommandBase {
         lift.motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         // remove breaking behavior so gravity can assist
         lift.motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        lift.motor1.setPower(-0.63);
+        lift.motor1.setPower(-0.7);
     }
 
     @Override

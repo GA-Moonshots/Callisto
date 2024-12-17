@@ -67,11 +67,11 @@ public class LiftRaiseThenDump extends CommandBase {
         }
 
         // dump basket after delay
-        if(lift.isUp() && (skipDelay || timer.seconds() > 4)){
+        if(lift.isUp() && (skipDelay || timer.seconds() > 1.65)){
             lift.dumpBasket();
             if(dumpTime == 0){ dumpTime = timer.seconds(); }
 
-            if(dumpTime != 0 && timer.seconds() >= 2 + dumpTime ) {
+            if(dumpTime != 0 && timer.seconds() >= 0.8 + dumpTime ) {
                 lift.levelBasket();
                 finished = true;
             }
