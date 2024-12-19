@@ -97,12 +97,6 @@ public class Callisto extends Robot {
         mecanum.setDefaultCommand(new Drive(this));
         intake.setDefaultCommand(new IntakeShoulderByPlayer(this));
 
-
-
-
-
-
-
         /*
                 .__                                      ____
         ______  |  |  _____   ___.__.  ____ _______     /_   |
@@ -143,8 +137,6 @@ public class Callisto extends Robot {
                     mecanum.resetFieldCentricTarget();
                 })
         );
-
-
 
         Button dPadUpP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_UP);
         Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
@@ -257,6 +249,16 @@ public class Callisto extends Robot {
             // these servo functions don't know when to stop, so we kill 'em on release
             intake.setSpinSpeed(0.0);
         }));
+
+        Button joyStickLeftTrigger = new GamepadButton(player2, GamepadKeys.Button.LEFT_STICK_BUTTON);
+        joyStickLeftTrigger.whenPressed(new InstantCommand(() -> {
+            intake.assistantIn();
+        }));
+
+        Button joyStickRightTrigger = new GamepadButton(player2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
+        joyStickRightTrigger.whenPressed(new InstantCommand(() -> {
+            intake.assistantOut();
+        }));
     }
 
     /**
@@ -329,30 +331,7 @@ public class Callisto extends Robot {
                          new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
                          // lower lift
                          new LiftLowerRTP(this)
-
-
-
-
-                  /*      // rotate to face the submersible
-                        new Rotate(this, 0),
-                        new InstantCommand(() -> {
-                            lift.levelBasket();
-                        }),
-                        // go half way
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-65, 0), Math.toRadians(180))),
-                        // lower arm
-                        new IntakeShoulderByTime(this, -0.35, 1000),
-                        // extend it
-                        new IntakeExtensionWithTimeout(this, 0, 1000),
-                        // bring it up
-                        new IntakeShoulderByTime(this, 0.5, 1500),
-                        // go to bar
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-26, 0), Math.toRadians(180))),
-                        // put hand on bar
-                        new IntakeShoulderByTime(this, -0.2, 1500)*/
-
                 ).schedule();
-
             }
 
             // BLUE LEFT
@@ -408,7 +387,7 @@ public class Callisto extends Robot {
         else {
             new StrafeByTime(this, 3.0, 0.25).schedule();
         }
-
-
     }
+
+
 }

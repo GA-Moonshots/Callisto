@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.Robot;
 
 import org.firstinspires.ftc.teamcode.Callisto;
+import org.firstinspires.ftc.teamcode.commands.SavePoseCommand;
 
 /**
  * The primary operation file for the teleOp phase of the match
@@ -53,9 +54,12 @@ public class AutoBotDriveyPants extends CommandOpMode {
          We pass in our autonomous config variables, which signals to the robot we want to be in
          autonomous mode instead of in teleop mode, which would take no params besides this.
          */
-        Robot m_robot = new Callisto(this, isRed, left);
-    }
+        Callisto m_robot = new Callisto(this, isRed, left);
 
+        // The idea here is to after stop, it will schedule this last command after shutting off
+        // IDK if it does - Mr.A, 2024
+        schedule(new SavePoseCommand(m_robot));
+    }
 }
 
 

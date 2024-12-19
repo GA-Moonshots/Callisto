@@ -66,6 +66,7 @@ public class Constants {
     public static final String WRIST_SERVO_NAME = "Wrist";
     public static final String OPEN_SERVO_NAME = "open";
     public static final String ROLL_SERVO_NAME = "roll";
+    public static final String ASSISTANT_SERVO_NAME = "assist";
     //public static final String LAUNCHER_SERVO_NAME = "launcher";
     public static final String ELEVATOR_LEFT_SERVO_NAME = "elevLeft";
     public static final String ELEVATOR_RIGHT_SERVO_NAME = "elevRight";
