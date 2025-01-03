@@ -225,8 +225,11 @@ public class Callisto extends Robot {
                 new LiftRaiseRTP(this, Constants.HIGH_HEIGHT)
         ));
 
-        // DPAD RIGHT -- available
+        // DPAD RIGHT -- ASSISTANT
         Button rightDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_RIGHT);
+        rightDpadP2.whenPressed(new InstantCommand(() -> {
+            intake.assistant();
+        }));
 
         // RIGHT BUMPER -- NEGATIVE SPIN INTAKE
         Button rightBumperP2 = new GamepadButton(player2, GamepadKeys.Button.RIGHT_BUMPER);
@@ -244,21 +247,19 @@ public class Callisto extends Robot {
         rightTriggerP2.whenActive(new InstantCommand(() -> {
             intake.setSpinSpeed(0.8);
         }));
+
         // RIGHT TRIGGER RELEASE -- SPIN STOP
         rightTriggerP2.whenInactive(new InstantCommand(() -> {
             // these servo functions don't know when to stop, so we kill 'em on release
             intake.setSpinSpeed(0.0);
         }));
 
-        Button joyStickLeftTrigger = new GamepadButton(player2, GamepadKeys.Button.LEFT_STICK_BUTTON);
-        joyStickLeftTrigger.whenPressed(new InstantCommand(() -> {
-            intake.assistantIn();
-        }));
+        // JOYSTICK LEFT - nothing
+         Button joyStickLeftTrigger = new GamepadButton(player2, GamepadKeys.Button.LEFT_STICK_BUTTON);
 
+        // JOYSTICK RIGHT - nothing
         Button joyStickRightTrigger = new GamepadButton(player2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
-        joyStickRightTrigger.whenPressed(new InstantCommand(() -> {
-            intake.assistantOut();
-        }));
+
     }
 
     /**

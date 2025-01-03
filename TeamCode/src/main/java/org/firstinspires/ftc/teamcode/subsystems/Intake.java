@@ -74,14 +74,13 @@ public class Intake extends SubsystemBase {
         spinServo.setPower(0.0);
     }
 
-    public void assistantIn() {
-        assistantServo.setPosition(1);
+    public void assistant() {
+        if(assistantServo.getPosition() == 1){
+            assistantServo.setPosition(0);
+        }else{
+            assistantServo.setPosition(1);
+        }
     }
-
-    public void assistantOut() {
-        assistantServo.setPosition(0);
-    }
-
     // Method to get the current shoulder position
     public double getShoulderPosition() {
         return shoulderMotor.getCurrentPosition();
