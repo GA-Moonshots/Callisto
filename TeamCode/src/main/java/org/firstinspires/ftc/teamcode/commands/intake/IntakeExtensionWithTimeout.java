@@ -14,9 +14,9 @@ public class IntakeExtensionWithTimeout extends CommandBase {
 
     private Timing.Timer timer;
 
-    private int position;
+    private double position;
 
-    public IntakeExtensionWithTimeout(Callisto robot, int position, long timeoutMilliseconds) {
+    public IntakeExtensionWithTimeout(Callisto robot, double position, long timeoutMilliseconds) {
         this.robot = robot;
         intake = this.robot.intake;
 
