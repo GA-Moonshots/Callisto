@@ -163,12 +163,12 @@ public class Callisto extends Robot {
             intake.setExtension(1);
         }));
 
-        // BUTTON X -- INTAKE EXTEND
+        // BUTTON X -- INTAKE
         // TO DO retract it first before extend
         Button xButtonP2 = new GamepadButton(player2, GamepadKeys.Button.X);
         // xButtonP2.whenPressed(new IntakeExtend(this));
         xButtonP2.whenPressed(new InstantCommand(() -> {
-            intake.setExtension(0);
+            intake.setExtension(0.3);
         }));
 
         // BUTTON B -- DUMP BASKET
@@ -189,7 +189,7 @@ public class Callisto extends Robot {
                 // LEVEL BASKET WHILE EXTENDING INTAKE
                 new ParallelCommandGroup(
                     new InstantCommand(() -> {lift.levelBasket();}),
-                    new IntakeExtensionWithTimeout(this, 0, 1000)
+                    new IntakeExtensionWithTimeout(this, 0.15, 1000)
                 ),
                 // LIFT UP SHOULDER
                 new IntakeShoulderByTime(this, 0.6, 1000),
@@ -234,7 +234,7 @@ public class Callisto extends Robot {
         // RIGHT BUMPER -- NEGATIVE SPIN INTAKE
         Button rightBumperP2 = new GamepadButton(player2, GamepadKeys.Button.RIGHT_BUMPER);
         rightBumperP2.whenHeld(new InstantCommand(() -> {
-            intake.setSpinSpeed(-0.8);
+            intake.setSpinSpeed(-1);
         }));
         // RIGHT BUMPER RELEASE -- SPIN STOP
         rightBumperP2.whenReleased(new InstantCommand(() -> {
@@ -245,7 +245,7 @@ public class Callisto extends Robot {
         // RIGHT TRIGGER -- SPIN INTAKE
         Trigger rightTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5);
         rightTriggerP2.whenActive(new InstantCommand(() -> {
-            intake.setSpinSpeed(0.8);
+            intake.setSpinSpeed(1);
         }));
 
         // RIGHT TRIGGER RELEASE -- SPIN STOP
@@ -368,14 +368,13 @@ public class Callisto extends Robot {
                         // lower shoulder
                         new IntakeShoulderByTime(this, -0.4, 2500),
                         // extend the arm
-                        new IntakeExtensionWithTimeout(this, 0, 1000),
-
+                        new IntakeExtensionWithTimeout(this, 0.05, 1000),
                         // intake block
-                        new IntakeSpinByTime(this, 800, 0.5),
+                        new IntakeSpinByTime(this, 200, 0.5),
                         // lift the shoulder
                         new IntakeShoulderByTime(this, 0.4, 2500),
                         // spit it out
-                        new IntakeSpinByTime(this, 2000, -0.3),
+                        new IntakeSpinByTime(this, 2000, -0.6),
                         // intake arm
                         new IntakeExtensionWithTimeout(this, 1, 1500),
                         // go to basket (mirrored from -59, -59.5 to 59, 59.5)

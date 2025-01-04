@@ -23,7 +23,8 @@ public class IntakeShoulderByPlayer extends CommandBase {
     public void execute() {
 
         robot.telemetry.addData("is the Intake shoulder by player Command Running", true);
-        double power = 0.35 * -robot.player2.getRightY();
+        //double power = 0.45 * -robot.player2.getRightY();
+        double power = 0.45 * -(Math.pow((robot.player2.getRightY()), 3));
         // Dead zone
         if(Math.abs(power) < 0.05){
             power = 0;
