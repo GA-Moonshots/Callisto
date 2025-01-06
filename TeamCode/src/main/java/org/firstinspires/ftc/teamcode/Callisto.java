@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByTime;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderDown;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeSpinByTime;
+import org.firstinspires.ftc.teamcode.commands.intake.TransferBlock;
 import org.firstinspires.ftc.teamcode.commands.lift.LiftRaiseThenDump;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
 import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
@@ -164,11 +165,19 @@ public class Callisto extends Robot {
         }));
 
         // BUTTON X -- INTAKE
-        // TO DO retract it first before extend
         Button xButtonP2 = new GamepadButton(player2, GamepadKeys.Button.X);
         // xButtonP2.whenPressed(new IntakeExtend(this));
         xButtonP2.whenPressed(new InstantCommand(() -> {
-            intake.setExtension(0.3);
+            intake.setExtension(0.5);
+        }));
+
+        // BUTTON X -- INTAKE ALL THE WAY
+        // xButtonP2.whenPressed(new IntakeExtend(this));
+        xButtonP2.whenHeld(new InstantCommand(() -> {
+            intake.setExtension(0);
+        }));
+        xButtonP2.whenReleased(new InstantCommand(() -> {
+            intake.setExtension(0.5);
         }));
 
         // BUTTON B -- DUMP BASKET
@@ -185,20 +194,7 @@ public class Callisto extends Robot {
 
         //  LEFT BUMPER -- transfer block to the basket
         Button leftBumperP2 = new GamepadButton(player2, GamepadKeys.Button.LEFT_BUMPER);
-        leftBumperP2.whenPressed(new SequentialCommandGroup(
-                // LEVEL BASKET WHILE EXTENDING INTAKE
-                new ParallelCommandGroup(
-                    new InstantCommand(() -> {lift.levelBasket();}),
-                    new IntakeExtensionWithTimeout(this, 0.15, 1000)
-                ),
-                // LIFT UP SHOULDER
-                new IntakeShoulderByTime(this, 0.6, 1000),
-                // SPIT OUT BLOCK
-                new IntakeSpinByTime(this, 2000, 0.3),
-                // RETRACT INTAKE (while it's still upright)
-                new IntakeExtensionWithTimeout(this, 1, 2000),
-                new IntakeShoulderByTime(this, 0.25, 1500))
-        );
+        leftBumperP2.whenPressed(new TransferBlock(this));
 
         // LEFT TRIGGER -- SHOULDER DOWN
         Trigger leftTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5);
@@ -234,7 +230,7 @@ public class Callisto extends Robot {
         // RIGHT BUMPER -- NEGATIVE SPIN INTAKE
         Button rightBumperP2 = new GamepadButton(player2, GamepadKeys.Button.RIGHT_BUMPER);
         rightBumperP2.whenHeld(new InstantCommand(() -> {
-            intake.setSpinSpeed(-1);
+            intake.setSpinSpeed(Constants.INTAKE_SPIN_SPEED_BACK);
         }));
         // RIGHT BUMPER RELEASE -- SPIN STOP
         rightBumperP2.whenReleased(new InstantCommand(() -> {
@@ -245,7 +241,7 @@ public class Callisto extends Robot {
         // RIGHT TRIGGER -- SPIN INTAKE
         Trigger rightTriggerP2 = new Trigger(() -> player2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5);
         rightTriggerP2.whenActive(new InstantCommand(() -> {
-            intake.setSpinSpeed(1);
+            intake.setSpinSpeed(Constants.INTAKE_SPIN_SPEED_FORWARD);
         }));
 
         // RIGHT TRIGGER RELEASE -- SPIN STOP
@@ -287,7 +283,40 @@ public class Callisto extends Robot {
             // RED LEFT
             if (isRed) {
                  new SequentialCommandGroup(
-                         // set the assistant to be down
+                         // idea for the new atonomouse the old one is comented out
+                         new InstantCommand(() ->{
+                             lift.levelBasket();
+                         }),
+                         //go to basket
+                         new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(180))),
+                         // rotate to face basket
+                         new Rotate(this, 230),
+                         //dump the block
+                         //new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                         // lower lift
+                         //new LiftLowerRTP(this),
+                         new StrafeToPose(this, new Pose2d(new Vector2d(-58, -59), Math.toRadians(230))),
+                        new Rotate(this, 170),
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-23.5, -40), Math.toRadians(160))),
+                         new StrafeToPose(this, new Pose2d(new Vector2d(-27, -35), Math.toRadians(160))),
+                         new IntakeShoulderByTime(this, -0.25, 1600),
+                        new IntakeExtensionWithTimeout(this, 0.5, 1500),
+                         new StrafeToPose(this, new Pose2d(new Vector2d(-29, -34), Math.toRadians(160))),
+                        new IntakeSpinByTime(this,3000, 0.2 ),
+                        new IntakeShoulderByTime(this, 0.5, 2000),
+                         new IntakeSpinByTime(this,1000,-0.3),
+                        new IntakeSpinByTime(this,3000,0.5)
+
+
+
+
+
+
+
+
+
+
+                        /* // set the assistant to be down
                          new InstantCommand(() -> {
                              intake.setAssistant(1);
                             //level basket
@@ -302,13 +331,14 @@ public class Callisto extends Robot {
                         // lower lift
                         new LiftLowerRTP(this),
                          // rotate to face the other block vertically
-                         new Rotate(this, 90),
+                         new StrafeToPose(this, new Pose2d(new Vector2d(-58, -59), Math.toRadians(230))),
+                         new Rotate(this, 92),
                          // move to pose in front of the second block
                          new StrafeToPose(this, new Pose2d(new Vector2d(-51.25, -58), Math.toRadians(90))),
                          // lower shoulder
                          new IntakeShoulderByTime(this, -0.4, 1000),
                          // extend arm
-                         new IntakeExtensionWithTimeout(this, 0.0, 1500),
+                         new IntakeExtensionWithTimeout(this, 0.3, 1500),
                          // intake block and move forward
                          new ParallelCommandGroup(
                              new IntakeSpinByTime(this,3000, 0.3),
@@ -337,7 +367,7 @@ public class Callisto extends Robot {
                          //dump the block
                          new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
                          // lower lift
-                         new LiftLowerRTP(this)
+                         new LiftLowerRTP(this)*/
                 ).schedule();
             }
 

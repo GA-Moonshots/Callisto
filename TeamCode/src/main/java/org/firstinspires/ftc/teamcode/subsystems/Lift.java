@@ -51,7 +51,7 @@ public class Lift extends SubsystemBase {
      * Levels the basket.
      */
     public void levelBasket() {
-        moveBasket(0.4);
+        moveBasket(0.45);
         currentBasketState = BasketState.LEVEL;
     }
 

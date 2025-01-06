@@ -24,7 +24,7 @@ public class TransferBlock extends SequentialCommandGroup {
     // How long we run the intake spin to transfer the block
     private static final double SPIN_DURATION_MS = 2000;
     // How far we extend the intake (0 = fully extended, 1 = fully retracted)
-    private static final double INTAKE_EXTENSION = 0;
+    private static final double INTAKE_EXTENSION = 0.5;
     // ------- MAGIC NUMBERS -----------
 
     /**
@@ -39,7 +39,7 @@ public class TransferBlock extends SequentialCommandGroup {
                 // Step 1: Level basket while extending intake (parallel actions)
                 new ParallelCommandGroup(
                         new InstantCommand(() -> robot.lift.levelBasket()),
-                        new IntakeExtensionWithTimeout(robot, INTAKE_EXTENSION, 1000)
+                        new IntakeExtensionWithTimeout(robot, INTAKE_EXTENSION, 2000)
                 ),
 
                 // Step 2: Lift shoulder up
