@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.commands.AlignToGamePiece;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.ForwardByTime;
 import org.firstinspires.ftc.teamcode.commands.Rotate;
@@ -295,17 +296,24 @@ public class Callisto extends Robot {
                          //new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
                          // lower lift
                          //new LiftLowerRTP(this),
+                         // move over not to bump  fence
                          new StrafeToPose(this, new Pose2d(new Vector2d(-58, -59), Math.toRadians(230))),
-                        new Rotate(this, 170),
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-23.5, -40), Math.toRadians(160))),
-                         new StrafeToPose(this, new Pose2d(new Vector2d(-27, -35), Math.toRadians(160))),
+                        //rotate to "face" te second block
+                        new Rotate(this, 176),
+                        // move to second block
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-21.5, -31.5), Math.toRadians(176))),
+                         // shoulder down
                          new IntakeShoulderByTime(this, -0.25, 1600),
+                         // parallel command where we move forward(to push) and extend the arm
+                         new StrafeToPose(this, new Pose2d(new Vector2d(-32, -29), Math.toRadians(176))),
                         new IntakeExtensionWithTimeout(this, 0.5, 1500),
-                         new StrafeToPose(this, new Pose2d(new Vector2d(-29, -34), Math.toRadians(160))),
-                        new IntakeSpinByTime(this,3000, 0.2 ),
+                        //intake block
+                        new IntakeSpinByTime(this,3000, 0.35),
+                        // transfer
                         new IntakeShoulderByTime(this, 0.5, 2000),
-                         new IntakeSpinByTime(this,1000,-0.3),
-                        new IntakeSpinByTime(this,3000,0.5)
+                         new IntakeSpinByTime(this,3000,0.5),
+                         new IntakeSpinByTime(this,1000,-0.3)
+
 
 
 
@@ -421,7 +429,8 @@ public class Callisto extends Robot {
         }
         // RIGHT SIDE
         else {
-            new StrafeByTime(this, 3.0, 0.25).schedule();
+            //new StrafeByTime(this, 3.0, 0.25).schedule();
+            new AlignToGamePiece(this);
         }
     }
 

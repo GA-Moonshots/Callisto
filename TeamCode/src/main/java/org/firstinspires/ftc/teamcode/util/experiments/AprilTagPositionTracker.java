@@ -2,8 +2,7 @@ package org.firstinspires.ftc.teamcode.util.experiments;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
-import org.openftc.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +13,6 @@ public class AprilTagPositionTracker {
     public static double CAMERA_Y_OFFSET = 0.0;  // Forward/Back from robot center (inches)
     public static double CAMERA_Z_OFFSET = 0.0;  // Up/Down from robot center (inches)
     public static double CAMERA_YAW_OFFSET = 0.0; // Rotation offset in degrees
-
-    // Constants for field dimensions and tag heights
-    private static final double TAG_HEIGHT = 5.9; // Height of tags above the field in inches
 
     // Store AprilTag positions on the field (ID -> Position)
     private static final Map<Integer, Pose2d> TAG_POSITIONS = new HashMap<Integer, Pose2d>() {{
@@ -32,18 +28,6 @@ public class AprilTagPositionTracker {
     }};
 
     /**
-     * Extract yaw angle from rotation matrix
-     * Assumes rotation matrix is in standard form where:
-     * R = [r11 r12 r13]
-     *     [r21 r22 r23]
-     *     [r31 r32 r33]
-     * yaw = atan2(r21, r11)
-     */
-    private static double getYawFromRotationMatrix(MatrixF R) {
-        return Math.atan2(R.get(1, 0), R.get(0, 0));
-    }
-
-    /**
      * Calculates robot position based on AprilTag detection
      */
     public static Pose2d calculateRobotPosition(AprilTagDetection detection) {
@@ -53,27 +37,24 @@ public class AprilTagPositionTracker {
 
         Pose2d tagPose = TAG_POSITIONS.get(detection.id);
 
-        // Get the translation vector from the camera to the tag
-        double x = detection.pose.x;
-        double y = detection.pose.y;
-        double z = detection.pose.z;
-
-        // Get the yaw angle from the rotation matrix
-        double cameraYaw = getYawFromRotationMatrix(detection.pose.R);
-
-        // Calculate total distance to tag in XZ plane
-        double distance = Math.sqrt(x * x + z * z);
-
-        // Calculate angle to tag in camera frame
-        double angleToTag = Math.atan2(x, z);
-
-        // Apply camera mounting offsets
-        double offsetAngle = Math.toRadians(CAMERA_YAW_OFFSET);
-        double robotYaw = tagPose.heading.toDouble() - cameraYaw + offsetAngle;
+        // FTC's AprilTag detection provides pose in field coordinates
+        // ftcPose gives us range (distance), bearing (horizontal angle), and elevation (vertical angle)
+        double distance = detection.ftcPose.range;
+        double bearing = Math.toRadians(detection.ftcPose.bearing);
+        double yaw = Math.toRadians(detection.ftcPose.yaw);
 
         // Calculate robot's position relative to the tag
-        double robotX = tagPose.position.x - (distance * Math.cos(tagPose.heading.toDouble() + angleToTag));
-        double robotY = tagPose.position.y - (distance * Math.sin(tagPose.heading.toDouble() + angleToTag));
+        double relativeX = distance * Math.sin(bearing);
+        double relativeY = distance * Math.cos(bearing);
+
+        // Calculate robot's absolute position
+        double robotYaw = tagPose.heading.toDouble() - yaw + Math.toRadians(CAMERA_YAW_OFFSET);
+
+        // Calculate robot position in field coordinates
+        double robotX = tagPose.position.x - (relativeX * Math.cos(tagPose.heading.toDouble()) -
+                relativeY * Math.sin(tagPose.heading.toDouble()));
+        double robotY = tagPose.position.y - (relativeX * Math.sin(tagPose.heading.toDouble()) +
+                relativeY * Math.cos(tagPose.heading.toDouble()));
 
         // Apply camera position offsets
         robotX += CAMERA_X_OFFSET * Math.cos(robotYaw) - CAMERA_Y_OFFSET * Math.sin(robotYaw);
@@ -91,8 +72,10 @@ public class AprilTagPositionTracker {
             return currentPose;
         }
 
+        // Calculate confidence based on detection quality
         double confidence = calculateConfidence(detection);
 
+        // Weighted average between current pose and tag-based pose
         double newX = (currentPose.position.x * (1 - confidence)) + (tagBasedPose.position.x * confidence);
         double newY = (currentPose.position.y * (1 - confidence)) + (tagBasedPose.position.y * confidence);
         double newHeading = (currentPose.heading.toDouble() * (1 - confidence)) + (tagBasedPose.heading.toDouble() * confidence);
@@ -101,26 +84,16 @@ public class AprilTagPositionTracker {
     }
 
     /**
-     * Calculates confidence in the AprilTag detection based on distance and visibility
+     * Calculates confidence in the AprilTag detection based on distance and decision margin
      */
     public static double calculateConfidence(AprilTagDetection detection) {
-        // Calculate distance to tag
-        double distance = Math.sqrt(
-                detection.pose.x * detection.pose.x +
-                        detection.pose.y * detection.pose.y +
-                        detection.pose.z * detection.pose.z
-        );
+        // Distance confidence (max reliable distance around 60 inches)
+        double distanceConfidence = Math.max(0, Math.min(1, 1 - (detection.ftcPose.range / 60)));
 
-        // Confidence decreases with distance (max reliable distance around 60 inches)
-        double distanceConfidence = Math.max(0, Math.min(1, 1 - (distance / 60)));
+        // Decision margin confidence (normalized to 0-1 range)
+        double marginConfidence = Math.min(1.0, detection.decisionMargin / 20.0);
 
-        // Calculate angle confidence using rotation matrix determinant
-        // A determinant closer to 1 indicates a better view of the tag
-        double determinant = Math.abs(detection.pose.R.get(0, 0) *
-                detection.pose.R.get(1, 1) *
-                detection.pose.R.get(2, 2));
-        double angleConfidence = Math.max(0, Math.min(1, determinant));
-
-        return Math.max(0, Math.min(1, (distanceConfidence + angleConfidence) / 2));
+        // Weight the confidence factors (giving more weight to decision margin)
+        return Math.max(0, Math.min(1, (distanceConfidence * 0.3) + (marginConfidence * 0.7)));
     }
 }

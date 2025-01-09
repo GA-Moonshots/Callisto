@@ -44,13 +44,13 @@ public class AlignToGamePiece extends CommandBase {
         this.isRed = robot.isRed;
 
         // TODO: determine constants
-        this.Kp = 0;
-        this.minPower = 0;
-        this.tolerance = 0;
-        this.clawOffsetX = 0;
-        this.clawOffsetY = 0;
-        double frameWidth = 0;
-        double frameHeight = 0;
+        this.Kp = 1;
+        this.minPower = 1;
+        this.tolerance = 1;
+        this.clawOffsetX = 10;
+        this.clawOffsetY = 10;
+        double frameWidth = 400;
+        double frameHeight = 400;
 
         // =========================================================================
         // *** ADJUST THESE OFFSETS TO MATCH THE CLAW'S GRAB LOCATION ***

@@ -28,25 +28,35 @@ public class AprilTagTuningOpMode extends LinearOpMode {
 
     private static final CalibrationPoint[] CALIBRATION_POINTS = {
             // Center of field positions
+            // Red alliance positions
             new CalibrationPoint(
-                    new Pose2d(new Vector2d(0, 0), 0),
-                    "Field Center, Facing East (Right)"
+                    new Pose2d(new Vector2d(-48, -48), Math.toRadians(90)),
+                    "Red alliance scoring side"
             ),
             new CalibrationPoint(
-                    new Pose2d(new Vector2d(0, 0), Math.toRadians(90)),
-                    "Field Center, Facing North (Back Wall)"
+                    new Pose2d(new Vector2d(0, -48), Math.toRadians(180)),
+                    "Red alliance side wall"
             ),
 
-            // Red Alliance positions
             new CalibrationPoint(
-                    new Pose2d(new Vector2d(-24, 24), Math.toRadians(90)),
-                    "Red Alliance Quarter, Facing North"
+                    new Pose2d(new Vector2d(48, -48), Math.toRadians(270)),
+                    "Red Alliance loading side"
             ),
 
             // Blue Alliance positions
             new CalibrationPoint(
-                    new Pose2d(new Vector2d(24, -24), Math.toRadians(-90)),
-                    "Blue Alliance Quarter, Facing South"
+                    new Pose2d(new Vector2d(48, 48), Math.toRadians(270)),
+                    "Blue alliance scoring side"
+            ),
+
+            new CalibrationPoint(
+                    new Pose2d(new Vector2d(-48, 48), Math.toRadians(90)),
+                    "Blue alliance loading side"
+            ),
+
+            new CalibrationPoint(
+                    new Pose2d(new Vector2d(0, 48), Math.toRadians(360)),
+                    "Blue alliance side wall"
             )
     };
 
