@@ -73,7 +73,7 @@ public class AprilTagTuningOpMode extends LinearOpMode {
         telemetry.addLine("Current camera offset values:");
         telemetry.addData("CAMERA_X_OFFSET", AprilTagPositionTracker.CAMERA_X_OFFSET);
         telemetry.addData("CAMERA_Y_OFFSET", AprilTagPositionTracker.CAMERA_Y_OFFSET);
-        telemetry.addData("CAMERA_Z_OFFSET", AprilTagPositionTracker.CAMERA_Z_OFFSET);
+        telemetry.addData("CAMERA_Z_OFFSET", AprilTagPositionTracker.CAMERA_HEIGHT);
         telemetry.addData("CAMERA_YAW_OFFSET", AprilTagPositionTracker.CAMERA_YAW_OFFSET);
         telemetry.update();
 
