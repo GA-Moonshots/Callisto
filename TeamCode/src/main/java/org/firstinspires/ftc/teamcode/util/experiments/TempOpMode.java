@@ -44,8 +44,9 @@ public class TempOpMode extends LinearOpMode {
             telemetry.addData("Range", april.ftcPose.range);
 
             double distance = Math.sqrt(Math.pow(april.ftcPose.x, 2) + Math.pow(april.ftcPose.y, 2) + Math.pow(april.ftcPose.z, 2));
-
+            double planeDistance = april.ftcPose.range * -Math.cos(april.ftcPose.yaw);
             telemetry.addData("Distance", distance);
+            telemetry.addData("Plane Distance", planeDistance);
 
             Pose2d calculatedPose = AprilTagPositionTracker.calculateRobotPosition(april);
             telemetry.addData("Calculated Pose", calculatedPose);

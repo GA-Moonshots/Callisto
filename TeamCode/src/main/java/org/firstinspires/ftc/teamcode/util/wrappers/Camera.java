@@ -23,7 +23,6 @@ public class Camera implements AutoCloseable {
     public Camera(Callisto robot, Telemetry telemetry) {
         m_robot = robot;
         telemetry.addData("Camera Status", "Initializing...");
-        telemetry.update();
 
         // Create the AprilTag processor
         aprilTagProcessor = new AprilTagProcessor.Builder()
@@ -37,8 +36,13 @@ public class Camera implements AutoCloseable {
                 .addProcessor(aprilTagProcessor)
                 .build();
 
+        try {
+            FtcDashboard dashboard = FtcDashboard.getInstance();
+            dashboard.startCameraStream(visionPortal, 30);
+        } catch (Exception e) {
+            telemetry.addData("Camera Status", "Error: " + e.getMessage());
+        }
         telemetry.addData("Camera Status", "Initialized");
-        telemetry.update();
     }
 
     /**

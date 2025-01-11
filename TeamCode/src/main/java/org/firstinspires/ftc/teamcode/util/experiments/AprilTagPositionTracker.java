@@ -64,14 +64,14 @@ public class AprilTagPositionTracker {
 
         // First, use pitch to find the horizontal distance to the tag
         // This is the distance if we were to project everything onto the ground plane
-        double horizontalDistance = distance * Math.cos(pitch);
+        double planeDistance = distance * Math.sin(yaw);
 
         // Now split this horizontal distance into X and Y components using pitch
         // Since our camera is fixed straight ahead:
         // - The X component (left/right) comes from the pitch angle
         // - The Y component (forward/back) is what remains
-        double relativeX = horizontalDistance * Math.sin(pitch);
-        double relativeY = horizontalDistance * Math.cos(pitch);
+        double relativeX = planeDistance * Math.sin(pitch);
+        double relativeY = planeDistance * Math.cos(pitch);
 
         // We can verify our distance calculation using the height differential
         // The vertical component should match our known height difference
