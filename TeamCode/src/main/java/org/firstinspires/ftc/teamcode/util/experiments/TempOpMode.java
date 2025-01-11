@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.util.experiments;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -32,6 +33,9 @@ public class TempOpMode extends LinearOpMode {
         double distance = Math.sqrt(Math.pow(april.ftcPose.x, 2) + Math.pow(april.ftcPose.y, 2) + Math.pow(april.ftcPose.z, 2));
 
         telemetry.addData("Distance", distance);
+
+        Pose2d calculatedPose = AprilTagPositionTracker.calculateRobotPosition(april);
+        telemetry.addData("Calculated Pose", calculatedPose);
 
 
     }

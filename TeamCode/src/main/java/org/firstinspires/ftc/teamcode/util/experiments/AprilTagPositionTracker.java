@@ -39,13 +39,20 @@ public class AprilTagPositionTracker {
 
         // FTC's AprilTag detection provides pose in field coordinates
         // ftcPose gives us range (distance), bearing (horizontal angle), and elevation (vertical angle)
+
+        /*
+        Pitch is the measure of rotation about the X axis
+        Roll is the measure of rotation about the Y axis
+        Heading, or Yaw, is the measure of rotation about the Z axis
+         */
         double distance = detection.ftcPose.range;
-        double bearing = Math.toRadians(detection.ftcPose.bearing);
+        double pitch = Math.toRadians(detection.ftcPose.pitch);
         double yaw = Math.toRadians(detection.ftcPose.yaw);
 
         // Calculate robot's position relative to the tag
-        double relativeX = distance * Math.sin(bearing);
-        double relativeY = distance * Math.cos(bearing);
+            //TODO figure out if pitch is the angle closer or father from tag
+        double relativeX = distance * Math.cos(pitch);
+        double relativeY = distance * Math.sin(pitch);
 
         // Calculate robot's absolute position
         double robotYaw = tagPose.heading.toDouble() - yaw + Math.toRadians(CAMERA_YAW_OFFSET);

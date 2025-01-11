@@ -5,12 +5,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Callisto;
-//<<<<<<< HEAD
-//import org.firstinspires.ftc.teamcode.util.AprilTagPositionTracker;
-//=======
+
 import org.firstinspires.ftc.teamcode.util.experiments.AprilTagPositionTracker;
-//>>>>>>> fe8c5807a27b19e09370750ec94235cfffb56234
-import org.openftc.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
+
+
 import java.util.ArrayList;
 
 @TeleOp(name = "AprilTag Camera Tuning", group = "tuning")
@@ -106,9 +106,9 @@ public class AprilTagTuningOpMode extends LinearOpMode {
                         telemetry.addData("Current Position", currentPoint.description);
                         telemetry.addData("Tag ID", detection.id);
                         telemetry.addData("Raw Tag Distance", String.format("%.1f inches",
-                                Math.sqrt(detection.pose.x * detection.pose.x +
-                                        detection.pose.y * detection.pose.y +
-                                        detection.pose.z * detection.pose.z)));
+                                Math.sqrt(detection.ftcPose.x * detection.ftcPose.x +
+                                        detection.ftcPose.y * detection.ftcPose.y +
+                                        detection.ftcPose.z * detection.ftcPose.z)));
 
                         telemetry.addLine("\nPosition Comparison:");
                         telemetry.addData("Expected", formatPose(currentPoint.pose));
