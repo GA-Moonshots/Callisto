@@ -11,8 +11,14 @@ public class AprilTagPositionTracker {
     // Camera mounting constants - adjust these based on tuning results
     public static double CAMERA_X_OFFSET = 0.0;  // Left/Right from robot center (inches)
     public static double CAMERA_Y_OFFSET = 0.0;  // Forward/Back from robot center (inches)
-    public static double CAMERA_Z_OFFSET = 0.0;  // Up/Down from robot center (inches)
+    public static double CAMERA_HEIGHT = 11.0;   // Height of camera from ground (inches)
     public static double CAMERA_YAW_OFFSET = 0.0; // Rotation offset in degrees
+
+    // Field constants
+    public static double APRILTAG_HEIGHT = 5.9;  // Height of AprilTag centers from ground (inches)
+
+    // Derived constant - vertical distance between camera and tag centers
+    public static double HEIGHT_DIFFERENTIAL = CAMERA_HEIGHT - APRILTAG_HEIGHT;
 
     // Store AprilTag positions on the field (ID -> Position)
     private static final Map<Integer, Pose2d> TAG_POSITIONS = new HashMap<Integer, Pose2d>() {{
@@ -28,7 +34,18 @@ public class AprilTagPositionTracker {
     }};
 
     /**
-     * Calculates robot position based on AprilTag detection
+     * Calculates robot position based on AprilTag detection.
+     * Using fixed camera height and tag height, we can calculate position more accurately.
+     *
+     * For a camera mounted parallel to the ground:
+     * - Pitch = 0° when looking straight ahead
+     * - Positive pitch when looking up
+     * - Negative pitch when looking down
+     *
+     * The actual ground distance to the tag is calculated using:
+     * - The measured direct distance (range)
+     * - The known height difference between camera and tag
+     * - The pitch angle of the detection
      */
     public static Pose2d calculateRobotPosition(AprilTagDetection detection) {
         if (!TAG_POSITIONS.containsKey(detection.id)) {
@@ -37,24 +54,23 @@ public class AprilTagPositionTracker {
 
         Pose2d tagPose = TAG_POSITIONS.get(detection.id);
 
-        // FTC's AprilTag detection provides pose in field coordinates
-        // ftcPose gives us range (distance), bearing (horizontal angle), and elevation (vertical angle)
-
-        /*
-        Pitch is the measure of rotation about the X axis
-        Roll is the measure of rotation about the Y axis
-        Heading, or Yaw, is the measure of rotation about the Z axis
-         */
         double distance = detection.ftcPose.range;
         double pitch = Math.toRadians(detection.ftcPose.pitch);
         double yaw = Math.toRadians(detection.ftcPose.yaw);
 
         // Calculate robot's position relative to the tag
-            //TODO figure out if pitch is the angle closer or father from tag
-        double relativeX = distance * Math.cos(pitch);
-        double relativeY = distance * Math.sin(pitch);
+        // Since the camera is fixed straight ahead, pitch helps us determine:
+        // - relativeY: the forward distance (adjacent to pitch angle)
+        // - relativeX: the side-to-side distance based on yaw
+        double relativeY = distance * Math.cos(pitch);
+        double relativeX = distance * Math.sin(yaw);
 
-        // Calculate robot's absolute position
+        // We can verify our distance calculation using the height differential
+        double calculatedDistance = HEIGHT_DIFFERENTIAL / Math.sin(pitch);
+        // If the calculated and measured distances differ significantly,
+        // we might want to adjust our confidence in this measurement
+
+        // Calculate robot's absolute heading
         double robotYaw = tagPose.heading.toDouble() - yaw + Math.toRadians(CAMERA_YAW_OFFSET);
 
         // Calculate robot position in field coordinates
@@ -63,7 +79,7 @@ public class AprilTagPositionTracker {
         double robotY = tagPose.position.y - (relativeX * Math.sin(tagPose.heading.toDouble()) +
                 relativeY * Math.cos(tagPose.heading.toDouble()));
 
-        // Apply camera position offsets
+        // Apply camera position offsets to account for camera mounting position
         robotX += CAMERA_X_OFFSET * Math.cos(robotYaw) - CAMERA_Y_OFFSET * Math.sin(robotYaw);
         robotY += CAMERA_X_OFFSET * Math.sin(robotYaw) + CAMERA_Y_OFFSET * Math.cos(robotYaw);
 
@@ -91,7 +107,10 @@ public class AprilTagPositionTracker {
     }
 
     /**
-     * Calculates confidence in the AprilTag detection based on distance and decision margin
+     * Calculates confidence in the AprilTag detection based on:
+     * - Distance (closer is better)
+     * - Decision margin (higher is better)
+     * - Height differential accuracy (comparing measured vs calculated distances)
      */
     public static double calculateConfidence(AprilTagDetection detection) {
         // Distance confidence (max reliable distance around 60 inches)
@@ -100,7 +119,17 @@ public class AprilTagPositionTracker {
         // Decision margin confidence (normalized to 0-1 range)
         double marginConfidence = Math.min(1.0, detection.decisionMargin / 20.0);
 
-        // Weight the confidence factors (giving more weight to decision margin)
-        return Math.max(0, Math.min(1, (distanceConfidence * 0.3) + (marginConfidence * 0.7)));
+        // Calculate confidence based on height differential accuracy
+        double pitch = Math.toRadians(detection.ftcPose.pitch);
+        double calculatedDistance = HEIGHT_DIFFERENTIAL / Math.sin(pitch);
+        double measuredDistance = detection.ftcPose.range;
+        double distanceError = Math.abs(calculatedDistance - measuredDistance) / measuredDistance;
+        double heightConfidence = Math.max(0, 1 - distanceError);
+
+        // Weight the confidence factors
+        return Math.max(0, Math.min(1,
+                (distanceConfidence * 0.3) +
+                        (marginConfidence * 0.4) +
+                        (heightConfidence * 0.3)));
     }
 }
