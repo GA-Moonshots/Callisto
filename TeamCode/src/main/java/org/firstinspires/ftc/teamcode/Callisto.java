@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.Robot;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Button;
@@ -14,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.commands.AlignByApril;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.Rotate;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
@@ -249,7 +251,7 @@ public class Callisto extends Robot {
         }));
 
         // JOYSTICK LEFT - nothing
-         Button joyStickLeftTrigger = new GamepadButton(player2, GamepadKeys.Button.LEFT_STICK_BUTTON);
+        Button joyStickLeftTrigger = new GamepadButton(player2, GamepadKeys.Button.LEFT_STICK_BUTTON);
 
         // JOYSTICK RIGHT - nothing
         Button joyStickRightTrigger = new GamepadButton(player2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
@@ -280,7 +282,7 @@ public class Callisto extends Robot {
         if (left) {
             // RED LEFT
             if (isRed) {
-                 new SequentialCommandGroup(
+               /*  new SequentialCommandGroup(
                          // idea for the new atonomouse the old one is comented out
                          new InstantCommand(() ->{
                              lift.levelBasket();
@@ -373,6 +375,47 @@ public class Callisto extends Robot {
                          new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
                          // lower lift
                          new LiftLowerRTP(this)*/
+                // ).schedule();
+
+
+                new SequentialCommandGroup(
+                        // go to basket
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(180))),
+                        // rotate to face basket
+                        new Rotate(this, 230),
+                        //dump the block
+                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                        //lower lift
+                        new LiftLowerRTP(this),
+                        // rotate to face other block (might have to back up first),
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-57, -54), Math.toRadians(230))),
+                        new Rotate(this, 90),
+                        // move it front of the block
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-46.5, -49), Math.toRadians(90))),
+                        // put arm down
+                        new IntakeShoulderByTime(this, -0.25, 1600),
+                        //extend arm
+                        new IntakeExtensionWithTimeout(this, 0.5, 1500),
+                        // intake block. Maybe add a parallel where it also goes forward
+                        new ParallelCommandGroup(
+                                new IntakeSpinByTime(this, 2000, -0.3),
+                                new StrafeToPose(this, new Pose2d(new Vector2d(-46, -45), Math.toRadians(90)))
+                        ),
+                        // lift shouder up
+                        new IntakeShoulderByTime(this, 0.6, 1600),
+                        // spit it out and rotate(maybe)
+                        new ParallelCommandGroup(
+                                new IntakeSpinByTime(this, 3000, 0.4),
+                                new Rotate(this, 230)
+                        ),
+                        // go to basket
+                        new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(230))),
+                        //lower  the arm a tincy bit
+                        new IntakeShoulderByTime(this, -0.2, 2000),
+                        //dump the block
+                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
+                        //lower lift
+                        new LiftLowerRTP(this)
                 ).schedule();
             }
 
@@ -407,7 +450,7 @@ public class Callisto extends Robot {
                         // intake block
                         new IntakeSpinByTime(this, 200, 0.5),
                         // lift the shoulder
-                        new IntakeShoulderByTime(this, 0.4, 2500),
+                        new IntakeShoulderByTime(this, 0.6, 2500),
                         // spit it out
                         new IntakeSpinByTime(this, 2000, -0.6),
                         // intake arm
@@ -426,7 +469,7 @@ public class Callisto extends Robot {
         }
         // RIGHT SIDE
         else {
-            new StrafeByTime(this, 3.0, 0.25).schedule();
+            new AlignByApril(this, 14, 12, 12);
         }
     }
 

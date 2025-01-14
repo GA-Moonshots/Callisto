@@ -33,6 +33,7 @@ public class Camera implements AutoCloseable {
                 .setCameraPose(new Position(DistanceUnit.INCH, 8.0,8.0,8.0, lastDetectionTime), new YawPitchRollAngles(AngleUnit.DEGREES, 0.0, 0, 0, lastDetectionTime))
                 .setDrawCubeProjection(true)
                 .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                .setLensIntrinsics(822.189, 822.189, 282.673, 151.036)
                 .build();
 
         // Create the vision portal with live view

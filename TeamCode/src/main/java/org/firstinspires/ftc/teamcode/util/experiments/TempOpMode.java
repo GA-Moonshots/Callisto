@@ -19,6 +19,8 @@ public class TempOpMode extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new Callisto(this);
 
+        waitForStart();
+
         while(opModeIsActive()) {
 
             AprilTagDetection april = null;
@@ -52,9 +54,6 @@ public class TempOpMode extends LinearOpMode {
             telemetry.addData("Calculated Pose", calculatedPose);
 
             telemetry.update();
-
-
-
         }
     }
 }
