@@ -469,7 +469,7 @@ public class Callisto extends Robot {
         }
         // RIGHT SIDE
         else {
-            new AlignByApril(this, 14, 12, 12);
+            new AlignByApril(this, 16, 3.6, 19.7).schedule();
         }
     }
 

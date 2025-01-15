@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.commands;
 
+import android.sax.StartElementListener;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
@@ -18,7 +20,6 @@ public class AlignByApril extends CommandBase {
     private final Mecanum mecanum;
     private final double targetX;
     private final double targetY;
-    private final double targetYaw;
     private final int tagId;
     private boolean finished = false;
     private final FtcDashboard dashboard;
@@ -34,8 +35,7 @@ public class AlignByApril extends CommandBase {
         this.robot = robot;
         this.mecanum = robot.mecanum;
         this.targetX = targetX;
-        this.targetY = targetY;
-        this.targetYaw = 0; // Adjust as necessary for your use case
+        this.targetY = targetY;// Adjust as necessary for your use case
         this.tagId = tagId;
         this.dashboard = FtcDashboard.getInstance();
         this.timer = new Timing.Timer(DEFAULT_TIMEOUT);
@@ -45,50 +45,67 @@ public class AlignByApril extends CommandBase {
     @Override
     public void initialize() {
         timer.start();
+        mecanum.setGyroLocked();
+        robot.telemetry.addData("Align Started", true);
         finished = false;
     }
 
     @Override
     public void execute() {
-        AprilTagDetection detection = robot.sensors.camera.getLatestFreshDetections().get(0);
+        AprilTagDetection detection = null;
+
+        try {
+            detection = robot.sensors.camera.getLatestFreshDetections().get(0);
+        } catch (Exception e) {
+            robot.telemetry.addLine("detection failed");
+        }
+
         if (detection != null) {
             if (detection.id == tagId) {
                     double currentX = detection.ftcPose.x;
                     double currentY = detection.ftcPose.y;
 
+                    robot.telemetry.addData("X: ", currentX);
+                    robot.telemetry.addData("Y: ", currentY);
+
                     double xError = targetX - currentX;
                     double yError = targetY - currentY;
 
-                    double xSpeed = Math.max(-MAX_ADJUSTMENT_SPEED, Math.min(MAX_ADJUSTMENT_SPEED, xError));
-                    double ySpeed = Math.max(-MAX_ADJUSTMENT_SPEED, Math.min(MAX_ADJUSTMENT_SPEED, yError));
+                    double xSpeed = .1;
+                    double ySpeed = -.2;
 
                     mecanum.drive(xSpeed, ySpeed, 0);
 
-                    if (Math.abs(xError) < POSITION_TOLERANCE && Math.abs(yError) < POSITION_TOLERANCE) {
-                        finished = true;
-                        mecanum.stop();
-                        return;
+                    if (Math.abs(xError) < POSITION_TOLERANCE){
+
+                        mecanum.drive(0, ySpeed, 0);
+
+                        if (Math.abs(yError) < POSITION_TOLERANCE){
+                            mecanum.stop();
+                            finished = true;
+
+                        }
                     }
+
 
                     TelemetryPacket packet = new TelemetryPacket();
                     packet.put("X Error", xError);
                     packet.put("Y Error", yError);
 
                     dashboard.sendTelemetryPacket(packet);
-
-                    return;
-
             }
         }
     }
 
     @Override
     public boolean isFinished() {
+
         return finished;
     }
 
     @Override
     public void end(boolean interrupted) {
+        mecanum.setGyroUnlocked();
         mecanum.stop();
     }
 }

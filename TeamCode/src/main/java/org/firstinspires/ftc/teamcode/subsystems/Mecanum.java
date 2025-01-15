@@ -61,6 +61,13 @@ public class Mecanum extends RoadRunner {
         fieldCentricTarget = getZAngle();
     }
 
+    public void setGyroLocked(){
+        isGyroLocked = true;
+    }
+
+    public void setGyroUnlocked(){
+        isGyroLocked = true;
+    }
     /**
      * Translates desired motion into mecanum commands
      * @param forward negative is forward
