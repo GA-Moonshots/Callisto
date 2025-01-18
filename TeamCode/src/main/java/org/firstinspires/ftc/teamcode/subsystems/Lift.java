@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
 public class Lift extends SubsystemBase {
     // Instance variables
     private Callisto robot;
@@ -24,10 +26,14 @@ public class Lift extends SubsystemBase {
     public DcMotorEx motor1;
     public Servo basket;
 
+    public VoltageSensor voltageSensor;
+
     // Constructor
     public Lift(Callisto robot) {
         this.robot = robot;
         basket = robot.hardwareMap.get(Servo.class, Constants.LIFT_BASKET_SERVO_NAME);
+
+        voltageSensor = robot.hardwareMap.voltageSensor.iterator().next();
 
         // Initialize motor1 as DcMotorEx to use RUN_TO_POSITION
         motor1 = robot.hardwareMap.get(DcMotorEx.class, Constants.LIFT_MOTOR_NAME);
@@ -73,14 +79,16 @@ public class Lift extends SubsystemBase {
     }
 
     public boolean isUp() {
-        return Math.abs(motor1.getCurrentPosition() - Constants.HIGH_HEIGHT) < 230;
+        return Math.abs(motor1.getCurrentPosition() - Constants.HIGH_HEIGHT) < 250;
     }
 
-    public boolean isDown() { return motor1.getCurrentPosition() <= Constants.LOW_HEIGHT;}
+    public boolean isDown() { return motor1.getCurrentPosition() <= Constants.LOW_HEIGHT + 10;}
 
     @Override
     public void periodic() {
         // Telemetry for debugging
+        robot.telemetry.addData("voltage", voltageSensor.getVoltage());
+
         robot.telemetry.addData("Lift Position", motor1.getCurrentPosition());
     }
 }

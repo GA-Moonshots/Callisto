@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.AlignByApril;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.Rotate;
+import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimeout;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByPlayer;
@@ -27,7 +28,6 @@ import org.firstinspires.ftc.teamcode.commands.intake.IntakeSpinByTime;
 import org.firstinspires.ftc.teamcode.commands.intake.TransferBlock;
 import org.firstinspires.ftc.teamcode.commands.lift.LiftRaiseThenDump;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
-import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
@@ -204,14 +204,14 @@ public class Callisto extends Robot {
         Button downDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_DOWN);
         downDpadP2.whenPressed(new LiftLowerRTP(this));
 
-        // DPAD LEFT -- RAISE THEN DUMP THEN LOWER
-        Button leftDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_LEFT);
-        leftDpadP2.whenPressed(new SequentialCommandGroup(
-                // we always lower first to reset encoder
-                new LiftLowerRTP(this),
-                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                new LiftLowerRTP(this)
-        ));
+//        // DPAD LEFT -- RAISE THEN DUMP THEN LOWER
+//        Button leftDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_LEFT);
+//        leftDpadP2.whenPressed(new SequentialCommandGroup(
+//                // we always lower first to reset encoder
+//                new LiftLowerRTP(this),
+//                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true)
+// //               new LiftLowerRTP(this)
+//        ));
 
         // DPAD UP -- LIFT RAISE
         Button upDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_UP);
@@ -276,146 +276,53 @@ public class Callisto extends Robot {
         mecanum.makeRobotCentric();
         sensors = new SensorPackage(this);
 
+
         register(mecanum, lift, sensors);
 
         // LEFT SIDE
         if (left) {
             // RED LEFT
             if (isRed) {
-               /*  new SequentialCommandGroup(
-                         // idea for the new atonomouse the old one is comented out
-                         new InstantCommand(() ->{
-                             lift.levelBasket();
-                         }),
-                         //go to basket
-                         new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(180))),
-                         // rotate to face basket
-                         new Rotate(this, 230),
-                         //dump the block
-                         //new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                         // lower lift
-                         //new LiftLowerRTP(this),
-                         // move over not to bump  fence
-                         new StrafeToPose(this, new Pose2d(new Vector2d(-58, -59), Math.toRadians(230))),
-                        //rotate to "face" te second block
-                        new Rotate(this, 176),
-                        // move to second block
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-21.5, -31.5), Math.toRadians(176))),
-                         // shoulder down
-                         new IntakeShoulderByTime(this, -0.25, 1600),
-                         // parallel command where we move forward(to push) and extend the arm
-                         new StrafeToPose(this, new Pose2d(new Vector2d(-32, -29), Math.toRadians(176))),
-                        new IntakeExtensionWithTimeout(this, 0.5, 1500),
-                        //intake block
-                        new IntakeSpinByTime(this,3000, 0.35),
-                        // transfer
-                        new IntakeShoulderByTime(this, 0.5, 2000),
-                         new IntakeSpinByTime(this,3000,0.5),
-                         new IntakeSpinByTime(this,1000,-0.3)
-
-
-
-
-
-
-
-
-
-
-
-                        /* // set the assistant to be down
-                         new InstantCommand(() -> {
-                             intake.setAssistant(1);
-                            //level basket
-                            lift.levelBasket();
-                        }),
-                        //go to basket
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(180))),
-                        // rotate to face basket
-                        new Rotate(this, 230),
-                        //dump the block
-                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                        // lower lift
-                        new LiftLowerRTP(this),
-                         // rotate to face the other block vertically
-                         new StrafeToPose(this, new Pose2d(new Vector2d(-58, -59), Math.toRadians(230))),
-                         new Rotate(this, 92),
-                         // move to pose in front of the second block
-                         new StrafeToPose(this, new Pose2d(new Vector2d(-51.25, -58), Math.toRadians(90))),
-                         // lower shoulder
-                         new IntakeShoulderByTime(this, -0.4, 1000),
-                         // extend arm
-                         new IntakeExtensionWithTimeout(this, 0.3, 1500),
-                         // intake block and move forward
-                         new ParallelCommandGroup(
-                             new IntakeSpinByTime(this,3000, 0.3),
-                             new StrafeToPose(this, new Pose2d(new Vector2d(-51.25, -57), Math.toRadians(90)))
-                         ),
-                        // lift shoulder and level basket
-                         new IntakeShoulderByTime(this, 0.5, 2500),
-                         //
-                         new IntakeExtensionWithTimeout(this,0.25,500),
-                         // lift up the assistant
-                         new InstantCommand(() -> {
-                             intake.setAssistant(0);
-                         }),
-                         // level basket
-                         new InstantCommand(() -> {
-                             lift.levelBasket();
-                         }),
-                        // spit it out
-                        new IntakeSpinByTime(this,3000, -0.3),
-                        // retract arm
-                         new IntakeExtensionWithTimeout(this, 1.0, 1500),
-                        // go to basket
-                         new StrafeToPose(this, new Pose2d(new Vector2d(-61, -59), Math.toRadians(180))),
-                         // rotate to face basket
-                         new Rotate(this, 230),
-                         //dump the block
-                         new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                         // lower lift
-                         new LiftLowerRTP(this)*/
-                // ).schedule();
-
-
                 new SequentialCommandGroup(
-                        // go to basket
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(180))),
-                        // rotate to face basket
-                        new Rotate(this, 230),
-                        //dump the block
-                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                        //lower lift
-                        new LiftLowerRTP(this),
-                        // rotate to face other block (might have to back up first),
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-57, -54), Math.toRadians(230))),
-                        new Rotate(this, 90),
-                        // move it front of the block
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-46.5, -49), Math.toRadians(90))),
-                        // put arm down
-                        new IntakeShoulderByTime(this, -0.25, 1600),
-                        //extend arm
-                        new IntakeExtensionWithTimeout(this, 0.5, 1500),
-                        // intake block. Maybe add a parallel where it also goes forward
-                        new ParallelCommandGroup(
-                                new IntakeSpinByTime(this, 2000, -0.3),
-                                new StrafeToPose(this, new Pose2d(new Vector2d(-46, -45), Math.toRadians(90)))
-                        ),
-                        // lift shouder up
-                        new IntakeShoulderByTime(this, 0.6, 1600),
-                        // spit it out and rotate(maybe)
-                        new ParallelCommandGroup(
-                                new IntakeSpinByTime(this, 3000, 0.4),
-                                new Rotate(this, 230)
-                        ),
-                        // go to basket
-                        new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(230))),
-                        //lower  the arm a tincy bit
-                        new IntakeShoulderByTime(this, -0.2, 2000),
-                        //dump the block
-                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                        //lower lift
-                        new LiftLowerRTP(this)
+                    // go to basket
+
+                    new StrafeToPose(this, new Pose2d(new Vector2d(-59.3, -59.7), Math.toRadians(180))),
+
+                    // rotate to face basket
+                    new Rotate(this, 230),
+                    //dump the block
+                    new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, false),//used to bre true
+                    //lower lift
+                    new LiftLowerRTP(this),
+                    // rotate to face the second block
+                    new Rotate(this, 99),
+                    // nove to see april tag
+                    new StrafeToPose(this, new Pose2d(new Vector2d(-58, -55), Math.toRadians(99))),
+                    // move to in front of other block
+                 //   new AlignByApril(this,5.7, 19.3, -35, -52),
+                    // put arm down
+                    new IntakeShoulderByTime(this, -0.25, 3000),
+                    //extend arm
+                    new IntakeExtensionWithTimeout(this, 0.3, 1300),
+                    // intake block
+                    new IntakeSpinByTime(this, 2000, 0.3),
+                    // lift shouder up
+                    new IntakeShoulderByTime(this, 0.65, 1600),
+                    // spit it out and rotate(maybe)
+                    new ParallelCommandGroup(
+                        new IntakeSpinByTime(this, 3000, 0.35),
+                        new Rotate(this, 230)
+                    ),
+                    // de extend arm
+                    new IntakeExtensionWithTimeout(this, 0.8, 1000),
+                    // go to basket
+                    new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(230))),
+                    //lower  the arm a tincy bit
+                    new IntakeShoulderByTime(this, -0.2, 2000),
+                    //dump the block
+                    new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, false),
+                    //lower lift
+                    new LiftLowerRTP(this)
                 ).schedule();
             }
 
@@ -469,7 +376,9 @@ public class Callisto extends Robot {
         }
         // RIGHT SIDE
         else {
-            new AlignByApril(this, 16, 3.6, 19.7).schedule();
+        //    new AlignByApril(this,  5.4, 19.3, 0, 0).schedule();
+         //   new AlignByApril(this,  3, 19.7).schedule();
+            new StrafeByTime(this, 5, 0.25).schedule();
         }
     }
 

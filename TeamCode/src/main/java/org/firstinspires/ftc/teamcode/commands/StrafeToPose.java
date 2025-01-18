@@ -85,6 +85,8 @@ public class StrafeToPose extends CommandBase {
         robot.telemetry.addData("leftBack:", robot.mecanum.leftBack.getVelocity());
         robot.telemetry.addData("rightBack:", robot.mecanum.rightBack.getVelocity());
 
+        robot.telemetry.addData("Running Strafe To Pose: ", true);
+
 
         // Use the telemetryPacket with the action's run method:
         finished = !action.run(packet);

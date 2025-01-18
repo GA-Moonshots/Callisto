@@ -59,10 +59,14 @@ public class LiftLowerRTP extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+
         lift.motor1.setPower(0);
         lift.motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        if (!interrupted) {
-            lift.motor1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        }
+
+        lift.motor1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+//        if (!interrupted) {
+//            lift.motor1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//        }
     }
 }

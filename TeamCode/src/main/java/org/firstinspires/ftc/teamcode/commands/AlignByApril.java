@@ -4,14 +4,16 @@ import android.sax.StartElementListener;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.util.Timing;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 
 import java.util.ArrayList;
 
@@ -20,23 +22,37 @@ public class AlignByApril extends CommandBase {
     private final Mecanum mecanum;
     private final double targetX;
     private final double targetY;
-    private final int tagId;
+    private final double mecX;
+    private final double mecY;
     private boolean finished = false;
     private final FtcDashboard dashboard;
     private final Timing.Timer timer;
 
-    private static final double POSITION_TOLERANCE = 0.5; // inches
+    private static final double POSITION_TOLERANCE = 0.75; // inches
     private static final double ANGLE_TOLERANCE = 2.0; // degrees
     private static final double MAX_ADJUSTMENT_SPEED = 0.3;
-    private static final long DEFAULT_TIMEOUT = 5000;
-    // 5 seconds timeout
+    private static final long DEFAULT_TIMEOUT = 3; // 5 seconds timeout
 
-    public AlignByApril(Callisto robot, int tagId, double targetX, double targetY) {
+    private double currentX;
+    private double currentY;
+
+
+    private double yDelta;
+    private double xDelta;
+
+    private AprilTagDetection detection;
+
+    public AlignByApril(Callisto robot, double targetX, double targetY, double mecX, double mecY) {
         this.robot = robot;
         this.mecanum = robot.mecanum;
+
         this.targetX = targetX;
-        this.targetY = targetY;// Adjust as necessary for your use case
-        this.tagId = tagId;
+        this.targetY = targetY;
+
+        this.mecX = mecX;
+        this.mecY = mecY;
+
+        // Adjust as necessary for your use case
         this.dashboard = FtcDashboard.getInstance();
         this.timer = new Timing.Timer(DEFAULT_TIMEOUT);
         addRequirements(mecanum);
@@ -45,62 +61,57 @@ public class AlignByApril extends CommandBase {
     @Override
     public void initialize() {
         timer.start();
-        mecanum.setGyroLocked();
+        //mecanum.setGyroLocked();
         robot.telemetry.addData("Align Started", true);
-        finished = false;
     }
 
     @Override
     public void execute() {
-        AprilTagDetection detection = null;
 
         try {
             detection = robot.sensors.camera.getLatestFreshDetections().get(0);
         } catch (Exception e) {
-            robot.telemetry.addLine("detection failed");
+            robot.telemetry.addLine("Detection failed");
+            detection = null;
         }
 
         if (detection != null) {
-            if (detection.id == tagId) {
-                    double currentX = detection.ftcPose.x;
-                    double currentY = detection.ftcPose.y;
+            // Get the pose from the April Tag detection
 
-                    robot.telemetry.addData("X: ", currentX);
-                    robot.telemetry.addData("Y: ", currentY);
+            currentX = detection.ftcPose.x;
+            currentY = detection.ftcPose.y;
 
-                    double xError = targetX - currentX;
-                    double yError = targetY - currentY;
+            // AprilTag y and x are opposite of RRs
+            yDelta = Math.abs(targetX - currentX);
+            xDelta = Math.abs(targetY - currentY);
 
-                    double xSpeed = .1;
-                    double ySpeed = -.2;
-
-                    mecanum.drive(xSpeed, ySpeed, 0);
-
-                    if (Math.abs(xError) < POSITION_TOLERANCE){
-
-                        mecanum.drive(0, ySpeed, 0);
-
-                        if (Math.abs(yError) < POSITION_TOLERANCE){
-                            mecanum.stop();
-                            finished = true;
-
-                        }
-                    }
-
-
-                    TelemetryPacket packet = new TelemetryPacket();
-                    packet.put("X Error", xError);
-                    packet.put("Y Error", yError);
-
-                    dashboard.sendTelemetryPacket(packet);
-            }
+            new StrafeToPose(robot, new Pose2d(new Vector2d(mecX - xDelta,
+                    mecY + yDelta),
+                    mecanum.pose.heading)
+            ).schedule();
         }
+
+        robot.telemetry.addData("Tag X: ", currentX);
+        robot.telemetry.addData("Tag Y: ", currentY);
+
+        robot.telemetry.addData("Target X: ", targetX);
+        robot.telemetry.addData("Target Y: ", targetY);
+
+        robot.telemetry.addData("Y Delta", yDelta);
+        robot.telemetry.addData("X Delta", xDelta);
+
+        robot.telemetry.addData("X position: ", mecanum.pose.position.x);
+        robot.telemetry.addData("Y position: ", mecanum.pose.position.y);
     }
 
     @Override
     public boolean isFinished() {
-
-        return finished;
+        if(detection != null) {
+            return ((Math.abs(detection.ftcPose.x - targetX) < POSITION_TOLERANCE) &&
+                    (Math.abs(detection.ftcPose.y - targetY) < POSITION_TOLERANCE)) ||
+                    timer.done();
+        }
+        return true;
     }
 
     @Override

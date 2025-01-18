@@ -26,6 +26,8 @@ public class AutoBotDriveyPants extends CommandOpMode {
         left =  true;
 
         while(opModeInInit()) {
+
+
             // press X for blue and B for red
             if (gamepad1.x)
                 isRed = false;

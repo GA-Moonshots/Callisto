@@ -226,6 +226,7 @@ public class Mecanum extends RoadRunner {
 
     @Override
     public void periodic() {
+   //     telemetry.addData("Camera Status", robot.sensors.camera.getLatestFreshDetections().get(0));
         // SUBSYSTEMS SHOULD PERIODICALLY POST THEIR DATA
         try {
             postEncoderData();

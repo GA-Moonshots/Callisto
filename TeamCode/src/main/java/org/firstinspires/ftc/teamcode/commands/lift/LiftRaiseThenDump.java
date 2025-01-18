@@ -63,17 +63,18 @@ public class LiftRaiseThenDump extends CommandBase {
         if(lift.motor1.getCurrentPosition() > Constants.HIGH_HEIGHT * 0.9) {
             lift.motor1.setPower(0);
         }else{
-            lift.motor1.setPower(0.85);
+            lift.motor1.setPower(0.95);
         }
 
         // dump basket after delay
-        if(lift.isUp() && (skipDelay || timer.seconds() > 1.65)){
+        if(lift.isUp() && (skipDelay || timer.seconds() > .5)){
             lift.dumpBasket();
             if(dumpTime == 0){ dumpTime = timer.seconds(); }
 
-            if(dumpTime != 0 && timer.seconds() >= 0.8 + dumpTime ) {
+            if(dumpTime != 0 && timer.seconds() >= 1.8 + dumpTime ) { // used to be 0.8
                 lift.levelBasket();
                 finished = true;
+
             }
         }
     }

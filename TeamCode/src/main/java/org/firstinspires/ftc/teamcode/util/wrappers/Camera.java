@@ -73,6 +73,7 @@ public class Camera implements AutoCloseable {
         return new ArrayList<>(currentDetections);
     }
 
+
     @Override
     public void close() {
         if (visionPortal != null) {
