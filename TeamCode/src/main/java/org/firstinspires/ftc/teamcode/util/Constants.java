@@ -50,6 +50,7 @@ public class Constants {
     public static final String RIGHT_DIST_NAME = "right_distance";
     public static final String LEFT_DIST_NAME = "left_distance";
     public static final String WEBCAM_NAME = "Webcam 1";
+    public static final String LIMELIGHT_NAME = "limelight";
 
     // --------- MOTOR NAMES ---------
     public static final String LEFT_FRONT_NAME = "leftFront";

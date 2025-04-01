@@ -16,7 +16,7 @@ public class Intake extends SubsystemBase {
     public Servo extensionServo;
     public CRServo spinServo;
 
-    public Servo assistantServo; // name dependent
+
 
     // Motor for the shoulder
     public DcMotorEx shoulderMotor;
@@ -31,7 +31,7 @@ public class Intake extends SubsystemBase {
         // Set up the servos
         extensionServo = robot.hardwareMap.get(Servo.class, Constants.EXTEND_INTAKE_SERVO);
         spinServo = robot.hardwareMap.get(com.qualcomm.robotcore.hardware.CRServo.class, Constants.SPIN_INTAKE_SERVO);
-        assistantServo = robot.hardwareMap.get(Servo.class, Constants.ASSISTANT_SERVO_NAME);
+
 
         extensionServo.setPosition(1);
     }
@@ -74,16 +74,7 @@ public class Intake extends SubsystemBase {
         spinServo.setPower(0.0);
     }
 
-    public void toggleAssistant() {
-        if(assistantServo.getPosition() == 1){
-            assistantServo.setPosition(0);
-        }else{
-            assistantServo.setPosition(1);
-        }
-    }
-    public void setAssistant(int position) {
-        assistantServo.setPosition(position);
-    }
+
 
     // Method to get the current shoulder position
     public double getShoulderPosition() {

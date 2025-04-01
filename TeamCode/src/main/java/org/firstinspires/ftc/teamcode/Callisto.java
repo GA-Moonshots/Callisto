@@ -222,10 +222,7 @@ public class Callisto extends Robot {
         ));
 
         // DPAD RIGHT -- ASSISTANT
-        Button rightDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_RIGHT);
-        rightDpadP2.whenPressed(new InstantCommand(() -> {
-            intake.toggleAssistant();
-        }));
+
 
         // RIGHT BUMPER -- NEGATIVE SPIN INTAKE
         Button rightBumperP2 = new GamepadButton(player2, GamepadKeys.Button.RIGHT_BUMPER);
