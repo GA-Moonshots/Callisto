@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.AlignByApril;
+import org.firstinspires.ftc.teamcode.commands.AprilLimeDetect;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.Rotate;
 import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
@@ -29,6 +30,7 @@ import org.firstinspires.ftc.teamcode.commands.intake.TransferBlock;
 import org.firstinspires.ftc.teamcode.commands.lift.LiftRaiseThenDump;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
 import org.firstinspires.ftc.teamcode.util.Constants;
@@ -51,6 +53,7 @@ public class Callisto extends Robot {
     public SensorPackage sensors;
     public Lift lift;
     public Intake intake;
+    public Limelight limelight;
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
@@ -89,6 +92,7 @@ public class Callisto extends Robot {
         lift = new Lift(this);
         intake = new Intake(this);
         sensors = new SensorPackage(this);
+        limelight = new Limelight(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
@@ -97,6 +101,7 @@ public class Callisto extends Robot {
         // Setting Default Commands. When not doing anything, respond to the controller
         mecanum.setDefaultCommand(new Drive(this));
         intake.setDefaultCommand(new IntakeShoulderByPlayer(this));
+        limelight.setDefaultCommand(new AprilLimeDetect(this));
 
         /*
                 .__                                      ____
@@ -158,27 +163,27 @@ public class Callisto extends Robot {
         | |                ( )_| |
         (_)                `\___/'-50  -50      */
 
-        // BUTTON A -- INTAKE RETRACT
-        Button aButtonP2 = new GamepadButton(player2, GamepadKeys.Button.A);
-        aButtonP2.whenPressed(new InstantCommand(() -> {
-            intake.setExtension(1);
-        }));
-
-        // BUTTON X -- INTAKE
-        Button xButtonP2 = new GamepadButton(player2, GamepadKeys.Button.X);
-        // xButtonP2.whenPressed(new IntakeExtend(this));
-        xButtonP2.whenPressed(new InstantCommand(() -> {
-            intake.setExtension(0.5);
-        }));
-
-        // BUTTON X -- INTAKE ALL THE WAY
-        // xButtonP2.whenPressed(new IntakeExtend(this));
-        xButtonP2.whenHeld(new InstantCommand(() -> {
-            intake.setExtension(0);
-        }));
-        xButtonP2.whenReleased(new InstantCommand(() -> {
-            intake.setExtension(0.5);
-        }));
+//        // BUTTON A -- INTAKE RETRACT
+//        Button aButtonP2 = new GamepadButton(player2, GamepadKeys.Button.A);
+//        aButtonP2.whenPressed(new InstantCommand(() -> {
+//            intake.setExtension(1);
+//        }));
+//
+//        // BUTTON X -- INTAKE
+//        Button xButtonP2 = new GamepadButton(player2, GamepadKeys.Button.X);
+//        // xButtonP2.whenPressed(new IntakeExtend(this));
+//        xButtonP2.whenPressed(new InstantCommand(() -> {
+//            intake.setExtension(0.5);
+//        }));
+//
+//        // BUTTON X -- INTAKE ALL THE WAY
+//        // xButtonP2.whenPressed(new IntakeExtend(this));
+//        xButtonP2.whenHeld(new InstantCommand(() -> {
+//            intake.setExtension(0);
+//        }));
+//        xButtonP2.whenReleased(new InstantCommand(() -> {
+//            intake.setExtension(0.5);
+//        }));
 
         // BUTTON B -- DUMP BASKET
         Button bButtonP2 = new GamepadButton(player2, GamepadKeys.Button.B);
@@ -272,9 +277,9 @@ public class Callisto extends Robot {
         intake = new Intake(this);
         mecanum.makeRobotCentric();
         sensors = new SensorPackage(this);
+        limelight = new Limelight(this);
 
-
-        register(mecanum, lift, sensors);
+        register(mecanum, lift, sensors, limelight);
 
         // LEFT SIDE
         if (left) {
