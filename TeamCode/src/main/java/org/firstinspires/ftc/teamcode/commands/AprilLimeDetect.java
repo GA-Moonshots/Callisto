@@ -4,15 +4,11 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.util.Timing;
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
-import org.firstinspires.ftc.teamcode.util.Constants;
-
-import java.util.List;
 
 public class AprilLimeDetect extends CommandBase {
     private final Callisto robot;
@@ -75,7 +71,6 @@ public class AprilLimeDetect extends CommandBase {
         if(fromDetect != null){
             robot.telemetry.addData("Object is not null", true);
             robot.mecanum.pose = fromDetect;
-          //  robot.mecanum.updatePoseEstimate();
             robot.telemetry.addData("Roadrunner(postion): ", robot.mecanum.pose.position.toString());
             robot.telemetry.addData("Roadrunner(heading): ", robot.mecanum.pose.heading.toString());
         }
