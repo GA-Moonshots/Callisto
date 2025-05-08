@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands.intake;
 
-import com.arcrobotics.ftclib.command.CommandBase;
+import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;

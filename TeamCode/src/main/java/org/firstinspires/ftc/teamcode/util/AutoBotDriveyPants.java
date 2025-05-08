@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.Robot;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.Robot;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.commands.SavePoseCommand;
@@ -22,12 +22,10 @@ public class AutoBotDriveyPants extends CommandOpMode {
     @Override
     public void initialize() {
 
-        isRed = true ;//false;
+        isRed = true ;
         left =  true;
 
         while(opModeInInit()) {
-
-
             // press X for blue and B for red
             if (gamepad1.x)
                 isRed = false;

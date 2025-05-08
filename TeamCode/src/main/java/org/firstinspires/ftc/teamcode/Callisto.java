@@ -2,33 +2,24 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.Robot;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.button.Button;
-import com.arcrobotics.ftclib.command.button.GamepadButton;
-import com.arcrobotics.ftclib.command.button.Trigger;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.Robot;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.button.Button;
+import com.seattlesolvers.solverslib.command.button.GamepadButton;
+import com.seattlesolvers.solverslib.command.button.Trigger;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.commands.AlignByApril;
 import org.firstinspires.ftc.teamcode.commands.AprilLimeDetect;
 import org.firstinspires.ftc.teamcode.commands.Drive;
-import org.firstinspires.ftc.teamcode.commands.Rotate;
-import org.firstinspires.ftc.teamcode.commands.StrafeByTime;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
-import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimeout;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByPlayer;
-import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByTime;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderDown;
-import org.firstinspires.ftc.teamcode.commands.intake.IntakeSpinByTime;
 import org.firstinspires.ftc.teamcode.commands.intake.TransferBlock;
-import org.firstinspires.ftc.teamcode.commands.lift.LiftRaiseThenDump;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Limelight;
@@ -105,12 +96,14 @@ public class Callisto extends Robot {
         limelight.setDefaultCommand(new AprilLimeDetect(this));
 
         /*
+
                 .__                                      ____
         ______  |  |  _____   ___.__.  ____ _______     /_   |
         \____ \ |  |  \__  \ <   |  |_/ __ \\_  __ \     |   |
         |  |_> >|  |__ / __ \_\___  |\  ___/ |  | \/     |   |
         |   __/ |____/(____  // ____| \___  >|__|        |___|
         |__|               \/ \/          \/
+
         */
 
         // BUTTON A -- TOGGLE FIELD / ROBOT CENTRIC
@@ -148,6 +141,7 @@ public class Callisto extends Robot {
         dPadRightP1.whenPressed(new StrafeToPose(this, new Pose2d(new Vector2d(-36, -62), Math.toRadians(180))));
 
         /*
+
                 _                                    __
                (_ )                                /'__`\
          _ _    | |    _ _  _   _    __   _ __    (_)  ) )
@@ -192,9 +186,6 @@ public class Callisto extends Robot {
                 new LiftRaiseRTP(this, Constants.HIGH_HEIGHT)
         ));
 
-        // DPAD RIGHT -- ASSISTANT
-
-
         // RIGHT BUMPER -- NEGATIVE SPIN INTAKE
         Button rightBumperP2 = new GamepadButton(player2, GamepadKeys.Button.RIGHT_BUMPER);
         rightBumperP2.whenHeld(new InstantCommand(() -> {
@@ -223,7 +214,6 @@ public class Callisto extends Robot {
 
         // JOYSTICK RIGHT - nothing
         Button joyStickRightTrigger = new GamepadButton(player2, GamepadKeys.Button.RIGHT_STICK_BUTTON);
-
     }
 
     /**

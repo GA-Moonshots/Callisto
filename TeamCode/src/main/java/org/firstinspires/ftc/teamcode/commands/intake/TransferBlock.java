@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.commands.intake;
 
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeExtensionWithTimeout;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByTime;

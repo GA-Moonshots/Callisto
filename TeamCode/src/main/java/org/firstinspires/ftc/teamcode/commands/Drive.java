@@ -5,8 +5,8 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.command.CommandBase;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.Callisto;

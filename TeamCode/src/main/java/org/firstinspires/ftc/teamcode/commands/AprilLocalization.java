@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.commands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
-import com.arcrobotics.ftclib.command.Robot;
+import com.seattlesolvers.solverslib.command.CommandBase;
+import com.seattlesolvers.solverslib.command.Robot;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.wrappers.Camera;
