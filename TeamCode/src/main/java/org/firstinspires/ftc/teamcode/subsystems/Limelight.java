@@ -8,6 +8,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
@@ -37,7 +38,7 @@ public class Limelight extends SubsystemBase {
         limelight.pipelineSwitch(channel);
     }
 
-    public LLResult limelightRun() {
+    public LLResult getResult() {
         LLResult result = limelight.getLatestResult();
         return result;
     }

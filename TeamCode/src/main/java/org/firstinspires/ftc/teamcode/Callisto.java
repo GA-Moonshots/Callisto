@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -124,10 +125,11 @@ public class Callisto extends Robot {
             mecanum.resetFieldCentricTarget();
         })); */
 
-        // BUTTON B -- TURN 90
+        // BUTTON B -- TRY TO MAKE IT TO A POSE USING LIMELIGHT
         Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
         bButtonP1.whenPressed(new InstantCommand(() -> {
-            new RotateByIMU(this, 180, 1.45, 0.385).schedule();
+            telemetry.addData("Curent Pose", mecanum.pose);
+            new StrafeToPose(this, new Pose2d(new Vector2d(-48, 0), Math.toRadians(180)));
         }));
 
         // BUTTON X -- TURN 180
@@ -209,14 +211,6 @@ public class Callisto extends Robot {
         Button downDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_DOWN);
         downDpadP2.whenPressed(new LiftLowerRTP(this));
 
-//        // DPAD LEFT -- RAISE THEN DUMP THEN LOWER
-//        Button leftDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_LEFT);
-//        leftDpadP2.whenPressed(new SequentialCommandGroup(
-//                // we always lower first to reset encoder
-//                new LiftLowerRTP(this),
-//                new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true)
-// //               new LiftLowerRTP(this)
-//        ));
 
         // DPAD UP -- LIFT RAISE
         Button upDpadP2 = new GamepadButton(player2, GamepadKeys.Button.DPAD_UP);
@@ -281,108 +275,9 @@ public class Callisto extends Robot {
 
         register(mecanum, lift, sensors, limelight);
 
-        // LEFT SIDE
-        if (left) {
-            // RED LEFT
-            if (isRed) {
-                new SequentialCommandGroup(
-                    // go to basket
-
-                    new StrafeToPose(this, new Pose2d(new Vector2d(-59.3, -59.7), Math.toRadians(180))),
-
-                    // rotate to face basket
-                    new Rotate(this, 230),
-                    //dump the block
-                    new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, false),//used to bre true
-                    //lower lift
-                    new LiftLowerRTP(this),
-                    // rotate to face the second block
-                    new Rotate(this, 99),
-                    // nove to see april tag
-                    new StrafeToPose(this, new Pose2d(new Vector2d(-58, -55), Math.toRadians(99))),
-                    // move to in front of other block
-                 //   new AlignByApril(this,5.7, 19.3, -35, -52),
-                    // put arm down
-                    new IntakeShoulderByTime(this, -0.25, 3000),
-                    //extend arm
-                    new IntakeExtensionWithTimeout(this, 0.3, 1300),
-                    // intake block
-                    new IntakeSpinByTime(this, 2000, 0.3),
-                    // lift shouder up
-                    new IntakeShoulderByTime(this, 0.65, 1600),
-                    // spit it out and rotate(maybe)
-                    new ParallelCommandGroup(
-                        new IntakeSpinByTime(this, 3000, 0.35),
-                        new Rotate(this, 230)
-                    ),
-                    // de extend arm
-                    new IntakeExtensionWithTimeout(this, 0.8, 1000),
-                    // go to basket
-                    new StrafeToPose(this, new Pose2d(new Vector2d(-59.5, -60), Math.toRadians(230))),
-                    //lower  the arm a tincy bit
-                    new IntakeShoulderByTime(this, -0.2, 2000),
-                    //dump the block
-                    new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, false),
-                    //lower lift
-                    new LiftLowerRTP(this)
-                ).schedule();
-            }
-
-            // BLUE LEFT
-            else {
-                // UNTESTED MIRRORED CODE
-                new SequentialCommandGroup(
-                        // level basket
-                        new InstantCommand(() -> {
-                            lift.levelBasket();
-                        }),
-                        // go to basket (mirrored from -59, -59.5 to 59, 59.5)
-                        new StrafeToPose(this, new Pose2d(new Vector2d(59, 59.5), Math.toRadians(0))),
-                        // rotate to face basket (230 becomes 130 for blue side)
-                        new Rotate(this, 50),
-                        // dump the block
-                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                        // lower lift
-                        new LiftLowerRTP(this),
-
-                        // rotate to face other block (98 becomes 262)
-                        new Rotate(this, 262),
-                        new InstantCommand(() -> {
-                            lift.levelBasket();
-                        }),
-                        // move forward to other block (mirrored from -58, -53.25 to 58, 53.25)
-                        new StrafeToPose(this, new Pose2d(new Vector2d(58, 53.25), Math.toRadians(135))), // 225 becomes 135
-                        // lower shoulder
-                        new IntakeShoulderByTime(this, -0.4, 2500),
-                        // extend the arm
-                        new IntakeExtensionWithTimeout(this, 0.05, 1000),
-                        // intake block
-                        new IntakeSpinByTime(this, 200, 0.5),
-                        // lift the shoulder
-                        new IntakeShoulderByTime(this, 0.6, 2500),
-                        // spit it out
-                        new IntakeSpinByTime(this, 2000, -0.6),
-                        // intake arm
-                        new IntakeExtensionWithTimeout(this, 1, 1500),
-                        // go to basket (mirrored from -59, -59.5 to 59, 59.5)
-                        new StrafeToPose(this, new Pose2d(new Vector2d(59, 59.5), Math.toRadians(0))),
-                        // rotate to face basket (230 becomes 130)
-                        new Rotate(this, 50),
-
-                        // dump the block
-                        new LiftRaiseThenDump(this, Constants.HIGH_HEIGHT, true),
-                        // lower lift
-                        new LiftLowerRTP(this)
-                ).schedule();
-            }
-        }
-        // RIGHT SIDE
-        else {
-        //    new AlignByApril(this,  5.4, 19.3, 0, 0).schedule();
-         //   new AlignByApril(this,  3, 19.7).schedule();
-            new StrafeByTime(this, 5, 0.25).schedule();
-        }
+        new SequentialCommandGroup(
+                new AprilLimeDetect(this),
+                new StrafeToPose(this, new Pose2d(-50, 0, 180))
+        ).schedule();
     }
-
-
 }
