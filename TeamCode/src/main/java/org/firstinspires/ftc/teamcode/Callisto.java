@@ -119,12 +119,6 @@ public class Callisto extends Robot {
             mecanum.toggleFieldCentric();
         }));
 
-      /*  // BUTTON B -- RESET FIELD CENTRIC TARGET
-        Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
-        bButtonP1.whenPressed(new InstantCommand(() -> {
-            mecanum.resetFieldCentricTarget();
-        })); */
-
         // BUTTON B -- TRY TO MAKE IT TO A POSE USING LIMELIGHT
         Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
         bButtonP1.whenPressed(new InstantCommand(() -> {
@@ -153,8 +147,6 @@ public class Callisto extends Robot {
 
         dPadRightP1.whenPressed(new StrafeToPose(this, new Pose2d(new Vector2d(-36, -62), Math.toRadians(180))));
 
-
-
         /*
                 _                                    __
                (_ )                                /'__`\
@@ -163,29 +155,9 @@ public class Callisto extends Robot {
         | (_) ) | | ( (_| || (_) |(  ___/| |       /' /( )
         | ,__/'(___)`\__,_)`\__, |`\____)(_)      (_____/'
         | |                ( )_| |
-        (_)                `\___/'-50  -50      */
+        (_)                `\___/'
 
-//        // BUTTON A -- INTAKE RETRACT
-//        Button aButtonP2 = new GamepadButton(player2, GamepadKeys.Button.A);
-//        aButtonP2.whenPressed(new InstantCommand(() -> {
-//            intake.setExtension(1);
-//        }));
-//
-//        // BUTTON X -- INTAKE
-//        Button xButtonP2 = new GamepadButton(player2, GamepadKeys.Button.X);
-//        // xButtonP2.whenPressed(new IntakeExtend(this));
-//        xButtonP2.whenPressed(new InstantCommand(() -> {
-//            intake.setExtension(0.5);
-//        }));
-//
-//        // BUTTON X -- INTAKE ALL THE WAY
-//        // xButtonP2.whenPressed(new IntakeExtend(this));
-//        xButtonP2.whenHeld(new InstantCommand(() -> {
-//            intake.setExtension(0);
-//        }));
-//        xButtonP2.whenReleased(new InstantCommand(() -> {
-//            intake.setExtension(0.5);
-//        }));
+        */
 
         // BUTTON B -- DUMP BASKET
         Button bButtonP2 = new GamepadButton(player2, GamepadKeys.Button.B);
