@@ -9,9 +9,10 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.util.MoonBase;
 
-public class Intake extends SubsystemBase {
-    private Callisto robot;
+public class Intake extends MoonBase {
+
 
     public Servo extensionServo;
     public CRServo spinServo;
@@ -24,7 +25,7 @@ public class Intake extends SubsystemBase {
     public boolean isExtended = false;
 
     public Intake(Callisto robot) {
-        this.robot = robot;
+        super(robot);
         shoulderMotor = robot.hardwareMap.get(DcMotorEx.class, Constants.SHOULDER_MOTOR_NAME);
         shoulderMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -66,7 +67,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setSpinSpeed(double speed) {
-        robot.telemetry.addData("Is it Spinning", speed != 0);
+        telemetry.addData("Is it Spinning", speed != 0);
         spinServo.setPower(speed);
     }
 
@@ -95,7 +96,7 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
 
-        robot.telemetry.addData("Intake Servo", extensionServo.getPosition());
+        telemetry.addData("Intake Servo", extensionServo.getPosition());
 
         String shoulderState = isUp() ? "Up"
                 : isNearUp() ? "Near Up"
@@ -103,7 +104,7 @@ public class Intake extends SubsystemBase {
                 : isNearDown() ? "Near Down"
                 : "Unknown";
         if(extensionServo != null)
-            robot.telemetry.addData("Intake: ", "Extension: " + extensionServo.getPosition() + ", Shoulder: " + shoulderState);
+            telemetry.addData("Intake: ", "Extension: " + extensionServo.getPosition() + ", Shoulder: " + shoulderState);
         // Output the current position of the shoulder motor
    //     if(shoulderMotor != null)
            // robot.telemetry.addData("Shoulder Position", getShoulderPosition());

@@ -257,6 +257,7 @@ public class RoadRunner extends SubsystemBase {
         // TODO: reverse motor directions if needed
            //rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
            //rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        // ??? is this configured the same way as ThreeDeadWheelLocalizer ???
            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)

@@ -1,16 +1,15 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.util.MoonBase;
 
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-public class Lift extends SubsystemBase {
-    // Instance variables
-    private Callisto robot;
+public class Lift extends MoonBase {
+
 
     // Enum to represent the different states of the basket (dump, nest, level)
     public enum BasketState {
@@ -30,7 +29,7 @@ public class Lift extends SubsystemBase {
 
     // Constructor
     public Lift(Callisto robot) {
-        this.robot = robot;
+        super(robot);
         basket = robot.hardwareMap.get(Servo.class, Constants.LIFT_BASKET_SERVO_NAME);
 
         voltageSensor = robot.hardwareMap.voltageSensor.iterator().next();
@@ -87,8 +86,8 @@ public class Lift extends SubsystemBase {
     @Override
     public void periodic() {
         // Telemetry for debugging
-        robot.telemetry.addData("voltage", voltageSensor.getVoltage());
+        telemetry.addData("voltage", voltageSensor.getVoltage());
 
-        robot.telemetry.addData("Lift Position", motor1.getCurrentPosition());
+        telemetry.addData("Lift Position", motor1.getCurrentPosition());
     }
 }

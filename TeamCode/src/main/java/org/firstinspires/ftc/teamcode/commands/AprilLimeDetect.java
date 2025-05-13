@@ -8,11 +8,11 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Callisto;
-import org.firstinspires.ftc.teamcode.subsystems.Limelight;
+import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
 
 public class AprilLimeDetect extends CommandBase {
     private final Callisto robot;
-    private final Limelight limelight;
+    private final SensorPackage sensors;
     private Timing.Timer timer;
 
     private boolean foundPose = false;
@@ -20,11 +20,11 @@ public class AprilLimeDetect extends CommandBase {
 
     public AprilLimeDetect(Callisto robot) {
         this.robot = robot;
-        this.limelight = robot.limelight;
+        this.sensors = robot.sensors;
 
         timer = new Timing.Timer((long) 3);
 
-        addRequirements(limelight);
+        addRequirements(sensors);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class AprilLimeDetect extends CommandBase {
     @Override
     public void execute() {
         robot.telemetry.addData("Detect Running:", true);
-        LLResult result = limelight.getResult();
+        LLResult result = sensors.getLLResult();
         if(result != null && result.isValid()) {
             double tx = result.getTx(); // How far the tag is from center horizontally
             double ty = result.getTy(); // Vertical offset
@@ -47,18 +47,17 @@ public class AprilLimeDetect extends CommandBase {
 
             robot.telemetry.addData("target id", result.getFiducialResults());
 
-            if(result != null && result.isValid()) {
-                Pose3D botpose = result.getBotpose();
-                if (botpose != null) {
-                    double x = botpose.getPosition().x;
-                    double y = botpose.getPosition().y;
-                    double theta = botpose.getOrientation().getYaw(AngleUnit.DEGREES);
-                    //robot.telemetry.addData("MT1 Location", "(" + (x * 39.3701) + "x inches, " + (y * 39.3701) + "y inches)");
-                    fromDetect = new Pose2d(x* 39.3701,y* 39.3701,theta);
-                    robot.telemetry.addData("Limelight Pose", fromDetect);
+            Pose3D botpose = result.getBotpose();
+            if (botpose != null) {
+                double x = botpose.getPosition().x;
+                double y = botpose.getPosition().y;
+                double theta = botpose.getOrientation().getYaw(AngleUnit.DEGREES);
+                //robot.telemetry.addData("MT1 Location", "(" + (x * 39.3701) + "x inches, " + (y * 39.3701) + "y inches)");
+                // what are these constants?
+                fromDetect = new Pose2d(x* 39.3701,y* 39.3701,theta);
+                robot.telemetry.addData("Limelight Pose", fromDetect);
 
-                    foundPose = true;
-                }
+                foundPose = true;
             }
         } else {
             robot.telemetry.addData("limelight", "No Targets");

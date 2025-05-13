@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderDown;
 import org.firstinspires.ftc.teamcode.commands.intake.TransferBlock;
 import org.firstinspires.ftc.teamcode.commands.RotateByIMU;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.subsystems.SensorPackage;
 import org.firstinspires.ftc.teamcode.util.Constants;
@@ -45,7 +44,6 @@ public class Callisto extends Robot {
     public SensorPackage sensors;
     public Lift lift;
     public Intake intake;
-    public Limelight limelight;
 
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
@@ -84,7 +82,6 @@ public class Callisto extends Robot {
         lift = new Lift(this);
         intake = new Intake(this);
         sensors = new SensorPackage(this);
-        limelight = new Limelight(this);
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
@@ -93,7 +90,6 @@ public class Callisto extends Robot {
         // Setting Default Commands. When not doing anything, respond to the controller
         mecanum.setDefaultCommand(new Drive(this));
         intake.setDefaultCommand(new IntakeShoulderByPlayer(this));
-        limelight.setDefaultCommand(new AprilLimeDetect(this));
 
         /*
 
@@ -231,11 +227,12 @@ public class Callisto extends Robot {
         mecanum = new Mecanum(this, start);
         lift = new Lift(this);
         intake = new Intake(this);
+        // ??? won't the limelight need fieldcentric? ???
         mecanum.makeRobotCentric();
         sensors = new SensorPackage(this);
-        limelight = new Limelight(this);
+        sensors.enableAprilTagTracking();
 
-        register(mecanum, lift, sensors, limelight);
+        register(mecanum, lift, sensors);
 
         new SequentialCommandGroup(
                 new AprilLimeDetect(this),
