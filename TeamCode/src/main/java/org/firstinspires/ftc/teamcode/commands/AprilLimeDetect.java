@@ -47,10 +47,14 @@ public class AprilLimeDetect extends CommandBase {
 
             robot.telemetry.addData("target id", result.getFiducialResults());
 
+
+
             Pose3D botpose = result.getBotpose();
             if (botpose != null) {
                 robot.sensors.updatePose(botpose);
-                foundPose = true;
+
+
+               foundPose = true;
             }
         } else {
             robot.telemetry.addData("limelight", "No Targets");

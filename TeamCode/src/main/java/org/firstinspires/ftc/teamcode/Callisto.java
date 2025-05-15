@@ -226,10 +226,8 @@ public class Callisto extends Robot {
         }
 
         mecanum = new Mecanum(this, start);
-        mecanum.pose = start;
         lift = new Lift(this);
         intake = new Intake(this);
-        // ??? won't the limelight need fieldcentric? ???
         mecanum.makeFieldCentric();
         sensors = new SensorPackage(this);
         sensors.enableAprilTagTracking();
@@ -238,6 +236,8 @@ public class Callisto extends Robot {
 
         new SequentialCommandGroup(
                 new AprilLimeDetect(this),
+
+
                 new StrafeToPose(this, new Pose2d(-50, 0, 180))
         ).schedule();
     }

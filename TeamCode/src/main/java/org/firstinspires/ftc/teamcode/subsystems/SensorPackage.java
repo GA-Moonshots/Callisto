@@ -37,15 +37,25 @@ public class SensorPackage extends MoonBase {
         return limelight.getLatestResult();
     }
 
+
     public void updatePose(Pose3D botpose){
         // TODO: should we stop the robot so we don't have unaccounted for momentum?
         double x = botpose.getPosition().x;
         double y = botpose.getPosition().y;
+        // replace with new wrapped theta
+
         double theta = botpose.getOrientation().getYaw(AngleUnit.DEGREES);
-        telemetry.addData("sensors:", "nuking history");
+        if(theta < 0) theta += 360;
+
+        //telemetry.addData("sensors:", "nuking history");
         robot.mecanum.nukeHistory();
-        robot.mecanum.pose = new Pose2d(x* 39.3701,y* 39.3701,theta);
+        robot.mecanum.pose = new Pose2d(x* 39.3701,y* 39.3701, Math.toRadians(theta));
+
         robot.mecanum.updatePoseEstimate();
+
+
+        robot.telemetry.addData("LL Theta",  theta);
+
     }
 
     @Override
