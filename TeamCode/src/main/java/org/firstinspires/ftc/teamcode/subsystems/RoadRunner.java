@@ -484,6 +484,10 @@ public class RoadRunner extends SubsystemBase {
         return twist.velocity().value();
     }
 
+    public void nukeHistory(){
+        // gulp
+        poseHistory.clear();
+    }
     private void drawPoseHistory(Canvas c) {
         double[] xPoints = new double[poseHistory.size()];
         double[] yPoints = new double[poseHistory.size()];

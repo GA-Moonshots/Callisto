@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Callisto;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.MoonBase;
@@ -35,16 +37,22 @@ public class SensorPackage extends MoonBase {
         return limelight.getLatestResult();
     }
 
-    public void passInValues(double x, double y, double theta) {
-        this.x = x;
-        this.y = y;
-        this.theta = theta;
+    public void updatePose(Pose3D botpose){
+        // TODO: should we stop the robot so we don't have unaccounted for momentum?
+        double x = botpose.getPosition().x;
+        double y = botpose.getPosition().y;
+        double theta = botpose.getOrientation().getYaw(AngleUnit.DEGREES);
+        telemetry.addData("sensors:", "nuking history");
+        robot.mecanum.nukeHistory();
+        robot.mecanum.pose = new Pose2d(x* 39.3701,y* 39.3701,theta);
+        robot.mecanum.updatePoseEstimate();
     }
 
     @Override
     public void periodic() {
         if (limelight != null && aprilTagPositionTracking) {
-            robot.mecanum.pose = new Pose2d(x,y,theta);
+            // TODO: Move command's execute logic here
+            // TODO: before we updatePose, check if there's enough of a difference
         }
         // !!! THIS SHOULD BE THE ONLY TELEMETRY UPDATE IN THE WHOLE PROJECT !!!
         telemetry.update();
