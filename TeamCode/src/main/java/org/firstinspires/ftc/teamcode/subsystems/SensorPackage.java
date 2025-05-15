@@ -23,6 +23,7 @@ public class SensorPackage extends MoonBase {
             limelight.setPollRateHz(100);
             limelight.start();
             // why pipelineswitch ??
+            // just to make sure its in the correct pipeline
             limelight.pipelineSwitch(0);
         } catch (Exception e) {
             telemetry.addData("Limelight Error", e.getMessage());
@@ -44,7 +45,6 @@ public class SensorPackage extends MoonBase {
     public void periodic() {
         if (limelight != null && aprilTagPositionTracking) {
             robot.mecanum.pose = new Pose2d(x,y,theta);
-            robot.mecanum.updatePoseEstimate();
         }
         // !!! THIS SHOULD BE THE ONLY TELEMETRY UPDATE IN THE WHOLE PROJECT !!!
         telemetry.update();

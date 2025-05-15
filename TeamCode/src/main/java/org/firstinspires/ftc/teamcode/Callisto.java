@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.AprilLimeDetect;
 import org.firstinspires.ftc.teamcode.commands.Drive;
+import org.firstinspires.ftc.teamcode.commands.SplineToPose;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderDown;
@@ -225,10 +226,11 @@ public class Callisto extends Robot {
         }
 
         mecanum = new Mecanum(this, start);
+        mecanum.pose = start;
         lift = new Lift(this);
         intake = new Intake(this);
         // ??? won't the limelight need fieldcentric? ???
-        mecanum.makeRobotCentric();
+        mecanum.makeFieldCentric();
         sensors = new SensorPackage(this);
         sensors.enableAprilTagTracking();
 

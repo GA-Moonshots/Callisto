@@ -232,6 +232,7 @@ public class Mecanum extends RoadRunner {
             postEncoderData();
         } catch (Exception ignored) {}
 
+        updatePoseEstimate();
     }
 
 }

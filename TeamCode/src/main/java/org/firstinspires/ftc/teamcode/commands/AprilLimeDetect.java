@@ -54,6 +54,7 @@ public class AprilLimeDetect extends CommandBase {
                 double theta = botpose.getOrientation().getYaw(AngleUnit.DEGREES);
                 //robot.telemetry.addData("MT1 Location", "(" + (x * 39.3701) + "x inches, " + (y * 39.3701) + "y inches)");
                 // what are these constants?
+                // inch conversions
                 fromDetect = new Pose2d(x* 39.3701,y* 39.3701,theta);
                 robot.telemetry.addData("Limelight Pose", fromDetect);
 
