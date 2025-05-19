@@ -14,9 +14,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.commands.AprilLimeDetect;
+import org.firstinspires.ftc.teamcode.util.experiments.AprilLimeDetect;
 import org.firstinspires.ftc.teamcode.commands.Drive;
-import org.firstinspires.ftc.teamcode.commands.SplineToPose;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderByPlayer;
 import org.firstinspires.ftc.teamcode.commands.intake.IntakeShoulderDown;
@@ -131,10 +130,13 @@ public class Callisto extends Robot {
         );
 
         Button dPadUpP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_UP);
+        // !!! - APRIL TAG TESTING --- !!!!
+        dPadUpP1.whenPressed(new AprilLimeDetect(this));
+
         Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
         Button dPadLeftP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
-        Button dPadRightP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
 
+        Button dPadRightP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
         dPadRightP1.whenPressed(new StrafeToPose(this, new Pose2d(new Vector2d(-36, -62), Math.toRadians(180))));
 
         /*
@@ -235,9 +237,6 @@ public class Callisto extends Robot {
         register(mecanum, lift, sensors);
 
         new SequentialCommandGroup(
-                new AprilLimeDetect(this),
-
-
                 new StrafeToPose(this, new Pose2d(-50, 0, 180))
         ).schedule();
     }
