@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util.experiments;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -36,7 +37,8 @@ public class AprilLimeDetect extends CommandBase {
     private final SensorPackage sensors;
     private Timing.Timer timer;
     private FtcDashboard dashboard;
-
+    private MultipleTelemetry telemetry;
+    
     // Movement test state tracking
     private boolean readyForMovementTest = false;
     private Pose2d preMovePose = null;
@@ -93,7 +95,8 @@ public class AprilLimeDetect extends CommandBase {
         // Reset state
         timer.start();
         sensors.enableAprilTagTracking();
-        robot.telemetry.addData("AprilTag Detect", "Started");
+        telemetry = new MultipleTelemetry(robot.telemetry, dashboard.getTelemetry());
+        telemetry.addData("AprilTag Detect", "Started");
 
         // Reset test state
         readyForMovementTest = false;
@@ -122,7 +125,7 @@ public class AprilLimeDetect extends CommandBase {
         // Process AprilTag detection if valid
         if(result != null && result.isValid()) {
             if (result.getFiducialResults() != null && !result.getFiducialResults().isEmpty()) {
-                robot.telemetry.addLine("⭐ AprilTag Detected ⭐");
+                telemetry.addLine("⭐ AprilTag Detected ⭐");
             }
 
             // Extract tag position data
@@ -154,44 +157,44 @@ public class AprilLimeDetect extends CommandBase {
                 double roadrunnerHeading = Math.toRadians(adjustedHeading);
 
                 // Display camera view data
-                robot.telemetry.addLine("⭐ AprilTag Detected ⭐");
-                robot.telemetry.addLine("----- Camera View -----");
-                robot.telemetry.addData("Horizontal Offset (tx)", String.format("%.2f", tx));
-                robot.telemetry.addData("Vertical Offset (ty)", String.format("%.2f", ty));
-                robot.telemetry.addData("Target Area (ta)", String.format("%.2f", ta));
+                telemetry.addLine("⭐ AprilTag Detected ⭐");
+                telemetry.addLine("----- Camera View -----");
+                telemetry.addData("Horizontal Offset (tx)", String.format("%.2f", tx));
+                telemetry.addData("Vertical Offset (ty)", String.format("%.2f", ty));
+                telemetry.addData("Target Area (ta)", String.format("%.2f", ta));
 
                 // Display raw position data
-                robot.telemetry.addLine("----- Raw Limelight Position (meters) -----");
-                robot.telemetry.addData("Raw X", String.format("%.3f m", rawX));
-                robot.telemetry.addData("Raw Y", String.format("%.3f m", rawY));
-                robot.telemetry.addData("Raw Heading", String.format("%.1f°", rawHeading));
+                telemetry.addLine("----- Raw Limelight Position (meters) -----");
+                telemetry.addData("Raw X", String.format("%.3f m", rawX));
+                telemetry.addData("Raw Y", String.format("%.3f m", rawY));
+                telemetry.addData("Raw Heading", String.format("%.1f°", rawHeading));
 
                 // Display adjusted position data
-                robot.telemetry.addLine("----- Adjusted Position (meters) -----");
-                robot.telemetry.addData("Adjusted X", String.format("%.3f m", adjustedX));
-                robot.telemetry.addData("Adjusted Y", String.format("%.3f m", adjustedY));
-                robot.telemetry.addData("Adjusted Heading", String.format("%.1f°", adjustedHeading));
+                telemetry.addLine("----- Adjusted Position (meters) -----");
+                telemetry.addData("Adjusted X", String.format("%.3f m", adjustedX));
+                telemetry.addData("Adjusted Y", String.format("%.3f m", adjustedY));
+                telemetry.addData("Adjusted Heading", String.format("%.1f°", adjustedHeading));
 
                 // Display RoadRunner position data
-                robot.telemetry.addLine("----- RoadRunner Position (inches) -----");
-                robot.telemetry.addData("RoadRunner X", String.format("%.1f in", roadrunnerX));
-                robot.telemetry.addData("RoadRunner Y", String.format("%.1f in", roadrunnerY));
-                robot.telemetry.addData("RoadRunner Heading", String.format("%.1f°", Math.toDegrees(roadrunnerHeading)));
+                telemetry.addLine("----- RoadRunner Position (inches) -----");
+                telemetry.addData("RoadRunner X", String.format("%.1f in", roadrunnerX));
+                telemetry.addData("RoadRunner Y", String.format("%.1f in", roadrunnerY));
+                telemetry.addData("RoadRunner Heading", String.format("%.1f°", Math.toDegrees(roadrunnerHeading)));
 
                 // Display current calibration offsets with active mode highlighted
-                robot.telemetry.addLine("----- Current Offsets -----");
-                robot.telemetry.addData("X Offset" + (currentMode == AdjustmentMode.X_OFFSET ? " ▶" : ""),
+                telemetry.addLine("----- Current Offsets -----");
+                telemetry.addData("X Offset" + (currentMode == AdjustmentMode.X_OFFSET ? " ▶" : ""),
                         String.format("%.3f m", xOffsetMeters));
-                robot.telemetry.addData("Y Offset" + (currentMode == AdjustmentMode.Y_OFFSET ? " ▶" : ""),
+                telemetry.addData("Y Offset" + (currentMode == AdjustmentMode.Y_OFFSET ? " ▶" : ""),
                         String.format("%.3f m", yOffsetMeters));
-                robot.telemetry.addData("Heading Offset" + (currentMode == AdjustmentMode.HEADING_OFFSET ? " ▶" : ""),
+                telemetry.addData("Heading Offset" + (currentMode == AdjustmentMode.HEADING_OFFSET ? " ▶" : ""),
                         String.format("%.1f°", headingOffsetDegrees));
 
                 // Compare with current RoadRunner pose
-                robot.telemetry.addLine("----- Current RoadRunner Pose -----");
-                robot.telemetry.addData("Current X", String.format("%.1f in", robot.mecanum.pose.position.x));
-                robot.telemetry.addData("Current Y", String.format("%.1f in", robot.mecanum.pose.position.y));
-                robot.telemetry.addData("Current Heading", String.format("%.1f°",
+                telemetry.addLine("----- Current RoadRunner Pose -----");
+                telemetry.addData("Current X", String.format("%.1f in", robot.mecanum.pose.position.x));
+                telemetry.addData("Current Y", String.format("%.1f in", robot.mecanum.pose.position.y));
+                telemetry.addData("Current Heading", String.format("%.1f°",
                         Math.toDegrees(robot.mecanum.pose.heading.toDouble())));
 
                 // Calculate differences between detected and current position
@@ -201,10 +204,10 @@ public class AprilLimeDetect extends CommandBase {
                         Math.toDegrees(roadrunnerHeading) -
                                 Math.toDegrees(robot.mecanum.pose.heading.toDouble()));
 
-                robot.telemetry.addLine("----- Position Differences -----");
-                robot.telemetry.addData("X Difference", String.format("%.1f in", xDiff));
-                robot.telemetry.addData("Y Difference", String.format("%.1f in", yDiff));
-                robot.telemetry.addData("Heading Difference", String.format("%.1f°", headingDiff));
+                telemetry.addLine("----- Position Differences -----");
+                telemetry.addData("X Difference", String.format("%.1f in", xDiff));
+                telemetry.addData("Y Difference", String.format("%.1f in", yDiff));
+                telemetry.addData("Heading Difference", String.format("%.1f°", headingDiff));
 
                 // Visualize on dashboard
                 packet.fieldOverlay()
@@ -220,14 +223,14 @@ public class AprilLimeDetect extends CommandBase {
                     // Record the starting pose before movement
                     preMovePose = new Pose2d(
                             roadrunnerX, roadrunnerY, roadrunnerHeading);
-                    robot.telemetry.addLine("⚠ MOVEMENT TEST: Starting Position Recorded ⚠");
+                    telemetry.addLine("⚠ MOVEMENT TEST: Starting Position Recorded ⚠");
                 }
 
                 if (hasMovementTestCompleted && postMovePose == null) {
                     // Record the ending pose after movement
                     postMovePose = new Pose2d(
                             roadrunnerX, roadrunnerY, roadrunnerHeading);
-                    robot.telemetry.addLine("⚠ MOVEMENT TEST: Ending Position Recorded ⚠");
+                    telemetry.addLine("⚠ MOVEMENT TEST: Ending Position Recorded ⚠");
 
                     // Calculate movement detected by AprilTag
                     if (preMovePose != null) {
@@ -236,48 +239,48 @@ public class AprilLimeDetect extends CommandBase {
                         double aprilTagRotate = Math.toDegrees(postMovePose.heading.toDouble() -
                                 preMovePose.heading.toDouble());
 
-                        robot.telemetry.addLine("----- Movement Test Results -----");
-                        robot.telemetry.addData("AprilTag-Detected X Movement",
+                        telemetry.addLine("----- Movement Test Results -----");
+                        telemetry.addData("AprilTag-Detected X Movement",
                                 String.format("%.1f in", aprilTagMoveX));
-                        robot.telemetry.addData("AprilTag-Detected Y Movement",
+                        telemetry.addData("AprilTag-Detected Y Movement",
                                 String.format("%.1f in", aprilTagMoveY));
-                        robot.telemetry.addData("AprilTag-Detected Rotation",
+                        telemetry.addData("AprilTag-Detected Rotation",
                                 String.format("%.1f°", aprilTagRotate));
                     }
                 }
             }
         } else {
             // Display status when no tag is detected
-            robot.telemetry.addData("Status", "No AprilTag detected");
-            robot.telemetry.addData("Last detection", lastTagDetectionTime > 0 ?
+            telemetry.addData("Status", "No AprilTag detected");
+            telemetry.addData("Last detection", lastTagDetectionTime > 0 ?
                     (System.currentTimeMillis() - lastTagDetectionTime) + "ms ago" : "Never");
             if (lastTagDetectionTime > 0 && lastBotpose != null) {
-                robot.telemetry.addData("Last Tag ID", tagID);
+                telemetry.addData("Last Tag ID", tagID);
             }
         }
 
         // Display movement test status
         if (!readyForMovementTest) {
-            robot.telemetry.addLine("\n🔵 Press B to start movement test");
+            telemetry.addLine("\n🔵 Press B to start movement test");
         } else if (preMovePose == null) {
-            robot.telemetry.addLine("\n🟡 Position yourself in view of AprilTag");
+            telemetry.addLine("\n🟡 Position yourself in view of AprilTag");
         } else if (!hasMovementTestCompleted) {
-            robot.telemetry.addLine("\n🟢 Press X to make test movement");
+            telemetry.addLine("\n🟢 Press X to make test movement");
         } else if (postMovePose == null) {
-            robot.telemetry.addLine("\n🟠 Waiting for AprilTag detection after movement");
+            telemetry.addLine("\n🟠 Waiting for AprilTag detection after movement");
         } else {
-            robot.telemetry.addLine("\n✅ Movement test complete!");
-            robot.telemetry.addLine("Press B again to reset test");
+            telemetry.addLine("\n✅ Movement test complete!");
+            telemetry.addLine("Press B again to reset test");
         }
 
         // Display button controls for adjustments
-        robot.telemetry.addLine("\n----- CONTROLS (LIMITED BUTTONS) -----");
-        robot.telemetry.addData("D-PAD RIGHT", "Cycle adjustment mode");
-        robot.telemetry.addData("D-PAD LEFT", "Increase selected value");
-        robot.telemetry.addData("D-PAD DOWN", "Decrease selected value");
-        robot.telemetry.addData("B Button", "Start/Reset movement test");
-        robot.telemetry.addData("X Button", "Execute test movement");
-        robot.telemetry.addData("Current Mode", getCurrentModeString());
+        telemetry.addLine("\n----- CONTROLS (LIMITED BUTTONS) -----");
+        telemetry.addData("D-PAD RIGHT", "Cycle adjustment mode");
+        telemetry.addData("D-PAD LEFT", "Increase selected value");
+        telemetry.addData("D-PAD DOWN", "Decrease selected value");
+        telemetry.addData("B Button", "Start/Reset movement test");
+        telemetry.addData("X Button", "Execute test movement");
+        telemetry.addData("Current Mode", getCurrentModeString());
 
         // ===== LIMITED BUTTON CONTROLS =====
         // Check D-Pad RIGHT to cycle between adjustment modes
@@ -286,7 +289,7 @@ public class AprilLimeDetect extends CommandBase {
             // Cycle to next adjustment mode
             currentMode = AdjustmentMode.values()[
                     (currentMode.ordinal() + 1) % AdjustmentMode.values().length];
-            robot.telemetry.addData("Mode Changed", getCurrentModeString());
+            telemetry.addData("Mode Changed", getCurrentModeString());
             sleep(50); // Small debounce
         }
         wasRightPressed = rightPressed;
@@ -298,17 +301,17 @@ public class AprilLimeDetect extends CommandBase {
             switch (currentMode) {
                 case X_OFFSET:
                     xOffsetMeters += POSITION_ADJUST_STEP;
-                    robot.telemetry.addData("X Offset Increased",
+                    telemetry.addData("X Offset Increased",
                             String.format("%.3f m", xOffsetMeters));
                     break;
                 case Y_OFFSET:
                     yOffsetMeters += POSITION_ADJUST_STEP;
-                    robot.telemetry.addData("Y Offset Increased",
+                    telemetry.addData("Y Offset Increased",
                             String.format("%.3f m", yOffsetMeters));
                     break;
                 case HEADING_OFFSET:
                     headingOffsetDegrees += HEADING_ADJUST_STEP;
-                    robot.telemetry.addData("Heading Offset Increased",
+                    telemetry.addData("Heading Offset Increased",
                             String.format("%.1f°", headingOffsetDegrees));
                     break;
             }
@@ -323,17 +326,17 @@ public class AprilLimeDetect extends CommandBase {
             switch (currentMode) {
                 case X_OFFSET:
                     xOffsetMeters -= POSITION_ADJUST_STEP;
-                    robot.telemetry.addData("X Offset Decreased",
+                    telemetry.addData("X Offset Decreased",
                             String.format("%.3f m", xOffsetMeters));
                     break;
                 case Y_OFFSET:
                     yOffsetMeters -= POSITION_ADJUST_STEP;
-                    robot.telemetry.addData("Y Offset Decreased",
+                    telemetry.addData("Y Offset Decreased",
                             String.format("%.3f m", yOffsetMeters));
                     break;
                 case HEADING_OFFSET:
                     headingOffsetDegrees -= HEADING_ADJUST_STEP;
-                    robot.telemetry.addData("Heading Offset Decreased",
+                    telemetry.addData("Heading Offset Decreased",
                             String.format("%.1f°", headingOffsetDegrees));
                     break;
             }
@@ -350,13 +353,13 @@ public class AprilLimeDetect extends CommandBase {
                 preMovePose = null;
                 postMovePose = null;
                 hasMovementTestCompleted = false;
-                robot.telemetry.addData("Movement Test", "Reset");
+                telemetry.addData("Movement Test", "Reset");
             } else {
                 // Start new test
                 readyForMovementTest = true;
                 preMovePose = null;
                 hasMovementTestCompleted = false;
-                robot.telemetry.addData("Movement Test", "Ready to start");
+                telemetry.addData("Movement Test", "Ready to start");
             }
             sleep(300); // Debounce
         }
@@ -368,7 +371,7 @@ public class AprilLimeDetect extends CommandBase {
                 preMovePose != null && !hasMovementTestCompleted) {
             // Execute the test movement
             hasMovementTestCompleted = true;
-            robot.telemetry.addData("Movement Test", "Moving...");
+            telemetry.addData("Movement Test", "Moving...");
             performTestMovement();
             sleep(300); // Debounce
         }
@@ -392,7 +395,7 @@ public class AprilLimeDetect extends CommandBase {
      */
     private void performTestMovement() {
         new SequentialCommandGroup(
-                new InstantCommand(() -> robot.telemetry.addData("Test Movement", "Starting...")),
+                new InstantCommand(() -> telemetry.addData("Test Movement", "Starting...")),
                 // Move forward 10 inches
                 new StrafeToPose(robot,
                         new Pose2d(
@@ -400,7 +403,7 @@ public class AprilLimeDetect extends CommandBase {
                                 robot.mecanum.pose.position.y,
                                 robot.mecanum.pose.heading.toDouble()),
                         2.0), // 2 second timeout
-                new InstantCommand(() -> robot.telemetry.addData("Test Movement", "Completed"))
+                new InstantCommand(() -> telemetry.addData("Test Movement", "Completed"))
         ).schedule();
     }
 
@@ -432,15 +435,15 @@ public class AprilLimeDetect extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        robot.telemetry.addData("AprilTag Detect", "Ended");
+        telemetry.addData("AprilTag Detect", "Ended");
 
         // Provide summary of calibration findings
         if (lastBotpose != null) {
-            robot.telemetry.addLine("\n----- Final Calibration Values -----");
-            robot.telemetry.addData("X Offset", String.format("%.3f m", xOffsetMeters));
-            robot.telemetry.addData("Y Offset", String.format("%.3f m", yOffsetMeters));
-            robot.telemetry.addData("Heading Offset", String.format("%.1f°", headingOffsetDegrees));
-            robot.telemetry.addLine("\nAdd these values to your SensorPackage.updatePose() method");
+            telemetry.addLine("\n----- Final Calibration Values -----");
+            telemetry.addData("X Offset", String.format("%.3f m", xOffsetMeters));
+            telemetry.addData("Y Offset", String.format("%.3f m", yOffsetMeters));
+            telemetry.addData("Heading Offset", String.format("%.1f°", headingOffsetDegrees));
+            telemetry.addLine("\nAdd these values to your SensorPackage.updatePose() method");
         }
     }
 }

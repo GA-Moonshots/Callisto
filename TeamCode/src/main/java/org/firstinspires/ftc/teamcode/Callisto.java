@@ -78,6 +78,8 @@ public class Callisto extends Robot {
      * Set teleOp's default commands and player control bindings
      */
     public void initTele() {
+        // JUST FOR TESTING
+        startOfTele = new Pose2d(new Vector2d(-36, -62), Math.toRadians(180));
         mecanum = new Mecanum(this, startOfTele);
         lift = new Lift(this);
         intake = new Intake(this);
@@ -111,7 +113,7 @@ public class Callisto extends Robot {
         // BUTTON B
         Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
 
-        // BUTTON X -- TURN 180
+        // BUTTON X
         Button xButtonP1 = new GamepadButton(player1, GamepadKeys.Button.X);
 
         // BUTTON Y -- Reset to Field centric
