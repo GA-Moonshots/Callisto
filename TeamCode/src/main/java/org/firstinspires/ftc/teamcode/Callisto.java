@@ -108,18 +108,11 @@ public class Callisto extends Robot {
             mecanum.toggleFieldCentric();
         }));
 
-        // BUTTON B -- TRY TO MAKE IT TO A POSE USING LIMELIGHT
+        // BUTTON B
         Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
-        bButtonP1.whenPressed(new InstantCommand(() -> {
-            telemetry.addData("Curent Pose", mecanum.pose);
-            new StrafeToPose(this, new Pose2d(new Vector2d(-48, 0), Math.toRadians(180)));
-        }));
 
         // BUTTON X -- TURN 180
         Button xButtonP1 = new GamepadButton(player1, GamepadKeys.Button.X);
-        xButtonP1.whenPressed(new InstantCommand(() -> {
-            new RotateByIMU(this, 180, 2.92, 0.385).schedule();
-        }));
 
         // BUTTON Y -- Reset to Field centric
         Button yButtonP1 = new GamepadButton(player1, GamepadKeys.Button.Y);
@@ -135,9 +128,7 @@ public class Callisto extends Robot {
 
         Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
         Button dPadLeftP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
-
         Button dPadRightP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
-        dPadRightP1.whenPressed(new StrafeToPose(this, new Pose2d(new Vector2d(-36, -62), Math.toRadians(180))));
 
         /*
 
