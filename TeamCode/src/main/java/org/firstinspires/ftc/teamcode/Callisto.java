@@ -111,10 +111,10 @@ public class Callisto extends Robot {
         }));
 
         // BUTTON B
-        Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
+//        Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
 
         // BUTTON X
-        Button xButtonP1 = new GamepadButton(player1, GamepadKeys.Button.X);
+//        Button xButtonP1 = new GamepadButton(player1, GamepadKeys.Button.X);
 
         // BUTTON Y -- Reset to Field centric
         Button yButtonP1 = new GamepadButton(player1, GamepadKeys.Button.Y);
@@ -128,9 +128,9 @@ public class Callisto extends Robot {
         // !!! - APRIL TAG TESTING --- !!!!
         dPadUpP1.whenPressed(new AprilLimeDetect(this));
 
-        Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
-        Button dPadLeftP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
-        Button dPadRightP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
+//        Button dPadDownP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
+//        Button dPadLeftP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
+//        Button dPadRightP1 = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
 
         /*
 
