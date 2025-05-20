@@ -11,6 +11,10 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.button.Button;
+import com.seattlesolvers.solverslib.command.button.GamepadButton;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
+import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import com.seattlesolvers.solverslib.util.Timing;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -32,6 +36,14 @@ public class AprilLimeDetect extends CommandBase {
     private Timing.Timer timer;
     private FtcDashboard dashboard;
     private MultipleTelemetry telemetry;
+    private GamepadEx player1;
+
+    // Button objects for reliable input handling
+    private Button dpadRightButton;
+    private Button dpadLeftButton;
+    private Button dpadDownButton;
+    private Button bButton;
+    private Button xButton;
 
     // Movement test state tracking
     private boolean readyForMovementTest = false;
@@ -47,13 +59,6 @@ public class AprilLimeDetect extends CommandBase {
     // Current adjustment mode (cycles through with D-Pad right)
     private enum AdjustmentMode { X_OFFSET, Y_OFFSET, HEADING_OFFSET }
     private AdjustmentMode currentMode = AdjustmentMode.X_OFFSET;
-
-    // Button state tracking to prevent multiple triggers
-    private boolean wasRightPressed = false;
-    private boolean wasLeftPressed = false;
-    private boolean wasDownPressed = false;
-    private boolean wasBPressed = false;
-    private boolean wasXPressed = false;
 
     // Tracking variables for detected tags
     private Pose3D lastBotpose = null;
@@ -79,6 +84,7 @@ public class AprilLimeDetect extends CommandBase {
         this.robot = robot;
         this.sensors = robot.sensors;
         this.dashboard = FtcDashboard.getInstance();
+        this.player1 = robot.player1;
         timer = new Timing.Timer((long) 0.5);
         addRequirements(sensors);
     }
@@ -100,8 +106,79 @@ public class AprilLimeDetect extends CommandBase {
         // Initialize adjustment mode
         currentMode = AdjustmentMode.X_OFFSET;
 
-        // Reset button states
-        wasRightPressed = wasLeftPressed = wasDownPressed = wasBPressed = wasXPressed = false;
+        // Set up button handlers
+        setupButtonHandlers();
+    }
+
+    /**
+     * Set up button handlers using the GamepadEx style from Callisto
+     */
+    private void setupButtonHandlers() {
+        // D-Pad RIGHT - Cycle through adjustment modes
+        dpadRightButton = new GamepadButton(player1, GamepadKeys.Button.DPAD_RIGHT);
+        dpadRightButton.whenPressed(new InstantCommand(() -> {
+            currentMode = AdjustmentMode.values()[
+                    (currentMode.ordinal() + 1) % AdjustmentMode.values().length];
+        }));
+
+        // D-Pad LEFT - Increase current value
+        dpadLeftButton = new GamepadButton(player1, GamepadKeys.Button.DPAD_LEFT);
+        dpadLeftButton.whenPressed(new InstantCommand(() -> {
+            switch (currentMode) {
+                case X_OFFSET:
+                    xOffsetMeters += POSITION_ADJUST_STEP;
+                    break;
+                case Y_OFFSET:
+                    yOffsetMeters += POSITION_ADJUST_STEP;
+                    break;
+                case HEADING_OFFSET:
+                    headingOffsetDegrees += HEADING_ADJUST_STEP;
+                    break;
+            }
+        }));
+
+        // D-Pad DOWN - Decrease current value
+        dpadDownButton = new GamepadButton(player1, GamepadKeys.Button.DPAD_DOWN);
+        dpadDownButton.whenPressed(new InstantCommand(() -> {
+            switch (currentMode) {
+                case X_OFFSET:
+                    xOffsetMeters -= POSITION_ADJUST_STEP;
+                    break;
+                case Y_OFFSET:
+                    yOffsetMeters -= POSITION_ADJUST_STEP;
+                    break;
+                case HEADING_OFFSET:
+                    headingOffsetDegrees -= HEADING_ADJUST_STEP;
+                    break;
+            }
+        }));
+
+        // B Button - Start/Reset movement test
+        bButton = new GamepadButton(player1, GamepadKeys.Button.B);
+        bButton.whenPressed(new InstantCommand(() -> {
+            if (postMovePose != null) {
+                // Reset the test if completed
+                readyForMovementTest = false;
+                preMovePose = null;
+                postMovePose = null;
+                hasMovementTestCompleted = false;
+            } else {
+                // Start new test
+                readyForMovementTest = true;
+                preMovePose = null;
+                hasMovementTestCompleted = false;
+            }
+        }));
+
+        // X Button - Execute test movement
+        xButton = new GamepadButton(player1, GamepadKeys.Button.X);
+        xButton.whenPressed(new InstantCommand(() -> {
+            if (readyForMovementTest && preMovePose != null && !hasMovementTestCompleted) {
+                // Execute the test movement
+                hasMovementTestCompleted = true;
+                performTestMovement();
+            }
+        }));
     }
 
     @Override
@@ -132,15 +209,10 @@ public class AprilLimeDetect extends CommandBase {
                 // Get tag ID if available
                 if (result.getFiducialResults() != null && !result.getFiducialResults().isEmpty()) {
                     try {
-                        // Based on Limelight documentation, FiducialResult objects have getFiducialId() method
                         List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
-
                         for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                            // Get the ID directly from the FiducialResult object
                             tagID = fr.getFiducialId();
                             telemetry.addData("Tag ID", tagID);
-
-                            // We only need the first tag for this test
                             break;
                         }
                     } catch (Exception e) {
@@ -193,13 +265,7 @@ public class AprilLimeDetect extends CommandBase {
                 // Draw current RoadRunner pose with heading indicator
                 drawPoseWithHeading(packet.fieldOverlay(), currentPose, ROADRUNNER_COLOR);
 
-                // Add a legend
-                packet.fieldOverlay()
-                        .setStroke(APRILTAG_COLOR)
-                        .strokeLine(10, 10, 30, 10)
-                        .setStroke(ROADRUNNER_COLOR)
-                        .strokeLine(10, 25, 30, 25);
-
+                
                 dashboard.sendTelemetryPacket(packet);
 
                 // Handle movement test logic
@@ -222,20 +288,22 @@ public class AprilLimeDetect extends CommandBase {
         // Display movement test status
         displayMovementTestStatus();
 
-        // Display button controls (simplified)
+        // Display button controls
         telemetry.addLine("\n==== CONTROLS ====");
-        telemetry.addData("RIGHT", "Next mode | LEFT", "Increase | DOWN: Decrease");
-        telemetry.addData("B", "Start/Reset test | X", "Execute movement");
+        telemetry.addData("D-Pad RIGHT", "Next adjustment mode");
+        telemetry.addData("D-Pad LEFT", "Increase current value");
+        telemetry.addData("D-Pad DOWN", "Decrease current value");
+        telemetry.addData("B Button", "Start/Reset movement test");
+        telemetry.addData("X Button", "Execute test movement");
 
-        // Handle button inputs
-        handleButtonInputs();
+        telemetry.update();
     }
 
     /**
      * Draws a pose with heading line on the field overlay
      */
     private void drawPoseWithHeading(Object fieldOverlay, Pose2d pose, String color) {
-        // Cast to the correct type (the method parameter is kept as Object to avoid compile errors if the API changes)
+        // Cast to the correct type
         com.acmerobotics.dashboard.canvas.Canvas canvas = (com.acmerobotics.dashboard.canvas.Canvas) fieldOverlay;
 
         // Draw robot position circle
@@ -287,6 +355,8 @@ public class AprilLimeDetect extends CommandBase {
         );
     }
 
+    // Rest of the methods remain largely unchanged
+
     /**
      * Handles the movement test logic and displays status
      */
@@ -335,98 +405,6 @@ public class AprilLimeDetect extends CommandBase {
     }
 
     /**
-     * Handles all button inputs with debouncing
-     */
-    private void handleButtonInputs() {
-        // D-Pad RIGHT to cycle between adjustment modes
-        boolean rightPressed = robot.opMode.gamepad1.dpad_right;
-        if (rightPressed && !wasRightPressed) {
-            currentMode = AdjustmentMode.values()[
-                    (currentMode.ordinal() + 1) % AdjustmentMode.values().length];
-            sleep(50);
-        }
-        wasRightPressed = rightPressed;
-
-        // D-Pad LEFT to increase current value
-        boolean leftPressed = robot.opMode.gamepad1.dpad_left;
-        if (leftPressed && !wasLeftPressed) {
-            switch (currentMode) {
-                case X_OFFSET:
-                    xOffsetMeters += POSITION_ADJUST_STEP;
-                    break;
-                case Y_OFFSET:
-                    yOffsetMeters += POSITION_ADJUST_STEP;
-                    break;
-                case HEADING_OFFSET:
-                    headingOffsetDegrees += HEADING_ADJUST_STEP;
-                    break;
-            }
-            sleep(50);
-        }
-        wasLeftPressed = leftPressed;
-
-        // D-Pad DOWN to decrease current value
-        boolean downPressed = robot.opMode.gamepad1.dpad_down;
-        if (downPressed && !wasDownPressed) {
-            switch (currentMode) {
-                case X_OFFSET:
-                    xOffsetMeters -= POSITION_ADJUST_STEP;
-                    break;
-                case Y_OFFSET:
-                    yOffsetMeters -= POSITION_ADJUST_STEP;
-                    break;
-                case HEADING_OFFSET:
-                    headingOffsetDegrees -= HEADING_ADJUST_STEP;
-                    break;
-            }
-            sleep(50);
-        }
-        wasDownPressed = downPressed;
-
-        // B button to start/reset movement test
-        boolean bPressed = robot.opMode.gamepad1.b;
-        if (bPressed && !wasBPressed) {
-            if (postMovePose != null) {
-                // Reset the test if completed
-                readyForMovementTest = false;
-                preMovePose = null;
-                postMovePose = null;
-                hasMovementTestCompleted = false;
-            } else {
-                // Start new test
-                readyForMovementTest = true;
-                preMovePose = null;
-                hasMovementTestCompleted = false;
-            }
-            sleep(300);
-        }
-        wasBPressed = bPressed;
-
-        // X button to execute test movement
-        boolean xPressed = robot.opMode.gamepad1.x;
-        if (xPressed && !wasXPressed && readyForMovementTest &&
-                preMovePose != null && !hasMovementTestCompleted) {
-            // Execute the test movement
-            hasMovementTestCompleted = true;
-            performTestMovement();
-            sleep(300);
-        }
-        wasXPressed = xPressed;
-    }
-
-    /**
-     * Returns a string representation of the current adjustment mode
-     */
-    private String getCurrentModeString() {
-        switch (currentMode) {
-            case X_OFFSET: return "X Offset";
-            case Y_OFFSET: return "Y Offset";
-            case HEADING_OFFSET: return "Heading Offset";
-            default: return "Unknown";
-        }
-    }
-
-    /**
      * Executes a simple forward movement to test localization accuracy
      */
     private void performTestMovement() {
@@ -453,17 +431,6 @@ public class AprilLimeDetect extends CommandBase {
         return normalized;
     }
 
-    /**
-     * Simple sleep helper for button debouncing
-     */
-    private void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
     @Override
     public boolean isFinished() {
         return false; // Run continuously until canceled
@@ -478,5 +445,6 @@ public class AprilLimeDetect extends CommandBase {
         telemetry.addData("X Offset", String.format("%.3f m", xOffsetMeters));
         telemetry.addData("Y Offset", String.format("%.3f m", yOffsetMeters));
         telemetry.addData("Heading Offset", String.format("%.1f°", headingOffsetDegrees));
+        telemetry.update();
     }
 }
