@@ -11,9 +11,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.seattlesolvers.solverslib.command.CommandBase;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.button.Button;
-import com.seattlesolvers.solverslib.command.button.GamepadButton;
-import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.util.Timing;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -31,16 +29,17 @@ public class AprilLimeDetect extends CommandBase {
     // Robot and subsystem references
     private final Callisto robot;
     private final SensorPackage sensors;
+    private final GamepadEx player1;
     private Timing.Timer timer;
     private FtcDashboard dashboard;
     private MultipleTelemetry telemetry;
 
-    // Button objects for input handling
-    private Button cycleButton;      // DPAD_UP = cycle modes
-    private Button increaseButton;   // DPAD_RIGHT = increase value
-    private Button decreaseButton;   // DPAD_LEFT = decrease value
-    private Button startButton;      // X = start/reset test
-    private Button executeButton;    // DPAD_DOWN = execute movement
+    // Button state tracking for edge detection
+    private boolean wasUpPressed = false;
+    private boolean wasRightPressed = false;
+    private boolean wasLeftPressed = false;
+    private boolean wasXPressed = false;
+    private boolean wasDownPressed = false;
 
     // Movement test state tracking
     private boolean readyForMovementTest = false;
@@ -79,16 +78,10 @@ public class AprilLimeDetect extends CommandBase {
     public AprilLimeDetect(Callisto robot) {
         this.robot = robot;
         this.sensors = robot.sensors;
+        this.player1 = robot.player1;
         this.dashboard = FtcDashboard.getInstance();
         timer = new Timing.Timer((long) 0.5);
         addRequirements(sensors);
-
-        // Create buttons using robot.player1 with D-pad controls to avoid conflicts
-        cycleButton = new GamepadButton(robot.player1, GamepadKeys.Button.DPAD_UP);
-        increaseButton = new GamepadButton(robot.player1, GamepadKeys.Button.DPAD_RIGHT);
-        decreaseButton = new GamepadButton(robot.player1, GamepadKeys.Button.DPAD_LEFT);
-        startButton = new GamepadButton(robot.player1, GamepadKeys.Button.X);
-        executeButton = new GamepadButton(robot.player1, GamepadKeys.Button.DPAD_DOWN);
     }
 
     @Override
@@ -108,78 +101,15 @@ public class AprilLimeDetect extends CommandBase {
         // Initialize adjustment mode
         currentMode = AdjustmentMode.X_OFFSET;
 
-        // Setup button handlers using SolversLib pattern
-        setupButtonHandlers();
-    }
-
-    /**
-     * Configure button handlers using SolversLib style
-     */
-    private void setupButtonHandlers() {
-        // DPAD_UP button - Cycle through adjustment modes
-        cycleButton.whenPressed(new InstantCommand(() -> {
-            currentMode = AdjustmentMode.values()[
-                    (currentMode.ordinal() + 1) % AdjustmentMode.values().length];
-        }));
-
-        // DPAD_RIGHT button - Increase current value
-        increaseButton.whenPressed(new InstantCommand(() -> {
-            switch (currentMode) {
-                case X_OFFSET:
-                    xOffsetMeters += POSITION_ADJUST_STEP;
-                    break;
-                case Y_OFFSET:
-                    yOffsetMeters += POSITION_ADJUST_STEP;
-                    break;
-                case HEADING_OFFSET:
-                    headingOffsetDegrees += HEADING_ADJUST_STEP;
-                    break;
-            }
-        }));
-
-        // DPAD_LEFT button - Decrease current value
-        decreaseButton.whenPressed(new InstantCommand(() -> {
-            switch (currentMode) {
-                case X_OFFSET:
-                    xOffsetMeters -= POSITION_ADJUST_STEP;
-                    break;
-                case Y_OFFSET:
-                    yOffsetMeters -= POSITION_ADJUST_STEP;
-                    break;
-                case HEADING_OFFSET:
-                    headingOffsetDegrees -= HEADING_ADJUST_STEP;
-                    break;
-            }
-        }));
-
-        // X button - Start/Reset movement test
-        startButton.whenPressed(new InstantCommand(() -> {
-            if (postMovePose != null) {
-                // Reset the test if completed
-                readyForMovementTest = false;
-                preMovePose = null;
-                postMovePose = null;
-                hasMovementTestCompleted = false;
-            } else {
-                // Start new test
-                readyForMovementTest = true;
-                preMovePose = null;
-                hasMovementTestCompleted = false;
-            }
-        }));
-
-        // DPAD_DOWN button - Execute test movement
-        executeButton.whenPressed(new InstantCommand(() -> {
-            if (readyForMovementTest && preMovePose != null && !hasMovementTestCompleted) {
-                // Execute the test movement
-                hasMovementTestCompleted = true;
-                performTestMovement();
-            }
-        }));
+        // Initialize button states
+        wasUpPressed = wasRightPressed = wasLeftPressed = wasXPressed = wasDownPressed = false;
     }
 
     @Override
     public void execute() {
+        // Handle button inputs with edge detection
+        handleButtonInputs();
+
         // Get the Limelight result and prepare dashboard packet
         LLResult result = sensors.getLLResult();
         TelemetryPacket packet = new TelemetryPacket();
@@ -291,6 +221,83 @@ public class AprilLimeDetect extends CommandBase {
         telemetry.addData("D-Pad DOWN", "Execute test movement");
 
         telemetry.update();
+    }
+
+    /**
+     * Handle button inputs with edge detection
+     * This avoids using the command scheduler's button handlers
+     */
+    private void handleButtonInputs() {
+        // DPAD_UP - Cycle adjustment modes
+        boolean upPressed = player1.gamepad.dpad_up;
+        if (upPressed && !wasUpPressed) {
+            currentMode = AdjustmentMode.values()[
+                    (currentMode.ordinal() + 1) % AdjustmentMode.values().length];
+        }
+        wasUpPressed = upPressed;
+
+        // DPAD_RIGHT - Increase value
+        boolean rightPressed = player1.gamepad.dpad_right;
+        if (rightPressed && !wasRightPressed) {
+            switch (currentMode) {
+                case X_OFFSET:
+                    xOffsetMeters += POSITION_ADJUST_STEP;
+                    break;
+                case Y_OFFSET:
+                    yOffsetMeters += POSITION_ADJUST_STEP;
+                    break;
+                case HEADING_OFFSET:
+                    headingOffsetDegrees += HEADING_ADJUST_STEP;
+                    break;
+            }
+        }
+        wasRightPressed = rightPressed;
+
+        // DPAD_LEFT - Decrease value
+        boolean leftPressed = player1.gamepad.dpad_left;
+        if (leftPressed && !wasLeftPressed) {
+            switch (currentMode) {
+                case X_OFFSET:
+                    xOffsetMeters -= POSITION_ADJUST_STEP;
+                    break;
+                case Y_OFFSET:
+                    yOffsetMeters -= POSITION_ADJUST_STEP;
+                    break;
+                case HEADING_OFFSET:
+                    headingOffsetDegrees -= HEADING_ADJUST_STEP;
+                    break;
+            }
+        }
+        wasLeftPressed = leftPressed;
+
+        // X button - Start/Reset test
+        boolean xPressed = player1.gamepad.x;
+        if (xPressed && !wasXPressed) {
+            if (postMovePose != null) {
+                // Reset the test if completed
+                readyForMovementTest = false;
+                preMovePose = null;
+                postMovePose = null;
+                hasMovementTestCompleted = false;
+            } else {
+                // Start new test
+                readyForMovementTest = true;
+                preMovePose = null;
+                hasMovementTestCompleted = false;
+            }
+        }
+        wasXPressed = xPressed;
+
+        // DPAD_DOWN - Execute movement
+        boolean downPressed = player1.gamepad.dpad_down;
+        if (downPressed && !wasDownPressed) {
+            if (readyForMovementTest && preMovePose != null && !hasMovementTestCompleted) {
+                // Execute the test movement
+                hasMovementTestCompleted = true;
+                performTestMovement();
+            }
+        }
+        wasDownPressed = downPressed;
     }
 
     /**
