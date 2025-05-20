@@ -61,6 +61,7 @@ public class Callisto extends Robot {
         this.telemetry = opMode.telemetry;
         player1 = new GamepadEx(opMode.gamepad1);
         player2 = new GamepadEx(opMode.gamepad2);
+        // TODO : load pose from persistent pose manager
         initTele();
     }
 
