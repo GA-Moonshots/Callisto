@@ -80,9 +80,7 @@ public class RoadRunner extends SubsystemBase {
 
 
         // feedforward parameters (in tick units)
-        //public double kS = 0.6891724468066125;
-        public double kS = 1.4895249721776433;
-        // temporary testing values
+        public double kS = 0.8;
         public double kV = 0.0004895060750799223;
         public double kA = 0.0001;
 
