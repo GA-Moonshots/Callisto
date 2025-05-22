@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.commands.SplineToPose;
 import org.firstinspires.ftc.teamcode.util.experiments.AprilLimeDetect;
 import org.firstinspires.ftc.teamcode.commands.Drive;
 import org.firstinspires.ftc.teamcode.commands.StrafeToPose;
@@ -85,6 +86,7 @@ public class Callisto extends Robot {
         lift = new Lift(this);
         intake = new Intake(this);
         sensors = new SensorPackage(this);
+        sensors.enableAprilTagTracking();
 
         // Register subsystems
         // REGISTER THE SUBSYSTEM BEFORE THE DEFAULT COMMANDS
@@ -112,10 +114,16 @@ public class Callisto extends Robot {
         }));
 
         // BUTTON B
-//        Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
+        Button bButtonP1 = new GamepadButton(player1, GamepadKeys.Button.B);
+        bButtonP1.whenPressed(
+                new StrafeToPose(this, new Pose2d(-50, 0, 180))
+        );
 
         // BUTTON X
-//        Button xButtonP1 = new GamepadButton(player1, GamepadKeys.Button.X);
+        Button xButtonP1 = new GamepadButton(player1, GamepadKeys.Button.X);
+        xButtonP1.whenPressed(
+                new SplineToPose(this, new Pose2d(50, 0, 180))
+        );
 
         // BUTTON Y -- Reset to Field centric
         Button yButtonP1 = new GamepadButton(player1, GamepadKeys.Button.Y);

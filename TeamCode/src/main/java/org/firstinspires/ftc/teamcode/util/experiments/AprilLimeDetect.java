@@ -48,8 +48,8 @@ public class AprilLimeDetect extends CommandBase {
     private boolean hasMovementTestCompleted = false;
 
     // Calibration values
-    private double xOffsetMeters = 0.0;
-    private double yOffsetMeters = 0.0;
+    private double xOffsetMeters = 0.2;
+    private double yOffsetMeters = 0.17;
     private double headingOffsetDegrees = 0.0;
 
     // Current adjustment mode
